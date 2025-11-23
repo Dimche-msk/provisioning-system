@@ -1,0 +1,39 @@
+id: yealink-T21P
+name: Yealink T21P
+image: yealink-t21.png
+lines: 2
+max_additional_lines: 1
+maximum_expansion_modules: 0
+keys:
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 2
+    type: line
+    label: "Line 2"
+    x: 10
+    y: 100
+    settings:
+      label: "linekey.2.label"
+      value: "linekey.2.value"
+      type: "linekey.2.type"
+      line: "linekey.2.line"
+
+settings:
+  - group: "Pickup Features"
+    params:
+      - key: "features.pickup.blf_audio_enable"
+        label: "BLF Audio Enable"
+        type: boolean
+        default: 1
+      - key: "features.pickup.direct_pickup_code"
+        label: "Direct Pickup Code"
+        type: string
+        default: "*8#"

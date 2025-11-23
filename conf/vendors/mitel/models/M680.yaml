@@ -1,0 +1,217 @@
+id: mitel-680i
+name: Mitel M680I
+image: mitel-m680.png
+type: expansion-module
+own_keys: 16
+
+keys:
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 2
+    type: line
+    label: "Line 2"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.2.label"
+      value: "linekey.2.value"
+      type: "linekey.2.type"
+      line: "linekey.2.line"
+  - index: 3
+    type: line
+    label: "Line 3"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.3.label"
+      value: "linekey.3.value"
+      type: "linekey.3.type"
+      line: "linekey.3.line"
+  - index: 4
+    type: line
+    label: "Line 4"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.4.label"
+      value: "linekey.4.value"
+      type: "linekey.4.type"
+      line: "linekey.4.line"
+  - index: 5
+    type: line
+    label: "Line 5"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.5.label"
+      value: "linekey.5.value"
+      type: "linekey.5.type"
+      line: "linekey.5.line"
+  - index: 6
+    type: line
+    label: "Line 6"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.6.label"
+      value: "linekey.6.value"
+      type: "linekey.6.type"
+      line: "linekey.6.line"
+  - index: 7
+    type: line
+    label: "Line 7"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.7.label"
+      value: "linekey.7.value"
+      type: "linekey.7.type"
+      line: "linekey.7.line"
+  - index: 8
+    type: line
+    label: "Line 8"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 10
+    y: 50
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"

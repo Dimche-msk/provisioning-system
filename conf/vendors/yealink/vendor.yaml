@@ -1,0 +1,4 @@
+id: yealink
+name: Yealink
+phone_config_file: "{{account.mac_address}}.cfg"
+static_dir: static

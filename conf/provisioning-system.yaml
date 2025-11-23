@@ -1,0 +1,41 @@
+server:
+  port: "8090"
+  serve_configs: true
+  # New fields:
+  log_device_access: full  # Options: none, access, error, full
+  log_file_path: ./access.log # Path to the log file
+auth:
+  admin_user: "admin"
+  admin_password: "password123"
+  secret_key: "super-secret-key-for-sessions"
+
+# Настройки по умолчанию (Default Domain)
+defaults:
+  name: "main_PBX"
+  deploy_cmd: "echo 'Deploying {{.FilePath}} to default server'" # Заглушка
+  delete_cmd: "echo 'Deleting {{.FileName}} from default server'"
+  variables:
+    ntp_server: "pool.ntp.org"
+    sip_server_ip: "192.168.88.150"
+    sip_server_port: "5060"
+    # vlan_voip: "100"
+    # vlan_pc: "1"
+    # time_zone: ""
+    http_prov_server: "192.168.88.150"
+    sip_password: "SipPasswd$"
+
+# Дополнительные домены (Локации)
+domains:
+  - name: "branch-1"
+    deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
+    variables:
+      ntp_server: "pool.ntp.org"
+      sip_server_ip: "192.168.88.150"
+      sip_server_port: "5060"
+  - name: "Вынос 2 (Цех Б)"
+    deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
+    variables:
+      ntp_server: "pool.ntp.org"
+      sip_server_ip: "192.168.88.150"
+      sip_server_port: "5060"
+

@@ -1,0 +1,4 @@
+id: cisco
+name: Cisco
+static_dir: static
+phone_config_file: "SEPa{{account.mac_address}}.cnf.xml"
