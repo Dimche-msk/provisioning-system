@@ -12,6 +12,7 @@ type LogEvent struct {
 	RequestedFile string    `json:"requested_file"`
 	Method        string    `json:"method"`
 	UserAgent     string    `json:"user_agent"`
+	Message       string    `json:"message,omitempty"`
 }
 
 type Broadcaster struct {

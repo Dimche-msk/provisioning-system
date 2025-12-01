@@ -9,33 +9,62 @@ auth:
   admin_password: "password123"
   secret_key: "super-secret-key-for-sessions"
 
-# Настройки по умолчанию (Default Domain)
-defaults:
-  name: "main_PBX"
-  deploy_cmd: "echo 'Deploying {{.FilePath}} to default server'" # Заглушка
-  delete_cmd: "echo 'Deleting {{.FileName}} from default server'"
-  variables:
-    ntp_server: "pool.ntp.org"
-    sip_server_ip: "192.168.88.150"
-    sip_server_port: "5060"
-    # vlan_voip: "100"
-    # vlan_pc: "1"
-    # time_zone: ""
-    http_prov_server: "192.168.88.150"
-    sip_password: "SipPasswd$"
+database:
+  path: "provisioning.db"
+  backup_dir: "backups"
+
 
 # Дополнительные домены (Локации)
+# Первый домен используется как домен "По умолчанию" для файлового сервера, если включен параметр "serve_configs"
+# При скачивании файла, сначала файл ищется в первом домене, а потом в других. Т.е. Общие файлы конфигурации будут из первого домена
 domains:
+  - name: "main_PBX"
+    # deploy_cmd: "echo 'Deploying {{.FilePath}} to default server'" # Legacy
+    # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy
+    deploy_commands:
+      - "echo '1. Uploading config for {{.Phone.MacAddress}} to server ({{.Vars.http_prov_server}})'"
+      - "echo '2. Creating Asterisk peer for {{.Phone.MacAddress}}'"
+      - "echo '3. Reloading Asterisk: asterisk -rx \"sip reload\"'"
+    delete_commands:
+      - "echo '1. Removing config for {{.Phone.MacAddress}} from server'"
+      - "echo '2. Removing Asterisk peer for {{.Phone.MacAddress}}'"
+      - "echo '3. Reloading Asterisk: asterisk -rx \"sip reload\"'"
+    generate_random_password: True
+    variables:
+      ntp_server: "pool.ntp.org"
+      sip_server_ip: "192.168.88.150"
+      sip_server_port: "5060"
+      sip_server2_ip: "10.0.0.150"
+      sip_server2_port: "5060"
+      #vlan_voip: "100"
+      #vlan_pc: "1"
+      # time_zone: ""
+      http_prov_server: "192.168.88.111"
+      http_prov_server_port: "8090"
+      sip_password: "SipPasswd$"
+      admin_password: "Admin"
+      user_password: "User"
+
   - name: "branch-1"
     deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
     variables:
       ntp_server: "pool.ntp.org"
       sip_server_ip: "192.168.88.150"
       sip_server_port: "5060"
+      vlan_voip: "100"
+      vlan_pc: "1"
   - name: "Вынос 2 (Цех Б)"
     deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
     variables:
       ntp_server: "pool.ntp.org"
       sip_server_ip: "192.168.88.150"
       sip_server_port: "5060"
+      sip_password: "SipPasswd$"
+  - name: "New_Domain"
+    generate_random_password: True
+    variables:
+      ntp_server: "pool.ntp.org"
+      sip_server_ip: "172.16.00.150"
+      sip_server_port: "5060"
+      sip_password: "SipPasswd$"
 

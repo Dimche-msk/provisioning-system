@@ -2,7 +2,8 @@ id: mitel-6887
 name: Mitel 6887
 image: mitel-6887.png
 type: phone
-own_keys: 42
+own_soft_keys: 24
+own_hard_keys: 12
 max_account_lines: 24
 supported_expansion_modules:
   - M680

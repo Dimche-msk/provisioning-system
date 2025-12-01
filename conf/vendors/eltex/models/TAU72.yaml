@@ -1,6 +1,8 @@
 id: eltex-TAU72
 name: Eltex TAU72
 type: gateway
-lines: 72
-max_additional_lines: 72
+max_account_lines: 72
 image: eltex-tau72.png
+
+
+

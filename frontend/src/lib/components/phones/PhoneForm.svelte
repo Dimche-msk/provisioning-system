@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import { t } from "svelte-i18n";
     import { Button } from "$lib/components/ui/button";
@@ -8,34 +8,39 @@
     import { toast } from "svelte-sonner";
     import LineEditor from "./LineEditor.svelte";
     import { Settings } from "lucide-svelte";
+    import type { Phone, DeviceModel, Vendor } from "$lib/types";
+    import { formatMacInput } from "$lib/utils";
 
-    export let phone = {
+    export let phone: Phone = {
         domain: "",
         vendor: "",
         model_id: "",
         mac_address: "",
         phone_number: "",
         ip_address: "",
-        caller_id: "",
-        account_settings: "{}",
         description: "",
         lines: [],
         expansion_module_model: "",
+        type: "phone",
     };
     export let mode = "create"; // create | edit
 
     const dispatch = createEventDispatcher();
 
-    let domains = [];
-    let vendors = [];
-    let models = [];
+    let domains: string[] = [];
+    let vendors: Vendor[] = [];
+    let models: DeviceModel[] = [];
     let loading = false;
+    const formId = Math.random().toString(36).slice(2);
     let showLineEditor = false;
 
     // Computed
     $: selectedModel = models.find((m) => m.id === phone.model_id);
-    $: maxLines = selectedModel?.max_additional_lines || 0;
+    $: maxLines = selectedModel?.max_account_lines || 0;
     $: canConfigureLines = maxLines > 0;
+
+    $: maxSoftKeys = selectedModel?.own_soft_keys || 0;
+    $: maxHardKeys = selectedModel?.own_hard_keys || 0;
 
     onMount(async () => {
         await Promise.all([loadDomains(), loadVendors()]);
@@ -65,6 +70,17 @@
             if (res.ok) {
                 const data = await res.json();
                 vendors = data.vendors || [];
+
+                // Force reactivity for vendor select
+                if (phone.vendor) {
+                    const currentVendor = phone.vendor;
+                    // Check if vendor exists in list
+                    if (vendors.find((v) => v.id === currentVendor)) {
+                        // Trigger update
+                        phone.vendor = currentVendor;
+                    }
+                }
+
                 if (mode === "create" && vendors.length > 0 && !phone.vendor) {
                     phone.vendor = vendors[0].id;
                     await loadModels(phone.vendor);
@@ -75,15 +91,43 @@
         }
     }
 
-    async function loadModels(vendorId) {
+    async function loadModels(vendorId: string) {
         try {
             const res = await fetch(`/api/models?vendor=${vendorId}`);
             if (res.ok) {
                 const data = await res.json();
-                models = data.models || [];
-                if (mode === "create" && models.length > 0 && !phone.model_id) {
+                models = (data.models || [])
+                    .filter((m: DeviceModel) => m.type !== "expansion-module")
+                    .sort((a: DeviceModel, b: DeviceModel) =>
+                        a.name.localeCompare(b.name),
+                    );
+
+                console.log("Loaded models:", models);
+
+                // Validate current model_id
+                if (phone.model_id) {
+                    const found = models.find((m) => m.id === phone.model_id);
+                    if (!found) {
+                        console.warn(
+                            `Model ${phone.model_id} not found in list. Resetting.`,
+                        );
+                        phone.model_id = "";
+                    } else {
+                        // Force UI update to ensure correct option is selected
+                        const current = phone.model_id;
+                        phone.model_id = "";
+                        setTimeout(() => {
+                            phone.model_id = current;
+                        }, 0);
+                    }
+                }
+
+                if (models.length > 0 && !phone.model_id) {
                     phone.model_id = models[0].id;
-                    console.log("loadModels - mode -> Create", phone.model_id);
+                    console.log(
+                        "loadModels - Defaulting to first model",
+                        phone.model_id,
+                    );
                 }
             }
         } catch (e) {
@@ -101,20 +145,24 @@
         }
     }
 
+    function onModelChange(e: Event) {
+        const target = e.target as HTMLSelectElement;
+        console.log("Model changed to:", target.value);
+        phone.model_id = target.value;
+    }
+
     async function save() {
+        // Ensure numeric types
+        if (phone.expansion_modules_count) {
+            phone.expansion_modules_count = parseInt(
+                String(phone.expansion_modules_count),
+                10,
+            );
+        }
+
+        console.log("Saving phone:", JSON.parse(JSON.stringify(phone)));
         loading = true;
         try {
-            // Validate JSON
-            try {
-                JSON.parse(phone.account_settings);
-            } catch (e) {
-                toast.error(
-                    $t("phone.invalid_json") || "Invalid JSON settings",
-                );
-                loading = false;
-                return;
-            }
-
             const url =
                 mode === "create" ? "/api/phones" : `/api/phones/${phone.id}`;
             const method = mode === "create" ? "POST" : "PUT";
@@ -142,8 +190,6 @@
                         mac_address: "",
                         phone_number: "",
                         ip_address: "",
-                        caller_id: "",
-                        account_settings: "{}",
                         description: "",
                         lines: [],
                     };
@@ -152,16 +198,41 @@
                 const text = await res.text();
                 toast.error(text || "Failed to save phone");
             }
-        } catch (e) {
+        } catch (e: any) {
             toast.error("Error: " + e.message);
         } finally {
             loading = false;
         }
     }
 
-    function handleLinesSave(e) {
+    function handleLinesSave(e: CustomEvent) {
         phone.lines = e.detail;
         showLineEditor = false;
+    }
+    function onPhoneNumberChange() {
+        if (
+            mode === "create" &&
+            phone.phone_number &&
+            (!phone.lines || phone.lines.length === 0)
+        ) {
+            phone.lines = [
+                {
+                    type: "line",
+                    number: 1,
+                    expansion_module_number: 0,
+                    key_number: 0,
+                    additional_info: JSON.stringify({
+                        line_number: "1",
+                        display_name: phone.phone_number,
+                        user_name: phone.phone_number,
+                        auth_name: phone.phone_number,
+                        password: "",
+                        screen_name: phone.phone_number,
+                    }),
+                },
+            ];
+            toast.info("Line 1 automatically created");
+        }
     }
 </script>
 
@@ -182,9 +253,11 @@
     <Card.Content class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2">
-                <Label for="domain">{$t("phone.domain") || "Domain"}</Label>
+                <Label for="domain-{formId}"
+                    >{$t("phone.domain") || "Domain"}</Label
+                >
                 <select
-                    id="domain"
+                    id="domain-{formId}"
                     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     bind:value={phone.domain}
                 >
@@ -194,9 +267,11 @@
                 </select>
             </div>
             <div class="space-y-2">
-                <Label for="vendor">{$t("phone.vendor") || "Vendor"}</Label>
+                <Label for="vendor-{formId}"
+                    >{$t("phone.vendor") || "Vendor"}</Label
+                >
                 <select
-                    id="vendor"
+                    id="vendor-{formId}"
                     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     bind:value={phone.vendor}
                     on:change={onVendorChange}
@@ -209,11 +284,12 @@
         </div>
 
         <div class="space-y-2">
-            <Label for="model">{$t("phone.model") || "Model"}</Label>
+            <Label for="model-{formId}">{$t("phone.model") || "Model"}</Label>
             <select
-                id="model"
+                id="model-{formId}"
                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                bind:value={phone.model_id}
+                value={phone.model_id}
+                on:change={onModelChange}
                 disabled={models.length === 0}
             >
                 {#if models.length === 0}
@@ -226,89 +302,85 @@
         </div>
 
         <!-- Expansion Module Selection (if supported) -->
-        {#if selectedModel?.supported_expansion_modules?.length > 0}
-            <div class="space-y-2">
-                <Label for="exp_module"
-                    >{$t("phone.expansion_module") || "Expansion Module"}</Label
-                >
-                <select
-                    id="exp_module"
-                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    bind:value={phone.expansion_module_model}
-                >
-                    <option value="">None</option>
-                    {#each selectedModel.supported_expansion_modules as m}
-                        <option value={m}>{m}</option>
-                    {/each}
-                </select>
+        {#if (selectedModel?.supported_expansion_modules?.length || 0) > 0}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <Label for="exp_module-{formId}"
+                        >{$t("phone.expansion_module") ||
+                            "Expansion Module"}</Label
+                    >
+                    <select
+                        id="exp_module-{formId}"
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        bind:value={phone.expansion_module_model}
+                    >
+                        <option value="">None</option>
+                        {#each selectedModel?.supported_expansion_modules || [] as m}
+                            <option value={m}>{m}</option>
+                        {/each}
+                    </select>
+                </div>
+                {#if phone.expansion_module_model}
+                    <div class="space-y-2">
+                        <Label for="exp_count-{formId}">Count</Label>
+                        <Input
+                            id="exp_count-{formId}"
+                            type="number"
+                            min="1"
+                            max="6"
+                            bind:value={phone.expansion_modules_count}
+                        />
+                    </div>
+                {/if}
             </div>
         {/if}
 
         <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2">
-                <Label for="mac">
+                <Label for="mac-{formId}">
                     {$t("phone.mac") || "MAC Address"}
                     {#if selectedModel?.type !== "gateway"}
                         <span class="text-red-500">*</span>
                     {/if}
                 </Label>
                 <Input
-                    id="mac"
+                    id="mac-{formId}"
                     bind:value={phone.mac_address}
                     placeholder="00:11:22:33:44:55"
                 />
             </div>
             <div class="space-y-2">
-                <Label for="number">
+                <Label for="number-{formId}">
                     {$t("phone.number") || "Phone Number"}
                     {#if selectedModel?.type !== "gateway"}
                         <span class="text-red-500">*</span>
                     {/if}
                 </Label>
                 <Input
-                    id="number"
+                    id="number-{formId}"
                     bind:value={phone.phone_number}
                     placeholder="101"
+                    on:blur={onPhoneNumberChange}
                 />
             </div>
         </div>
 
         <div class="space-y-2">
-            <Label for="ip_address"
+            <Label for="ip_address-{formId}"
                 >{$t("phone.ip_address") || "IP Address"}</Label
             >
             <Input
-                id="ip_address"
+                id="ip_address-{formId}"
                 bind:value={phone.ip_address}
                 placeholder="192.168.1.100"
             />
         </div>
 
         <div class="space-y-2">
-            <Label for="callerid">{$t("phone.caller_id") || "Caller ID"}</Label>
-            <Input
-                id="callerid"
-                bind:value={phone.caller_id}
-                placeholder="John Doe"
-            />
-        </div>
-
-        <div class="space-y-2">
-            <Label for="settings"
-                >{$t("phone.settings") || "Account Settings (JSON)"}</Label
-            >
-            <textarea
-                id="settings"
-                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                bind:value={phone.account_settings}
-            ></textarea>
-        </div>
-
-        <div class="space-y-2">
-            <Label for="description"
+            <Label for="description-{formId}"
                 >{$t("common.description") || "Description"}</Label
             >
-            <Input id="description" bind:value={phone.description} />
+            <Input id="description-{formId}" bind:value={phone.description} />
         </div>
 
         <div class="flex gap-4">
@@ -338,6 +410,10 @@
     bind:open={showLineEditor}
     lines={phone.lines || []}
     {maxLines}
+    {maxSoftKeys}
+    {maxHardKeys}
+    image={selectedModel?.image}
+    {phone}
     on:save={handleLinesSave}
     on:close={() => (showLineEditor = false)}
 />

@@ -1,13 +1,13 @@
-id: mitel-6869
-name: Mitel 6869
-image: mitel-6869.png
+id: snom-D785
+name: SNOM D785
+image: snom-d785.png
 type: phone
-own_keys: 12
-max_additional_lines: 11
+own_hard_keys: 5
+own_soft_keys: 0
+max_account_lines: 5
 supported_expansion_modules:
-  - M680
-  - M685
-maximum_expansion_modules: 3
+  - SNOM-D7
+maximum_expansion_modules: 2
 keys:
   - index: 1
     type: line

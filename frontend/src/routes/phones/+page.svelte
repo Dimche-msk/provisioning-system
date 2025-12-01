@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { t } from "svelte-i18n";
     import * as Card from "$lib/components/ui/card";
     import { Button } from "$lib/components/ui/button";
@@ -7,12 +7,28 @@
     import { toast } from "svelte-sonner";
     import { onMount } from "svelte";
     import PhoneForm from "$lib/components/phones/PhoneForm.svelte";
-    import { Search, ChevronLeft, ChevronRight, X } from "lucide-svelte";
+    import {
+        Search,
+        ChevronLeft,
+        ChevronRight,
+        X,
+        Upload,
+        Plus,
+        Trash2,
+    } from "lucide-svelte";
+    import type { Phone, Vendor } from "$lib/types";
+    import { formatMacInput } from "$lib/utils";
 
-    let domains = [];
-    let vendors = [];
+    let domains: string[] = [];
+    let vendors: Vendor[] = [];
 
-    let filters = {
+    let filters: {
+        domain: string;
+        vendor: string;
+        mac: string;
+        number: string;
+        caller_id: string;
+    } = {
         domain: "",
         vendor: "",
         mac: "",
@@ -20,14 +36,14 @@
         caller_id: "",
     };
 
-    let phones = [];
+    let phones: Phone[] = [];
     let total = 0;
     let page = 1;
     let limit = 20;
     let loading = false;
 
     // Edit state
-    let editingPhone = null;
+    let editingPhone: Phone | null = null;
     let showEditDialog = false;
 
     onMount(async () => {
@@ -102,7 +118,7 @@
         }
     }
 
-    function formatMac(mac) {
+    function formatMac(mac: string | null) {
         if (!mac) return "";
         // Remove any existing separators
         const clean = mac.replace(/[^a-fA-F0-9]/g, "");
@@ -110,22 +126,110 @@
         return clean.match(/.{1,2}/g)?.join(":") || mac;
     }
 
-    function editPhone(phone) {
-        console.debug("Start Phone Editor", phone)
+    function editPhone(phone: Phone) {
+        console.debug("Start Phone Editor", phone);
         editingPhone = { ...phone }; // Clone
         showEditDialog = true;
     }
 
-    function onSave(e) {
+    function createPhone() {
+        editingPhone = {
+            domain: domains[0] || "",
+            vendor: "",
+            model_id: "",
+            mac_address: "",
+            phone_number: "",
+            ip_address: "",
+            description: "",
+            lines: [],
+            expansion_module_model: "",
+            type: "phone",
+        };
+        showEditDialog = true;
+    }
+
+    function onSave(e: CustomEvent) {
         showEditDialog = false;
         search(page); // Refresh
+    }
+
+    function getLinesDescription(phone: Phone) {
+        const parts = [];
+        if (phone.description) {
+            parts.push(phone.description);
+        }
+
+        if (phone.type === "phone" && phone.lines) {
+            const descriptions = [];
+            for (const line of phone.lines) {
+                if (line.type !== "line") continue;
+
+                let info: Record<string, any> = {};
+                if (typeof line.additional_info === "string") {
+                    try {
+                        info = JSON.parse(line.additional_info);
+                    } catch (e) {
+                        /* ignore */
+                    }
+                } else if (typeof line.additional_info === "object") {
+                    info = line.additional_info || {};
+                }
+
+                let text =
+                    info.display_name ||
+                    info.screen_name ||
+                    info.user_name ||
+                    info.auth_name ||
+                    (line.number ? line.number.toString() : "");
+
+                if (text) {
+                    if (text.length > 20) {
+                        text = text.substring(0, 20) + "...";
+                    }
+                    descriptions.push(text);
+                }
+            }
+            if (descriptions.length > 0) {
+                parts.push(descriptions.join(", "));
+            }
+        }
+
+        return parts.join(": ");
+    }
+
+    async function deletePhone(phone: Phone) {
+        if (
+            !confirm(
+                $t("phone.confirm_delete") ||
+                    "Are you sure you want to delete this phone?",
+            )
+        ) {
+            return;
+        }
+        try {
+            const res = await fetch(`/api/phones/${phone.id}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                toast.success($t("phone.deleted") || "Phone deleted");
+                search(page);
+            } else {
+                toast.error(
+                    $t("phone.delete_failed") || "Failed to delete phone",
+                );
+            }
+        } catch (e) {
+            toast.error("Error deleting phone: " + e.message);
+        }
     }
 </script>
 
 <div class="p-6 space-y-6">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
-        {$t("menu.phones") || "Phones"}
-    </h1>
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {$t("menu.phones") || "Phones"}
+        </h1>
+    </div>
 
     <Card.Root>
         <Card.Header>
@@ -165,7 +269,11 @@
                     <Label for="s_mac">{$t("phone.mac")}</Label>
                     <Input
                         id="s_mac"
-                        bind:value={filters.mac}
+                        value={filters.mac}
+                        on:input={(e) => {
+                            filters.mac = formatMacInput(e.currentTarget.value);
+                            e.currentTarget.value = filters.mac;
+                        }}
                         placeholder="00:11:..."
                     />
                 </div>
@@ -195,6 +303,22 @@
         </Card.Content>
     </Card.Root>
 
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {$t("menu.phones") || "Phones"}
+        </h1>
+        <div class="flex gap-2">
+            <Button variant="outline" href="/phones/import">
+                <Upload class="mr-2 h-4 w-4" />
+                {$t("phones.import") || "Import"}
+            </Button>
+            <Button on:click={createPhone}>
+                <Plus class="mr-2 h-4 w-4" />
+                {$t("phones.create") || "Create Phone"}
+            </Button>
+        </div>
+    </div>
+
     <Card.Root>
         <Card.Content class="p-0">
             <div class="relative w-full overflow-auto">
@@ -209,7 +333,7 @@
                             >
                             <th
                                 class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
-                                >{$t("phone.caller_id")}</th
+                                >{$t("common.description") || "Description"}</th
                             >
                             <th
                                 class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
@@ -227,13 +351,18 @@
                                 class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.domain")}</th
                             >
+                            <th
+                                class="h-12 px-2 text-right align-middle font-medium text-muted-foreground w-[1%] whitespace-nowrap"
+                            >
+                                {$t("common.actions") || "Actions"}
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="[&_tr:last-child]:border-0">
                         {#if phones.length === 0}
                             <tr>
                                 <td
-                                    colspan="6"
+                                    colspan="7"
                                     class="p-4 text-center text-muted-foreground"
                                 >
                                     {$t("common.no_results") ||
@@ -246,12 +375,16 @@
                                     class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                                     on:click={() => editPhone(phone)}
                                 >
-                                    <td class="p-4 align-middle"
-                                        >{phone.phone_number}</td
-                                    >
-                                    <td class="p-4 align-middle"
-                                        >{phone.caller_id}</td
-                                    >
+                                    <td class="p-4 align-middle">
+                                        {#if phone.type === "gateway"}
+                                            {phone.ip_address}
+                                        {:else}
+                                            {phone.phone_number}
+                                        {/if}
+                                    </td>
+                                    <td class="p-4 align-middle">
+                                        {getLinesDescription(phone)}
+                                    </td>
                                     <td class="p-4 align-middle"
                                         >{formatMac(phone.mac_address)}</td
                                     >
@@ -264,6 +397,19 @@
                                     <td class="p-4 align-middle"
                                         >{phone.domain}</td
                                     >
+                                    <td class="p-2 align-middle text-right">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                            on:click={(e) => {
+                                                e.stopPropagation();
+                                                deletePhone(phone);
+                                            }}
+                                        >
+                                            <Trash2 class="h-4 w-4" />
+                                        </Button>
+                                    </td>
                                 </tr>
                             {/each}
                         {/if}
@@ -304,7 +450,7 @@
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
         >
             <div
-                class="bg-background p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border relative"
+                class="bg-background dark:bg-slate-900 p-6 rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border dark:border-slate-700 relative"
             >
                 <Button
                     variant="ghost"
@@ -316,7 +462,7 @@
                 </Button>
                 {#if editingPhone}
                     <PhoneForm
-                        mode="edit"
+                        mode={editingPhone.id ? "edit" : "create"}
                         phone={editingPhone}
                         on:save={onSave}
                     />

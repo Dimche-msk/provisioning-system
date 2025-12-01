@@ -1,10 +1,13 @@
 id: cisco-SPA525
 name: Cisco SPA525
 image: cisco-spa525.png
-lines: 5
-max_additional_lines: 4
+type: phone
+own_hard_keys: 5
+own_soft_keys: 0
+max_account_lines: 5
 supported_expansion_modules:
-  - CiscoEXP32
+  - CiscoSPA500S
+  - CiscoSPA500DS
 maximum_expansion_modules: 2
 keys:
   - index: 1

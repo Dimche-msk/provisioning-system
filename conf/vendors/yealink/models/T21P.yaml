@@ -1,8 +1,9 @@
 id: yealink-T21P
 name: Yealink T21P
 image: yealink-t21.png
-lines: 2
-max_additional_lines: 1
+type: phone
+own_keys: 2
+max_account_lines: 2
 maximum_expansion_modules: 0
 keys:
   - index: 1

@@ -6,21 +6,40 @@ type VendorConfig struct {
 	StaticDir           string `yaml:"static_dir"`            // Директория со статикой (относительно vendor.yaml)
 	PhoneConfigFile     string `yaml:"phone_config_file"`     // Шаблон имени файла конфига телефона (например: "{{account.mac_address}}.cfg")
 	PhoneConfigTemplate string `yaml:"phone_config_template"` // Путь к шаблону конфига телефона (относительно vendor.yaml)
+	FeaturesFile        string `yaml:"features_file"`         // Путь к файлу с описанием функций (относительно vendor.yaml)
 
 	// Внутреннее поле для хранения полного пути к директории вендора
-	Dir string `yaml:"-"`
+	Dir      string    `yaml:"-"`
+	Features []Feature `yaml:"-" json:"features"`
+}
+
+type Feature struct {
+	ID     string         `yaml:"id" json:"id"`
+	Name   string         `yaml:"name" json:"name"`
+	Params []FeatureParam `yaml:"params" json:"params"`
+}
+
+type FeatureParam struct {
+	ID             string `yaml:"id" json:"id"`
+	Label          string `yaml:"label" json:"label"`
+	Type           string `yaml:"type" json:"type"`                         // string, select, etc.
+	Value          string `yaml:"value,omitempty" json:"value,omitempty"`   // Fixed value if any
+	ConfigTemplate string `yaml:"config_template" json:"config_template"`   // Template line
+	Source         string `yaml:"source,omitempty" json:"source,omitempty"` // e.g. "lines" for select source
 }
 
 type DeviceModel struct {
-	ID                        string              `yaml:"id" json:"id"`
-	Vendor                    string              `yaml:"vendor" json:"vendor"`
-	Name                      string              `yaml:"name" json:"name"`
-	Type                      string              `yaml:"type" json:"type"` // "phone" (default) or "gateway"
-	Image                     string              `yaml:"image" json:"image"`
-	Lines                     int                 `yaml:"lines" json:"lines"`
+	ID     string `yaml:"id" json:"id"`
+	Vendor string `yaml:"vendor" json:"vendor"`
+	Name   string `yaml:"name" json:"name"`
+	Type   string `yaml:"type" json:"type"` // "phone", "gateway", "expansion-module"
+	Image  string `yaml:"image" json:"image"`
+	//	OwnKeys                   int                 `yaml:"own_keys" json:"own_keys"`
+	OwnSoftKeys               int                 `yaml:"own_soft_keys" json:"own_soft_keys"`
+	OwnHardKeys               int                 `yaml:"own_hard_keys" json:"own_hard_keys"`
 	SupportedExpansionModules []string            `yaml:"supported_expansion_modules" json:"supported_expansion_modules"`
 	MaximumExpansionModules   int                 `yaml:"maximum_expansion_modules" json:"maximum_expansion_modules"`
-	MaxAdditionalLines        int                 `yaml:"max_additional_lines" json:"max_additional_lines"`
+	MaxAccountLines           int                 `yaml:"max_account_lines" json:"max_account_lines"`
 	LineNameFormat            string              `yaml:"line_name_format" json:"line_name_format"` // Regex or format string
 	Keys                      []ModelKey          `yaml:"keys" json:"keys"`
 	Settings                  []ModelSettingGroup `yaml:"settings" json:"settings"`

@@ -98,16 +98,47 @@ func (l *DeviceLogger) logToFile(event broadcaster.LogEvent) {
 	}
 	defer f.Close()
 
-	logLine := fmt.Sprintf("%s | %s | %d | %s | %s | %s\n",
+	logLine := fmt.Sprintf("%s | %s | %d | %s | %s | %s | %s\n",
 		event.Time.Format(time.RFC3339),
 		event.SourceIP,
 		event.StatusCode,
 		event.Method,
 		event.RequestedFile,
 		event.UserAgent,
+		event.Message,
 	)
 
 	if _, err := f.WriteString(logLine); err != nil {
 		fmt.Printf("Error writing to log file: %v\n", err)
+	}
+}
+
+func (l *DeviceLogger) LogCustom(r *http.Request, statusCode int, message string) {
+	logLevel := l.Config.Server.LogDeviceAccess
+	if logLevel == "" || logLevel == "none" {
+		return
+	}
+
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		ip = r.RemoteAddr
+	}
+
+	event := broadcaster.LogEvent{
+		Time:          time.Now(),
+		SourceIP:      ip,
+		StatusCode:    statusCode,
+		RequestedFile: r.URL.Path,
+		Method:        r.Method,
+		UserAgent:     r.UserAgent(),
+		Message:       message,
+	}
+
+	if l.Broadcaster != nil {
+		l.Broadcaster.Broadcast(event)
+	}
+
+	if l.Config.Server.LogFilePath != "" {
+		l.logToFile(event)
 	}
 }

@@ -1,4 +1,5 @@
 id: cisco
 name: Cisco
 static_dir: static
-phone_config_file: "SEPa{{account.mac_address}}.cnf.xml"
+phone_config_file: "spa{{account.mac_address}}.xml"
+phone_config_template: templates/phone.tpl

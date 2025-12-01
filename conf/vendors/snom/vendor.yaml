@@ -1,0 +1,5 @@
+id: snom
+name: Snom
+phone_config_file: "snom{{account.model}}{{account.mac_address}}.cfg"
+phone_config_template: templates/snomD785-mac.htm.tpl
+static_dir: static

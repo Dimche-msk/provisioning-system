@@ -37,6 +37,7 @@
     $: hasActiveFilters = activeFiltersCount > 0;
 
     onMount(() => {
+        console.log("connecting to event stream")
         connect();
     });
 
@@ -149,7 +150,7 @@
                     class="relative"
                 >
                     <Filter class="mr-2 h-4 w-4" />
-                    Filters
+                    {$t("common.filters")}
                     {#if hasActiveFilters}
                         <span class="absolute -top-1 -right-1 flex h-3 w-3">
                             <span
@@ -215,11 +216,12 @@
             <Table.Root>
                 <Table.Header class="sticky top-0 bg-background z-10 shadow-sm">
                     <Table.Row>
-                        <Table.Head class="w-[180px]">Time</Table.Head>
+                        <Table.Head class="w-[180px]">{$t("common.time")}</Table.Head>
                         <Table.Head class="w-[150px]">Source IP</Table.Head>
-                        <Table.Head class="w-[100px]">Status</Table.Head>
-                        <Table.Head class="w-[100px]">Method</Table.Head>
-                        <Table.Head>Requested File</Table.Head>
+                        <Table.Head class="w-[100px]">{$t("common.status")}</Table.Head>
+                        <Table.Head class="w-[100px]">{$t("common.method")}</Table.Head>
+                        <Table.Head>{$t("common.requested_file")}</Table.Head>
+                        <Table.Head>{$t("common.message")}</Table.Head>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -249,15 +251,18 @@
                             <Table.Cell class="font-mono text-sm break-all"
                                 >{log.requested_file}</Table.Cell
                             >
+                            <Table.Cell class="text-sm text-muted-foreground">
+                                {log.message || ""}
+                            </Table.Cell>
                         </Table.Row>
                     {/each}
                     {#if filteredLogs.length === 0}
                         <Table.Row>
                             <Table.Cell
-                                colspan="5"
+                                colspan="6"
                                 class="text-center text-muted-foreground py-8"
                             >
-                                No logs received yet...
+                                {$t("debug.no_log_received_yet")}
                             </Table.Cell>
                         </Table.Row>
                     {/if}

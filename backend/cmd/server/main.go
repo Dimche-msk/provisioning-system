@@ -7,12 +7,14 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gorilla/mux"
 
 	"provisioning-system/internal/api"
+	"provisioning-system/internal/backup"
 	"provisioning-system/internal/broadcaster"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
@@ -48,14 +50,13 @@ func main() {
 	// Раздача сгенерированных конфигов (если включено)
 	if cfg.Server.ServeConfigs {
 		configsDir := filepath.Join(*configDir, "temp_configs")
-		// Используем http.StripPrefix чтобы убрать /config/ из пути
 		configFs := http.FileServer(http.Dir(configsDir))
 
 		// Оборачиваем в логгер
 		loggingHandler := deviceLogger.Middleware(http.StripPrefix("/config/", configFs))
 
 		r.PathPrefix("/config/").Handler(loggingHandler)
-		fmt.Printf("Serving generated configs at /config/ from %s\n", configsDir)
+		fmt.Printf("Serving generated configs at http://.../ from %s\n", configsDir)
 	}
 
 	// 5. Инициализация Provisioner Manager
@@ -73,9 +74,12 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	// 7. Инициализация API Handlers
-	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database)
-	phoneHandler := api.NewPhoneHandler(database, provManager)
+	// 7. Инициализация Backup Manager
+	backupManager := backup.NewManager(cfg, database)
+
+	// 8. Инициализация API Handlers
+	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager)
+	phoneHandler := api.NewPhoneHandler(*configDir, database, provManager)
 	debugHandler := api.NewDebugHandler(b)
 
 	// API Routes
@@ -94,18 +98,29 @@ func main() {
 	})
 
 	protected.HandleFunc("/system/reload", sysHandler.Reload).Methods("POST")
+	protected.HandleFunc("/system/apply", sysHandler.ApplyConfig).Methods("POST")
 	protected.HandleFunc("/domains", sysHandler.GetDomains).Methods("GET")
 	protected.HandleFunc("/deploy", sysHandler.Deploy).Methods("POST")
+
+	protected.HandleFunc("/system/backup", sysHandler.CreateBackup).Methods("POST")
+	protected.HandleFunc("/system/backups", sysHandler.ListBackups).Methods("GET")
+	protected.HandleFunc("/system/restore", sysHandler.RestoreBackup).Methods("POST")
+	protected.HandleFunc("/system/stats", sysHandler.GetSystemStats).Methods("GET")
 
 	protected.HandleFunc("/phones", phoneHandler.CreatePhone).Methods("POST")
 	protected.HandleFunc("/phones", phoneHandler.GetPhones).Methods("GET")
 	protected.HandleFunc("/phones/{id}", phoneHandler.UpdatePhone).Methods("PUT")
+	protected.HandleFunc("/phones/{id}", phoneHandler.DeletePhone).Methods("DELETE")
 
 	protected.HandleFunc("/vendors", phoneHandler.GetVendors).Methods("GET")
 	protected.HandleFunc("/models", phoneHandler.GetModels).Methods("GET")
 
 	// Debug API (SSE)
 	protected.HandleFunc("/debug/logs", debugHandler.StreamLogs).Methods("GET")
+
+	// Serve Vendor Static Files (Images, etc.)
+	vendorsDir := filepath.Join(*configDir, "vendors")
+	r.PathPrefix("/api/vendors-static/").Handler(http.StripPrefix("/api/vendors-static/", http.FileServer(http.Dir(vendorsDir))))
 
 	// Статика (Фронтенд) - SPA Fallback
 	dist, err := fs.Sub(staticFS, "static")
@@ -122,19 +137,68 @@ func main() {
 			return
 		}
 
+		// 1. Check if it matches a static file (Frontend)
+		f, err := dist.Open(strings.TrimPrefix(path, "/"))
+		if err == nil {
+			f.Close()
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+
 		if path == "/" {
 			fileServer.ServeHTTP(w, r)
 			return
 		}
 
-		f, err := dist.Open(strings.TrimPrefix(path, "/"))
-		if err != nil {
-			// SPA Fallback
-			r.URL.Path = "/"
-			fileServer.ServeHTTP(w, r)
+		// 2. Universal Config Serving (Fallback for configs)
+		if cfg.Server.ServeConfigs {
+			configsDir := filepath.Join(*configDir, "temp_configs")
+
+			// 2a. Check default domain (first in config)
+			var defaultDomain string
+			if len(cfg.Domains) > 0 {
+				defaultDomain = cfg.Domains[0].Name
+				configPath := filepath.Join(configsDir, defaultDomain, path)
+				if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
+					deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from default domain: %s", defaultDomain))
+					http.ServeFile(w, r, configPath)
+					return
+				}
+			}
+
+			// 2b. Search in all other domains
+			entries, err := os.ReadDir(configsDir)
+			if err == nil {
+				for _, entry := range entries {
+					if entry.IsDir() {
+						domain := entry.Name()
+						// Skip default domain as we already checked it
+						if domain == defaultDomain {
+							continue
+						}
+
+						configPath := filepath.Join(configsDir, domain, path)
+						if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
+							deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from domain: %s", domain))
+							http.ServeFile(w, r, configPath)
+							return
+						}
+					}
+				}
+			}
+		}
+
+		// 3. Check if it looks like a file (has extension)
+		// If it looks like a file and wasn't found above, return 404 and log it
+		if filepath.Ext(path) != "" {
+			deviceLogger.LogCustom(r, http.StatusNotFound, "File not found")
+			http.NotFound(w, r)
 			return
 		}
-		f.Close()
+
+		// 4. SPA Fallback
+		// If not found anywhere else, serve index.html
+		r.URL.Path = "/"
 		fileServer.ServeHTTP(w, r)
 	})
 

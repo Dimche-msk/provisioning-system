@@ -10,7 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"provisioning-system/internal/backup"
 	"provisioning-system/internal/config"
+	"provisioning-system/internal/db"
 	"provisioning-system/internal/models"
 	"provisioning-system/internal/provisioner"
 
@@ -18,18 +20,20 @@ import (
 )
 
 type SystemHandler struct {
-	ConfigDir   string
-	Config      **config.SystemConfig // Pointer to the global config pointer to allow updates
-	ProvManager *provisioner.Manager
-	DB          *gorm.DB
+	ConfigDir     string
+	Config        **config.SystemConfig
+	ProvManager   *provisioner.Manager
+	DB            *gorm.DB
+	BackupManager *backup.Manager
 }
 
-func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB) *SystemHandler {
+func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB, bm *backup.Manager) *SystemHandler {
 	return &SystemHandler{
-		ConfigDir:   configDir,
-		Config:      cfg,
-		ProvManager: pm,
-		DB:          db,
+		ConfigDir:     configDir,
+		Config:        cfg,
+		ProvManager:   pm,
+		DB:            db,
+		BackupManager: bm,
 	}
 }
 
@@ -42,7 +46,9 @@ func (h *SystemHandler) Reload(w http.ResponseWriter, r *http.Request) {
 	// 1. Reload provisioning-system.yaml
 	newCfg, err := config.LoadConfig(h.ConfigDir)
 	if err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "Failed to reload config: %v"}`, err), http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Failed to reload config: %v", err)})
 		return
 	}
 
@@ -53,43 +59,107 @@ func (h *SystemHandler) Reload(w http.ResponseWriter, r *http.Request) {
 	// 2. Reload vendor configs
 	vendorsDir := filepath.Join(h.ConfigDir, "vendors")
 	if err := h.ProvManager.LoadVendors(vendorsDir); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "Failed to reload vendors: %v"}`, err), http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Failed to reload vendors: %v", err)})
+		return
+	}
+	if err := h.ProvManager.LoadModels(); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Failed to reload models: %v", err)})
 		return
 	}
 
 	// 3. Generate configs
-	outputDir := filepath.Join(h.ConfigDir, "temp_configs")
-	backupDir := filepath.Join(h.ConfigDir, "temp_configs.bak")
+	// 3. Generate configs
+	outputDir := filepath.Join(h.ConfigDir, "pre_configs")
 
-	if _, err := os.Stat(outputDir); err == nil {
-		if err := os.RemoveAll(backupDir); err != nil {
-			log.Printf("Warning: Failed to remove old backup: %v", err)
-		}
-		if err := os.Rename(outputDir, backupDir); err != nil {
-			http.Error(w, fmt.Sprintf(`{"error": "Failed to backup configs: %v"}`, err), http.StatusInternalServerError)
-			return
-		}
+	// Clean pre_configs if exists
+	if err := os.RemoveAll(outputDir); err != nil {
+		log.Printf("Warning: Failed to clean pre_configs: %v", err)
 	}
-	// 4. Генерация основных конфигов
-	if err := h.ProvManager.GenerateConfigs(outputDir); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to generate configs: %v", err), http.StatusInternalServerError)
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Failed to create pre_configs dir: %v", err)})
 		return
 	}
 
-	// 5. Генерация конфигов телефонов
+	// 4. Fetch phones (needed for both general configs (directory) and phone configs)
 	var phones []models.Phone
-	if result := h.DB.Find(&phones); result.Error != nil {
+	var warnings []string
+
+	if result := h.DB.Preload("Lines").Find(&phones); result.Error != nil {
 		log.Printf("Failed to fetch phones for config generation: %v", result.Error)
-		// Не прерываем процесс, так как основные конфиги уже сгенерированы
-	} else {
-		if err := h.ProvManager.GeneratePhoneConfigs(outputDir, phones); err != nil {
+		warnings = append(warnings, fmt.Sprintf("Failed to fetch phones: %v", result.Error))
+	}
+
+	// 5. Generate general configs (including directories)
+	if err := h.ProvManager.GenerateConfigs(outputDir, phones); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("Failed to generate configs: %v", err)})
+		return
+	}
+
+	// 6. Generate phone configs
+	if len(phones) > 0 {
+		phoneWarnings, err := h.ProvManager.GeneratePhoneConfigs(outputDir, phones)
+		if err != nil {
 			log.Printf("Failed to generate phone configs: %v", err)
-			// Тоже не прерываем, но логируем
+			warnings = append(warnings, fmt.Sprintf("Failed to generate phone configs: %v", err))
+		}
+		if len(phoneWarnings) > 0 {
+			warnings = append(warnings, phoneWarnings...)
 		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"status": "ok", "message": "Configuration reloaded and generated successfully"}`))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":   "ok",
+		"message":  "Configuration prepared successfully. Ready to apply.",
+		"warnings": warnings,
+	})
+}
+
+func (h *SystemHandler) ApplyConfig(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	preDir := filepath.Join(h.ConfigDir, "pre_configs")
+	targetDir := filepath.Join(h.ConfigDir, "temp_configs")
+	backupDir := filepath.Join(h.ConfigDir, "temp_configs.bak")
+
+	// Check if pre_configs exists
+	if _, err := os.Stat(preDir); os.IsNotExist(err) {
+		http.Error(w, `{"error": "No prepared configuration found. Please prepare configuration first."}`, http.StatusBadRequest)
+		return
+	}
+
+	// Backup existing temp_configs
+	if _, err := os.Stat(targetDir); err == nil {
+		if err := os.RemoveAll(backupDir); err != nil {
+			log.Printf("Warning: Failed to remove old backup: %v", err)
+		}
+		if err := os.Rename(targetDir, backupDir); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to backup current configs: %v"}`, err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// Move pre_configs to temp_configs
+	if err := os.Rename(preDir, targetDir); err != nil {
+		// Try to restore backup if move failed
+		os.Rename(backupDir, targetDir)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to apply configuration: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Configuration applied successfully."}`))
 }
 
 func (h *SystemHandler) GetDomains(w http.ResponseWriter, r *http.Request) {
@@ -99,22 +169,17 @@ func (h *SystemHandler) GetDomains(w http.ResponseWriter, r *http.Request) {
 	// Using a map to ensure uniqueness if needed, though the slice should be enough if config is valid
 	domains := []string{}
 
-	// Always add default if it has a name, or just "default"
-	defaultName := cfg.Defaults.Name
-	if defaultName == "" {
-		defaultName = "default"
-	}
-	domains = append(domains, defaultName)
-
+	// Collect detailed domains for frontend usage (e.g. variables)
+	detailedDomains := []config.DomainSettings{}
 	for _, d := range cfg.Domains {
-		if d.Name != defaultName {
-			domains = append(domains, d.Name)
-		}
+		domains = append(domains, d.Name)
+		detailedDomains = append(detailedDomains, d)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"domains": domains,
+		"domains":          domains,
+		"detailed_domains": detailedDomains,
 	})
 }
 
@@ -185,5 +250,103 @@ func (h *SystemHandler) Deploy(w http.ResponseWriter, r *http.Request) {
 		"status":  "ok",
 		"message": fmt.Sprintf("Deployed successfully to %s", domainName),
 		"output":  string(output),
+	})
+}
+
+func (h *SystemHandler) CreateBackup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if err := h.BackupManager.CreateBackup(); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to create backup: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Backup created successfully"}`))
+}
+
+func (h *SystemHandler) ListBackups(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	backups, err := h.BackupManager.ListBackups()
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to list backups: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"backups": backups,
+	})
+}
+
+func (h *SystemHandler) RestoreBackup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Filename string `json:"filename"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.Filename == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.BackupManager.RestoreBackup(req.Filename); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to restore backup: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Re-initialize Database connection
+	// Note: We are updating the content of the struct pointed to by h.DB
+	// This assumes that h.DB is shared by all handlers as a pointer.
+	newDB, err := db.Init((*h.Config).Database.Path)
+	if err != nil {
+		log.Printf("CRITICAL: Failed to re-initialize database after restore: %v", err)
+		http.Error(w, fmt.Sprintf(`{"error": "Restore successful but DB re-init failed: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	// Update the global DB instance
+	*h.DB = *newDB
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Backup restored successfully"}`))
+}
+
+type DashboardStats struct {
+	Domain string `json:"domain"`
+	Vendor string `json:"vendor"`
+	Count  int64  `json:"count"`
+}
+
+func (h *SystemHandler) GetSystemStats(w http.ResponseWriter, r *http.Request) {
+	var stats []DashboardStats
+	// GORM query to group by domain and vendor
+	if err := h.DB.Model(&models.Phone{}).Select("domain, vendor, count(*) as count").Group("domain, vendor").Scan(&stats).Error; err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to fetch stats: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	var totalPhones int64
+	h.DB.Model(&models.Phone{}).Count(&totalPhones)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"stats":        stats,
+		"total_phones": totalPhones,
 	})
 }

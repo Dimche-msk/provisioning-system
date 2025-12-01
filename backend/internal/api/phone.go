@@ -1,10 +1,18 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"sort"
 	"strings"
+	"text/template"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -15,12 +23,14 @@ import (
 )
 
 type PhoneHandler struct {
+	ConfigDir   string
 	DB          *gorm.DB
 	ProvManager *provisioner.Manager
 }
 
-func NewPhoneHandler(db *gorm.DB, pm *provisioner.Manager) *PhoneHandler {
+func NewPhoneHandler(configDir string, db *gorm.DB, pm *provisioner.Manager) *PhoneHandler {
 	return &PhoneHandler{
+		ConfigDir:   configDir,
 		DB:          db,
 		ProvManager: pm,
 	}
@@ -52,30 +62,73 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 
 	// Validation Logic
 	isGateway := model != nil && model.Type == "gateway"
+	phone.Type = "phone"
+	if isGateway {
+		phone.Type = "gateway"
+	}
 
 	if !isGateway {
 		if phone.MacAddress == nil || *phone.MacAddress == "" {
 			http.Error(w, "MAC Address is required for phones", http.StatusBadRequest)
 			return
 		}
-		if phone.PhoneNumber == nil || *phone.PhoneNumber == "" {
-			http.Error(w, "Phone Number is required for phones", http.StatusBadRequest)
+	} else {
+		// Gateway Logic
+		if phone.IPAddress == "" {
+			http.Error(w, "IP Address is required for gateways", http.StatusBadRequest)
 			return
 		}
-	} else {
-		// For gateways, if MAC/Number is empty string, set to nil to allow multiple NULLs in DB
+		// Copy IP to PhoneNumber for search
+		ip := phone.IPAddress
+		phone.PhoneNumber = &ip
+
+		// For gateways, if MAC is empty string, set to nil
 		if phone.MacAddress != nil && *phone.MacAddress == "" {
 			phone.MacAddress = nil
-		}
-		if phone.PhoneNumber != nil && *phone.PhoneNumber == "" {
-			phone.PhoneNumber = nil
 		}
 	}
 
 	if model != nil {
-		// Check MaxAdditionalLines
-		if len(phone.Lines) > model.MaxAdditionalLines {
-			http.Error(w, fmt.Sprintf("Too many additional lines. Max allowed: %d", model.MaxAdditionalLines), http.StatusBadRequest)
+		// Calculate limits
+		maxAccountLines := model.MaxAccountLines
+		ownSoftKeys := model.OwnSoftKeys
+		ownHardKeys := model.OwnHardKeys
+
+		// Expansion modules
+		expansionKeys := 0
+		if phone.ExpansionModulesCount > 0 && phone.ExpansionModuleModel != "" {
+			// Find expansion module model
+			var expModel *provisioner.DeviceModel
+			for _, m := range h.ProvManager.Models {
+				if m.ID == phone.ExpansionModuleModel && m.Type == "expansion-module" {
+					expModel = &m
+					break
+				}
+			}
+			if expModel != nil {
+				expansionKeys = phone.ExpansionModulesCount * expModel.OwnHardKeys
+			}
+		}
+
+		totalLimit := ownSoftKeys + ownHardKeys + maxAccountLines + expansionKeys
+		if isGateway {
+			totalLimit = maxAccountLines // For gateway, limit is just max accounts (lines)
+		}
+
+		if len(phone.Lines) > totalLimit {
+			http.Error(w, fmt.Sprintf("Too many lines. Max allowed: %d", totalLimit), http.StatusBadRequest)
+			return
+		}
+
+		// Check "line" type limit
+		lineCount := 0
+		for _, l := range phone.Lines {
+			if l.Type == "line" {
+				lineCount++
+			}
+		}
+		if lineCount > maxAccountLines {
+			http.Error(w, fmt.Sprintf("Too many account lines. Max allowed: %d", maxAccountLines), http.StatusBadRequest)
 			return
 		}
 	}
@@ -90,34 +143,31 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Check for duplicate Number (in Phones and PhoneLines)
-	// 1. Check main phone number
-	if phone.PhoneNumber != nil && *phone.PhoneNumber != "" {
-		var count int64
-		h.DB.Model(&models.Phone{}).Where("phone_number = ?", *phone.PhoneNumber).Count(&count)
-		if count > 0 {
-			http.Error(w, "Phone number already exists", http.StatusConflict)
-			return
-		}
-		h.DB.Model(&models.PhoneLine{}).Where("phone_number = ?", *phone.PhoneNumber).Count(&count)
-		if count > 0 {
-			http.Error(w, "Phone number already exists in lines", http.StatusConflict)
-			return
-		}
-	}
+	// Generate Random Password if enabled
+	cfg := h.ProvManager.Config
+	domainCfg := cfg.GetEffectiveDomainConfig(phone.Domain)
+	if domainCfg.GenerateRandomPassword {
+		for i := range phone.Lines {
+			if phone.Lines[i].Type == "line" {
+				// Parse AdditionalInfo
+				var info map[string]interface{}
+				if phone.Lines[i].AdditionalInfo != "" {
+					json.Unmarshal([]byte(phone.Lines[i].AdditionalInfo), &info)
+				} else {
+					info = make(map[string]interface{})
+				}
 
-	// 2. Check lines numbers
-	for _, line := range phone.Lines {
-		var count int64
-		h.DB.Model(&models.Phone{}).Where("phone_number = ?", line.PhoneNumber).Count(&count)
-		if count > 0 {
-			http.Error(w, fmt.Sprintf("Line number %s already exists", line.PhoneNumber), http.StatusConflict)
-			return
-		}
-		h.DB.Model(&models.PhoneLine{}).Where("phone_number = ?", line.PhoneNumber).Count(&count)
-		if count > 0 {
-			http.Error(w, fmt.Sprintf("Line number %s already exists", line.PhoneNumber), http.StatusConflict)
-			return
+				// Check if password is empty
+				if pwd, ok := info["password"].(string); !ok || pwd == "" {
+					newPwd := generateRandomPassword(12)
+					info["password"] = newPwd
+
+					// Update AdditionalInfo
+					if data, err := json.Marshal(info); err == nil {
+						phone.Lines[i].AdditionalInfo = string(data)
+					}
+				}
+			}
 		}
 	}
 
@@ -126,13 +176,42 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate config for new phone
+	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+	if _, err := h.ProvManager.GeneratePhoneConfigs(outputDir, []models.Phone{phone}); err != nil {
+		// Rollback: Delete the phone we just created
+		h.DB.Delete(&phone)
+		http.Error(w, fmt.Sprintf("Failed to generate configs: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Deploy to domain
+	if err := h.deployDomain(phone.Domain, &phone); err != nil {
+		fmt.Printf("Failed to deploy domain %s: %v\n", phone.Domain, err)
+		// We don't fail the request if deployment fails, but we log it.
+		// Or should we? User might want to know.
+		// Let's keep it as is for now, but maybe add a warning header?
+	}
+
+	// Regenerate directories
+	go func() {
+		var allPhones []models.Phone
+		if err := h.DB.Preload("Lines").Find(&allPhones).Error; err != nil {
+			fmt.Printf("Failed to fetch phones for directory regeneration: %v\n", err)
+			return
+		}
+		outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+		if err := h.ProvManager.GenerateDirectories(outputDir, allPhones); err != nil {
+			fmt.Printf("Failed to regenerate directories: %v\n", err)
+		}
+	}()
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(phone)
 }
 
 // GetPhones handles GET /api/phones
-// Query params: domain, vendor, mac, number, caller_id, page, limit
 func (h *PhoneHandler) GetPhones(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -155,10 +234,6 @@ func (h *PhoneHandler) GetPhones(w http.ResponseWriter, r *http.Request) {
 	if number := r.URL.Query().Get("number"); number != "" {
 		number = strings.ReplaceAll(number, "*", "%")
 		query = query.Where("phone_number LIKE ?", number)
-	}
-	if callerID := r.URL.Query().Get("caller_id"); callerID != "" {
-		callerID = strings.ReplaceAll(callerID, "*", "%")
-		query = query.Where("caller_id LIKE ?", callerID)
 	}
 
 	// Count total
@@ -222,30 +297,98 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 
 	// Validation Logic
 	isGateway := model != nil && model.Type == "gateway"
+	reqPhone.Type = "phone"
+	if isGateway {
+		reqPhone.Type = "gateway"
+	}
 
 	if !isGateway {
 		if reqPhone.MacAddress == nil || *reqPhone.MacAddress == "" {
 			http.Error(w, "MAC Address is required for phones", http.StatusBadRequest)
 			return
 		}
-		if reqPhone.PhoneNumber == nil || *reqPhone.PhoneNumber == "" {
-			http.Error(w, "Phone Number is required for phones", http.StatusBadRequest)
+	} else {
+		// Gateway Logic
+		if reqPhone.IPAddress == "" {
+			http.Error(w, "IP Address is required for gateways", http.StatusBadRequest)
 			return
 		}
-	} else {
-		// For gateways, if MAC/Number is empty string, set to nil to allow multiple NULLs in DB
+		// Copy IP to PhoneNumber for search
+		ip := reqPhone.IPAddress
+		reqPhone.PhoneNumber = &ip
+
 		if reqPhone.MacAddress != nil && *reqPhone.MacAddress == "" {
 			reqPhone.MacAddress = nil
-		}
-		if reqPhone.PhoneNumber != nil && *reqPhone.PhoneNumber == "" {
-			reqPhone.PhoneNumber = nil
 		}
 	}
 
 	if model != nil {
-		if len(reqPhone.Lines) > model.MaxAdditionalLines {
-			http.Error(w, fmt.Sprintf("Too many additional lines. Max allowed: %d", model.MaxAdditionalLines), http.StatusBadRequest)
+		maxAccountLines := model.MaxAccountLines
+
+		// 1. Check Account Lines
+		lineCount := 0
+		for _, l := range reqPhone.Lines {
+			if l.Type == "line" {
+				lineCount++
+			}
+		}
+		if lineCount > maxAccountLines {
+			http.Error(w, fmt.Sprintf("Too many account lines. Max allowed: %d", maxAccountLines), http.StatusBadRequest)
 			return
+		}
+
+		// 2. Check Soft Keys (Main Phone)
+		softKeyCount := 0
+		for _, l := range reqPhone.Lines {
+			if l.Type == "soft_key" && l.ExpansionModuleNumber == 0 {
+				softKeyCount++
+			}
+		}
+		// Fallback: if OwnSoftKeys is 0 but OwnKeys > 0, maybe use OwnKeys?
+		// But user wants to transition. Let's assume models are updated or 0 is valid.
+		if softKeyCount > model.OwnSoftKeys {
+			http.Error(w, fmt.Sprintf("Too many soft keys. Max allowed: %d", model.OwnSoftKeys), http.StatusBadRequest)
+			return
+		}
+
+		// 3. Check Hard Keys (Main Phone)
+		hardKeyCount := 0
+		for _, l := range reqPhone.Lines {
+			if l.Type == "hard_key" && l.ExpansionModuleNumber == 0 {
+				hardKeyCount++
+			}
+		}
+		if hardKeyCount > model.OwnHardKeys {
+			http.Error(w, fmt.Sprintf("Too many hard keys. Max allowed: %d", model.OwnHardKeys), http.StatusBadRequest)
+			return
+		}
+
+		// 4. Check Expansion Modules
+		if reqPhone.ExpansionModulesCount > 0 && reqPhone.ExpansionModuleModel != "" {
+			var expModel *provisioner.DeviceModel
+			for _, m := range h.ProvManager.Models {
+				if m.ID == reqPhone.ExpansionModuleModel && m.Type == "expansion-module" {
+					expModel = &m
+					break
+				}
+			}
+			if expModel != nil {
+				// For expansion modules, we sum up all capacity
+				limitPerModule := expModel.OwnHardKeys + expModel.OwnSoftKeys + expModel.OwnHardKeys
+
+				for i := 1; i <= reqPhone.ExpansionModulesCount; i++ {
+					count := 0
+					for _, l := range reqPhone.Lines {
+						if l.ExpansionModuleNumber == i {
+							count++
+						}
+					}
+					if count > limitPerModule {
+						http.Error(w, fmt.Sprintf("Too many keys on expansion module %d. Max allowed: %d", i, limitPerModule), http.StatusBadRequest)
+						return
+					}
+				}
+			}
 		}
 	}
 
@@ -259,58 +402,36 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Check for duplicate Number (exclude current phone and its lines)
-	// 1. Check main phone number
-	if reqPhone.PhoneNumber != nil && *reqPhone.PhoneNumber != "" {
-		var count int64
-		h.DB.Model(&models.Phone{}).Where("phone_number = ? AND id != ?", *reqPhone.PhoneNumber, id).Count(&count)
-		if count > 0 {
-			http.Error(w, "Phone number already exists", http.StatusConflict)
-			return
-		}
-		h.DB.Model(&models.PhoneLine{}).Where("phone_number = ? AND phone_id != ?", *reqPhone.PhoneNumber, id).Count(&count)
-		if count > 0 {
-			http.Error(w, "Phone number already exists in lines", http.StatusConflict)
-			return
-		}
+	// Update fields in memory to test config generation
+	tempPhone := existingPhone
+	tempPhone.Domain = reqPhone.Domain
+	tempPhone.Vendor = reqPhone.Vendor
+	tempPhone.ModelID = reqPhone.ModelID
+	tempPhone.MacAddress = reqPhone.MacAddress
+	tempPhone.PhoneNumber = reqPhone.PhoneNumber
+	tempPhone.IPAddress = reqPhone.IPAddress
+	tempPhone.Description = reqPhone.Description
+	tempPhone.ExpansionModulesCount = reqPhone.ExpansionModulesCount
+	tempPhone.ExpansionModuleModel = reqPhone.ExpansionModuleModel
+	tempPhone.Type = reqPhone.Type
+	tempPhone.Lines = reqPhone.Lines // This is a slice, so it's a reference, but GeneratePhoneConfigs reads it.
+
+	// Generate new config (Dry Run / Pre-check)
+	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+	if _, err := h.ProvManager.GeneratePhoneConfigs(outputDir, []models.Phone{tempPhone}); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to generate configs: %v", err), http.StatusInternalServerError)
+		return
 	}
 
-	// 2. Check lines numbers
-	for _, line := range reqPhone.Lines {
-		var count int64
-		h.DB.Model(&models.Phone{}).Where("phone_number = ? AND id != ?", line.PhoneNumber, id).Count(&count)
-		if count > 0 {
-			http.Error(w, fmt.Sprintf("Line number %s already exists", line.PhoneNumber), http.StatusConflict)
-			return
-		}
-		// For lines, we need to be careful. If we are updating an existing line, we should exclude it.
-		// But reqPhone.Lines might contain new lines (ID=0) or existing lines (ID!=0).
-		query := h.DB.Model(&models.PhoneLine{}).Where("phone_number = ?", line.PhoneNumber)
-		if line.ID != 0 {
-			query = query.Where("id != ?", line.ID)
-		}
-		query.Count(&count)
-		if count > 0 {
-			http.Error(w, fmt.Sprintf("Line number %s already exists", line.PhoneNumber), http.StatusConflict)
-			return
-		}
+	// Delete old config
+	if err := h.ProvManager.DeletePhoneConfig(outputDir, existingPhone); err != nil {
+		fmt.Printf("Warning: Failed to delete old config: %v\n", err)
 	}
 
-	// Update fields
-	existingPhone.Domain = reqPhone.Domain
-	existingPhone.Vendor = reqPhone.Vendor
-	existingPhone.ModelID = reqPhone.ModelID
-	existingPhone.MacAddress = reqPhone.MacAddress
-	existingPhone.PhoneNumber = reqPhone.PhoneNumber
-	existingPhone.IPAddress = reqPhone.IPAddress
-	existingPhone.CallerID = reqPhone.CallerID
-	existingPhone.AccountSettings = reqPhone.AccountSettings
-	existingPhone.Description = reqPhone.Description
-	existingPhone.ExpansionModulesCount = reqPhone.ExpansionModulesCount
-	existingPhone.ExpansionModuleModel = reqPhone.ExpansionModuleModel
+	// Apply updates to DB
+	existingPhone = tempPhone // Copy fields back (except Lines which need association update)
 
 	// Update Lines using Association Replace
-	// This will delete missing lines and insert/update provided ones
 	if err := h.DB.Session(&gorm.Session{FullSaveAssociations: true}).Model(&existingPhone).Association("Lines").Replace(reqPhone.Lines); err != nil {
 		http.Error(w, fmt.Sprintf("Failed to update lines: %v", err), http.StatusInternalServerError)
 		return
@@ -322,17 +443,46 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Deploy to domain
+	if err := h.deployDomain(existingPhone.Domain, &existingPhone); err != nil {
+		fmt.Printf("Failed to deploy domain %s: %v\n", existingPhone.Domain, err)
+	}
+
+	// Regenerate directories
+	go func() {
+		var allPhones []models.Phone
+		if err := h.DB.Preload("Lines").Find(&allPhones).Error; err != nil {
+			fmt.Printf("Failed to fetch phones for directory regeneration: %v\n", err)
+			return
+		}
+		outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+		if err := h.ProvManager.GenerateDirectories(outputDir, allPhones); err != nil {
+			fmt.Printf("Failed to regenerate directories: %v\n", err)
+		}
+	}()
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(existingPhone)
 }
 
+func (h *PhoneHandler) deployDomain(domainName string, phone *models.Phone) error {
+	cfg := h.ProvManager.Config
+	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
+
+	if len(domainCfg.DeployCommands) == 0 {
+		return nil // No deploy commands, nothing to do
+	}
+
+	return h.executeCommands(domainCfg.DeployCommands, domainName, phone, domainCfg.Variables)
+}
+
 // GetVendors handles GET /api/vendors
 func (h *PhoneHandler) GetVendors(w http.ResponseWriter, r *http.Request) {
-	vendors := []map[string]string{}
+	var vendors []map[string]interface{}
 	for _, v := range h.ProvManager.Vendors {
-		vendors = append(vendors, map[string]string{
-			"id":   v.ID,
-			"name": v.Name,
+		vendors = append(vendors, map[string]interface{}{
+			"id":       v.ID,
+			"name":     v.Name,
+			"features": v.Features,
 		})
 	}
 
@@ -354,8 +504,131 @@ func (h *PhoneHandler) GetModels(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Sort models by Name
+	sort.Slice(models, func(i, j int) bool {
+		return models[i].Name < models[j].Name
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"models": models,
 	})
+}
+
+// DeletePhone handles DELETE /api/phones/{id}
+func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var phone models.Phone
+	if err := h.DB.Preload("Lines").First(&phone, id).Error; err != nil {
+		http.Error(w, "Phone not found", http.StatusNotFound)
+		return
+	}
+
+	// 1. Delete config file
+	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+	if err := h.ProvManager.DeletePhoneConfig(outputDir, phone); err != nil {
+		fmt.Printf("Warning: Failed to delete config file: %v\n", err)
+	}
+
+	// 2. Delete from DB
+	// Delete associated lines first (GORM should handle this with cascading or we do it manually)
+	// Using Select("Lines").Delete(&phone) deletes the phone and clears associations, but might not delete Line records if not configured.
+	// Let's rely on GORM's association handling or manual cleanup if needed.
+	// For now, simple Delete.
+	if err := h.DB.Select("Lines").Delete(&phone).Error; err != nil {
+		http.Error(w, fmt.Sprintf("Failed to delete phone: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Execute DeleteCmd (Deploy changes)
+	if err := h.executeDeleteCmd(phone.Domain, &phone); err != nil {
+		fmt.Printf("Warning: Failed to execute delete command for domain %s: %v\n", phone.Domain, err)
+		// We don't fail the request if the hook fails, but we log it.
+	}
+
+	// Regenerate directories
+	go func() {
+		var allPhones []models.Phone
+		if err := h.DB.Preload("Lines").Find(&allPhones).Error; err != nil {
+			fmt.Printf("Failed to fetch phones for directory regeneration: %v\n", err)
+			return
+		}
+		outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+		if err := h.ProvManager.GenerateDirectories(outputDir, allPhones); err != nil {
+			fmt.Printf("Failed to regenerate directories: %v\n", err)
+		}
+	}()
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status": "ok", "message": "Phone deleted successfully"}`))
+}
+
+func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone) error {
+	cfg := h.ProvManager.Config
+	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
+
+	if len(domainCfg.DeleteCommands) == 0 {
+		return nil
+	}
+
+	return h.executeCommands(domainCfg.DeleteCommands, domainName, phone, domainCfg.Variables)
+}
+
+func (h *PhoneHandler) executeCommands(commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
+	sourceDir, _ := filepath.Abs(filepath.Join(h.ConfigDir, "temp_configs", domainName))
+
+	// Data for template
+	data := struct {
+		Phone  *models.Phone
+		Domain string
+		Vars   map[string]string
+	}{
+		Phone:  phone,
+		Domain: domainName,
+		Vars:   domainVars,
+	}
+
+	for _, cmdStr := range commands {
+		// 1. Parse template
+		tmpl, err := template.New("cmd").Parse(cmdStr)
+		if err != nil {
+			return fmt.Errorf("failed to parse command template '%s': %w", cmdStr, err)
+		}
+
+		var cmdBuf bytes.Buffer
+		if err := tmpl.Execute(&cmdBuf, data); err != nil {
+			return fmt.Errorf("failed to execute command template '%s': %w", cmdStr, err)
+		}
+
+		finalCmdStr := cmdBuf.String()
+
+		// 2. Execute command
+		// We use "sh -c" to allow complex commands (pipes, redirects, etc.)
+		cmd := exec.Command("sh", "-c", finalCmdStr)
+
+		// Set environment variables
+		cmd.Env = append(os.Environ(),
+			fmt.Sprintf("PROVISIONING_DOMAIN=%s", domainName),
+			fmt.Sprintf("PROVISIONING_SOURCE=%s", sourceDir),
+		)
+
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("command execution failed: '%s', error: %v, output: %s", finalCmdStr, err, string(output))
+		}
+	}
+
+	return nil
+}
+
+func generateRandomPassword(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
