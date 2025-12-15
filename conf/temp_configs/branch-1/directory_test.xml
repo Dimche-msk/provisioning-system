@@ -1,0 +1,1353 @@
+
+  <!-- Domain: main_PBX -->
+    <!-- Phone: 00112233445566 -->
+    <Description></Description>
+    <Number>1000</Number>
+       <Entry>
+         <Name>1000</Name>
+         <UserName>1000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name>1012</Name>
+         <UserName>1012</UserName>
+         <Registrar>10.10.10.1</Registrar>
+       </Entry>
+    <!-- Phone: 0015657863c1 -->
+    <Description>Сидоров</Description>
+    <Number>1002</Number>
+    <!-- Phone: 112233445566 -->
+    <Description></Description>
+    <Number>1003</Number>
+       <Entry>
+         <Name>Иванов_1003</Name>
+         <UserName>1003</UserName>
+         <Registrar>192.168.88.150</Registrar>
+       </Entry>
+       <Entry>
+         <Name>Иванов_2545</Name>
+         <UserName>2545</UserName>
+         <Registrar>2545@mango.ru</Registrar>
+       </Entry>
+    <!-- Phone:  -->
+    <Description>Шлюз в каком-то шкафу</Description>
+    <Number>192.168.88.190</Number>
+       <Entry>
+         <Name>Line_2003</Name>
+         <UserName>Line_2003</UserName>
+         <Registrar>Line_2003</Registrar>
+       </Entry>
+       <Entry>
+         <Name>Line_2004</Name>
+         <UserName>Line_2004</UserName>
+         <Registrar>reg.dd..ww</Registrar>
+       </Entry>
+    <!-- Phone:  -->
+    <Description>Другой Шлюз</Description>
+    <Number>192.168.88.61</Number>
+       <Entry>
+         <Name>Line_2001</Name>
+         <UserName>Line_2001</UserName>
+         <Registrar>Line_2001</Registrar>
+       </Entry>
+       <Entry>
+         <Name>Line_2002</Name>
+         <UserName>Line_2002</UserName>
+         <Registrar>Line_2002</Registrar>
+       </Entry>
+    <!-- Phone: 2233445566 -->
+    <Description></Description>
+    <Number>1010</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 001122334456 -->
+    <Description></Description>
+    <Number>1011</Number>
+    <!-- Phone: 001122334457 -->
+    <Description>GGGee</Description>
+    <Number>1012</Number>
+       <Entry>
+         <Name>1012</Name>
+         <UserName>1012</UserName>
+         <Registrar>1012.1012.ru</Registrar>
+       </Entry>
+    <!-- Phone: 1122334479 -->
+    <Description>Васили1-100</Description>
+    <Number>1200</Number>
+       <Entry>
+         <Name>Васили1-100</Name>
+         <UserName>1200.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334480 -->
+    <Description>Васили1-101</Description>
+    <Number>1201</Number>
+       <Entry>
+         <Name>Васили1-101</Name>
+         <UserName>1201.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334481 -->
+    <Description>Васили1-102</Description>
+    <Number>1202</Number>
+       <Entry>
+         <Name>Васили1-102</Name>
+         <UserName>1202.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334482 -->
+    <Description>Васили1-103</Description>
+    <Number>1203</Number>
+       <Entry>
+         <Name>Васили1-103</Name>
+         <UserName>1203.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334483 -->
+    <Description>Васили1-104</Description>
+    <Number>1204</Number>
+       <Entry>
+         <Name>Васили1-104</Name>
+         <UserName>1204.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334484 -->
+    <Description>Васили1-105</Description>
+    <Number>1205</Number>
+       <Entry>
+         <Name>Васили1-105</Name>
+         <UserName>1205.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334485 -->
+    <Description>Васили1-106</Description>
+    <Number>1206</Number>
+       <Entry>
+         <Name>Васили1-106</Name>
+         <UserName>1206.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334486 -->
+    <Description>Васили1-107</Description>
+    <Number>1207</Number>
+       <Entry>
+         <Name>Васили1-107</Name>
+         <UserName>1207.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334487 -->
+    <Description>Васили1-108</Description>
+    <Number>1208</Number>
+       <Entry>
+         <Name>Васили1-108</Name>
+         <UserName>1208.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334488 -->
+    <Description>Васили1-109</Description>
+    <Number>1209</Number>
+       <Entry>
+         <Name>Васили1-109</Name>
+         <UserName>1209.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334489 -->
+    <Description>Васили1-110</Description>
+    <Number>1210</Number>
+       <Entry>
+         <Name>Васили1-110</Name>
+         <UserName>1210.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334490 -->
+    <Description>Васили1-111</Description>
+    <Number>1211</Number>
+       <Entry>
+         <Name>Васили1-111</Name>
+         <UserName>1211.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334491 -->
+    <Description>Васили1-112</Description>
+    <Number>1212</Number>
+       <Entry>
+         <Name>Васили1-112</Name>
+         <UserName>1212.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334492 -->
+    <Description>Васили1-113</Description>
+    <Number>1213</Number>
+       <Entry>
+         <Name>Васили1-113</Name>
+         <UserName>1213.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334493 -->
+    <Description>Васили1-114</Description>
+    <Number>1214</Number>
+       <Entry>
+         <Name>Васили1-114</Name>
+         <UserName>1214.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334494 -->
+    <Description>Васили1-115</Description>
+    <Number>1215</Number>
+       <Entry>
+         <Name>Васили1-115</Name>
+         <UserName>1215.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334495 -->
+    <Description>Васили1-116</Description>
+    <Number>1216</Number>
+       <Entry>
+         <Name>Васили1-116</Name>
+         <UserName>1216.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334496 -->
+    <Description>Васили1-117</Description>
+    <Number>1217</Number>
+       <Entry>
+         <Name>Васили1-117</Name>
+         <UserName>1217.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334497 -->
+    <Description>Васили1-118</Description>
+    <Number>1218</Number>
+       <Entry>
+         <Name>Васили1-118</Name>
+         <UserName>1218.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334498 -->
+    <Description>Васили1-119</Description>
+    <Number>1219</Number>
+       <Entry>
+         <Name>Васили1-119</Name>
+         <UserName>1219.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334499 -->
+    <Description>Васили1-120</Description>
+    <Number>1220</Number>
+       <Entry>
+         <Name>Васили1-120</Name>
+         <UserName>1220.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334500 -->
+    <Description>Васили1-121</Description>
+    <Number>1221</Number>
+       <Entry>
+         <Name>Васили1-121</Name>
+         <UserName>1221.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334501 -->
+    <Description>Васили1-122</Description>
+    <Number>1222</Number>
+       <Entry>
+         <Name>Васили1-122</Name>
+         <UserName>1222.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334502 -->
+    <Description>Васили1-123</Description>
+    <Number>1223</Number>
+       <Entry>
+         <Name>Васили1-123</Name>
+         <UserName>1223.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334503 -->
+    <Description>Васили1-124</Description>
+    <Number>1224</Number>
+       <Entry>
+         <Name>Васили1-124</Name>
+         <UserName>1224.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334504 -->
+    <Description>Васили1-125</Description>
+    <Number>1225</Number>
+       <Entry>
+         <Name>Васили1-125</Name>
+         <UserName>1225.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334505 -->
+    <Description>Васили1-126</Description>
+    <Number>1226</Number>
+       <Entry>
+         <Name>Васили1-126</Name>
+         <UserName>1226.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334506 -->
+    <Description>Васили1-127</Description>
+    <Number>1227</Number>
+       <Entry>
+         <Name>Васили1-127</Name>
+         <UserName>1227.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334507 -->
+    <Description>Васили1-128</Description>
+    <Number>1228</Number>
+       <Entry>
+         <Name>Васили1-128</Name>
+         <UserName>1228.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334508 -->
+    <Description>Васили1-129</Description>
+    <Number>1229</Number>
+       <Entry>
+         <Name>Васили1-129</Name>
+         <UserName>1229.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334509 -->
+    <Description>Васили1-130</Description>
+    <Number>1230</Number>
+       <Entry>
+         <Name>Васили1-130</Name>
+         <UserName>1230.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334510 -->
+    <Description>Васили1-131</Description>
+    <Number>1231</Number>
+       <Entry>
+         <Name>Васили1-131</Name>
+         <UserName>1231.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334511 -->
+    <Description>Васили1-132</Description>
+    <Number>1232</Number>
+       <Entry>
+         <Name>Васили1-132</Name>
+         <UserName>1232.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334512 -->
+    <Description>Васили1-133</Description>
+    <Number>1233</Number>
+       <Entry>
+         <Name>Васили1-133</Name>
+         <UserName>1233.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334513 -->
+    <Description>Васили1-134</Description>
+    <Number>1234</Number>
+       <Entry>
+         <Name>Васили1-134</Name>
+         <UserName>1234.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334514 -->
+    <Description>Васили1-135</Description>
+    <Number>1235</Number>
+       <Entry>
+         <Name>Васили1-135</Name>
+         <UserName>1235.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334515 -->
+    <Description>Васили1-136</Description>
+    <Number>1236</Number>
+       <Entry>
+         <Name>Васили1-136</Name>
+         <UserName>1236.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334516 -->
+    <Description>Васили1-137</Description>
+    <Number>1237</Number>
+       <Entry>
+         <Name>Васили1-137</Name>
+         <UserName>1237.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334517 -->
+    <Description>Васили1-138</Description>
+    <Number>1238</Number>
+       <Entry>
+         <Name>Васили1-138</Name>
+         <UserName>1238.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334518 -->
+    <Description>Васили1-139</Description>
+    <Number>1239</Number>
+       <Entry>
+         <Name>Васили1-139</Name>
+         <UserName>1239.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334519 -->
+    <Description>Васили1-140</Description>
+    <Number>1240</Number>
+       <Entry>
+         <Name>Васили1-140</Name>
+         <UserName>1240.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334520 -->
+    <Description>Васили1-141</Description>
+    <Number>1241</Number>
+       <Entry>
+         <Name>Васили1-141</Name>
+         <UserName>1241.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334521 -->
+    <Description>Васили1-142</Description>
+    <Number>1242</Number>
+       <Entry>
+         <Name>Васили1-142</Name>
+         <UserName>1242.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334522 -->
+    <Description>Васили1-143</Description>
+    <Number>1243</Number>
+       <Entry>
+         <Name>Васили1-143</Name>
+         <UserName>1243.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334523 -->
+    <Description>Васили1-144</Description>
+    <Number>1244</Number>
+       <Entry>
+         <Name>Васили1-144</Name>
+         <UserName>1244.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334524 -->
+    <Description>Васили1-145</Description>
+    <Number>1245</Number>
+       <Entry>
+         <Name>Васили1-145</Name>
+         <UserName>1245.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334525 -->
+    <Description>Васили1-146</Description>
+    <Number>1246</Number>
+       <Entry>
+         <Name>Васили1-146</Name>
+         <UserName>1246.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334526 -->
+    <Description>Васили1-147</Description>
+    <Number>1247</Number>
+       <Entry>
+         <Name>Васили1-147</Name>
+         <UserName>1247.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334527 -->
+    <Description>Васили1-148</Description>
+    <Number>1248</Number>
+       <Entry>
+         <Name>Васили1-148</Name>
+         <UserName>1248.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334528 -->
+    <Description>Васили1-149</Description>
+    <Number>1249</Number>
+       <Entry>
+         <Name>Васили1-149</Name>
+         <UserName>1249.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334529 -->
+    <Description>Васили1-150</Description>
+    <Number>1250</Number>
+       <Entry>
+         <Name>Васили1-150</Name>
+         <UserName>1250.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334530 -->
+    <Description>Васили1-151</Description>
+    <Number>1251</Number>
+       <Entry>
+         <Name>Васили1-151</Name>
+         <UserName>1251.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334531 -->
+    <Description>Васили1-152</Description>
+    <Number>1252</Number>
+       <Entry>
+         <Name>Васили1-152</Name>
+         <UserName>1252.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334532 -->
+    <Description>Васили1-153</Description>
+    <Number>1253</Number>
+       <Entry>
+         <Name>Васили1-153</Name>
+         <UserName>1253.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334533 -->
+    <Description>Васили1-154</Description>
+    <Number>1254</Number>
+       <Entry>
+         <Name>Васили1-154</Name>
+         <UserName>1254.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334534 -->
+    <Description>Васили1-155</Description>
+    <Number>1255</Number>
+       <Entry>
+         <Name>Васили1-155</Name>
+         <UserName>1255.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334535 -->
+    <Description>Васили1-156</Description>
+    <Number>1256</Number>
+       <Entry>
+         <Name>Васили1-156</Name>
+         <UserName>1256.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334536 -->
+    <Description>Васили1-157</Description>
+    <Number>1257</Number>
+       <Entry>
+         <Name>Васили1-157</Name>
+         <UserName>1257.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334537 -->
+    <Description>Васили1-158</Description>
+    <Number>1258</Number>
+       <Entry>
+         <Name>Васили1-158</Name>
+         <UserName>1258.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334538 -->
+    <Description>Васили1-159</Description>
+    <Number>1259</Number>
+       <Entry>
+         <Name>Васили1-159</Name>
+         <UserName>1259.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334539 -->
+    <Description>Васили1-160</Description>
+    <Number>1260</Number>
+       <Entry>
+         <Name>Васили1-160</Name>
+         <UserName>1260.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334540 -->
+    <Description>Васили1-161</Description>
+    <Number>1261</Number>
+       <Entry>
+         <Name>Васили1-161</Name>
+         <UserName>1261.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334541 -->
+    <Description>Васили1-162</Description>
+    <Number>1262</Number>
+       <Entry>
+         <Name>Васили1-162</Name>
+         <UserName>1262.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334542 -->
+    <Description>Васили1-163</Description>
+    <Number>1263</Number>
+       <Entry>
+         <Name>Васили1-163</Name>
+         <UserName>1263.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334543 -->
+    <Description>Васили1-164</Description>
+    <Number>1264</Number>
+       <Entry>
+         <Name>Васили1-164</Name>
+         <UserName>1264.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334544 -->
+    <Description>Васили1-165</Description>
+    <Number>1265</Number>
+       <Entry>
+         <Name>Васили1-165</Name>
+         <UserName>1265.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334545 -->
+    <Description>Васили1-166</Description>
+    <Number>1266</Number>
+       <Entry>
+         <Name>Васили1-166</Name>
+         <UserName>1266.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334546 -->
+    <Description>Васили1-167</Description>
+    <Number>1267</Number>
+       <Entry>
+         <Name>Васили1-167</Name>
+         <UserName>1267.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334547 -->
+    <Description>Васили1-168</Description>
+    <Number>1268</Number>
+       <Entry>
+         <Name>Васили1-168</Name>
+         <UserName>1268.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334548 -->
+    <Description>Васили1-169</Description>
+    <Number>1269</Number>
+       <Entry>
+         <Name>Васили1-169</Name>
+         <UserName>1269.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334549 -->
+    <Description>Васили1-170</Description>
+    <Number>1270</Number>
+       <Entry>
+         <Name>Васили1-170</Name>
+         <UserName>1270.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334550 -->
+    <Description>Васили1-171</Description>
+    <Number>1271</Number>
+       <Entry>
+         <Name>Васили1-171</Name>
+         <UserName>1271.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334551 -->
+    <Description>Васили1-172</Description>
+    <Number>1272</Number>
+       <Entry>
+         <Name>Васили1-172</Name>
+         <UserName>1272.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334552 -->
+    <Description>Васили1-173</Description>
+    <Number>1273</Number>
+       <Entry>
+         <Name>Васили1-173</Name>
+         <UserName>1273.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334553 -->
+    <Description>Васили1-174</Description>
+    <Number>1274</Number>
+       <Entry>
+         <Name>Васили1-174</Name>
+         <UserName>1274.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334554 -->
+    <Description>Васили1-175</Description>
+    <Number>1275</Number>
+       <Entry>
+         <Name>Васили1-175</Name>
+         <UserName>1275.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334555 -->
+    <Description>Васили1-176</Description>
+    <Number>1276</Number>
+       <Entry>
+         <Name>Васили1-176</Name>
+         <UserName>1276.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334556 -->
+    <Description>Васили1-177</Description>
+    <Number>1277</Number>
+       <Entry>
+         <Name>Васили1-177</Name>
+         <UserName>1277.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334557 -->
+    <Description>Васили1-178</Description>
+    <Number>1278</Number>
+       <Entry>
+         <Name>Васили1-178</Name>
+         <UserName>1278.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334558 -->
+    <Description>Васили1-179</Description>
+    <Number>1279</Number>
+       <Entry>
+         <Name>Васили1-179</Name>
+         <UserName>1279.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334559 -->
+    <Description>Васили1-180</Description>
+    <Number>1280</Number>
+       <Entry>
+         <Name>Васили1-180</Name>
+         <UserName>1280.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334560 -->
+    <Description>Васили1-181</Description>
+    <Number>1281</Number>
+       <Entry>
+         <Name>Васили1-181</Name>
+         <UserName>1281.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334561 -->
+    <Description>Васили1-182</Description>
+    <Number>1282</Number>
+       <Entry>
+         <Name>Васили1-182</Name>
+         <UserName>1282.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334562 -->
+    <Description>Васили1-183</Description>
+    <Number>1283</Number>
+       <Entry>
+         <Name>Васили1-183</Name>
+         <UserName>1283.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334563 -->
+    <Description>Васили1-184</Description>
+    <Number>1284</Number>
+       <Entry>
+         <Name>Васили1-184</Name>
+         <UserName>1284.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334564 -->
+    <Description>Васили1-185</Description>
+    <Number>1285</Number>
+       <Entry>
+         <Name>Васили1-185</Name>
+         <UserName>1285.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334565 -->
+    <Description>Васили1-186</Description>
+    <Number>1286</Number>
+       <Entry>
+         <Name>Васили1-186</Name>
+         <UserName>1286.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334566 -->
+    <Description>Васили1-187</Description>
+    <Number>1287</Number>
+       <Entry>
+         <Name>Васили1-187</Name>
+         <UserName>1287.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334567 -->
+    <Description>Васили1-188</Description>
+    <Number>1288</Number>
+       <Entry>
+         <Name>Васили1-188</Name>
+         <UserName>1288.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334568 -->
+    <Description>Васили1-189</Description>
+    <Number>1289</Number>
+       <Entry>
+         <Name>Васили1-189</Name>
+         <UserName>1289.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334569 -->
+    <Description>Васили1-190</Description>
+    <Number>1290</Number>
+       <Entry>
+         <Name>Васили1-190</Name>
+         <UserName>1290.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334570 -->
+    <Description>Васили1-191</Description>
+    <Number>1291</Number>
+       <Entry>
+         <Name>Васили1-191</Name>
+         <UserName>1291.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334571 -->
+    <Description>Васили1-192</Description>
+    <Number>1292</Number>
+       <Entry>
+         <Name>Васили1-192</Name>
+         <UserName>1292.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334572 -->
+    <Description>Васили1-193</Description>
+    <Number>1293</Number>
+       <Entry>
+         <Name>Васили1-193</Name>
+         <UserName>1293.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334573 -->
+    <Description>Васили1-194</Description>
+    <Number>1294</Number>
+       <Entry>
+         <Name>Васили1-194</Name>
+         <UserName>1294.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334574 -->
+    <Description>Васили1-195</Description>
+    <Number>1295</Number>
+       <Entry>
+         <Name>Васили1-195</Name>
+         <UserName>1295.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334575 -->
+    <Description>Васили1-196</Description>
+    <Number>1296</Number>
+       <Entry>
+         <Name>Васили1-196</Name>
+         <UserName>1296.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334576 -->
+    <Description>Васили1-197</Description>
+    <Number>1297</Number>
+       <Entry>
+         <Name>Васили1-197</Name>
+         <UserName>1297.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334577 -->
+    <Description>Васили1-198</Description>
+    <Number>1298</Number>
+       <Entry>
+         <Name>Васили1-198</Name>
+         <UserName>1298.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334578 -->
+    <Description>Васили1-199</Description>
+    <Number>1299</Number>
+       <Entry>
+         <Name>Васили1-199</Name>
+         <UserName>1299.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334579 -->
+    <Description>Васили1-200</Description>
+    <Number>1300</Number>
+       <Entry>
+         <Name>Васили1-200</Name>
+         <UserName>1300.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334580 -->
+    <Description>Васили1-201</Description>
+    <Number>1301</Number>
+       <Entry>
+         <Name>Васили1-201</Name>
+         <UserName>1301.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334581 -->
+    <Description>Васили1-202</Description>
+    <Number>1302</Number>
+       <Entry>
+         <Name>Васили1-202</Name>
+         <UserName>1302.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334582 -->
+    <Description>Васили1-203</Description>
+    <Number>1303</Number>
+       <Entry>
+         <Name>Васили1-203</Name>
+         <UserName>1303.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334583 -->
+    <Description>Васили1-204</Description>
+    <Number>1304</Number>
+       <Entry>
+         <Name>Васили1-204</Name>
+         <UserName>1304.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334584 -->
+    <Description>Васили1-205</Description>
+    <Number>1305</Number>
+       <Entry>
+         <Name>Васили1-205</Name>
+         <UserName>1305.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334585 -->
+    <Description>Васили1-206</Description>
+    <Number>1306</Number>
+       <Entry>
+         <Name>Васили1-206</Name>
+         <UserName>1306.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334586 -->
+    <Description>Васили1-207</Description>
+    <Number>1307</Number>
+       <Entry>
+         <Name>Васили1-207</Name>
+         <UserName>1307.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334587 -->
+    <Description>Васили1-208</Description>
+    <Number>1308</Number>
+       <Entry>
+         <Name>Васили1-208</Name>
+         <UserName>1308.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334588 -->
+    <Description>Васили1-209</Description>
+    <Number>1309</Number>
+       <Entry>
+         <Name>Васили1-209</Name>
+         <UserName>1309.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334589 -->
+    <Description>Васили1-210</Description>
+    <Number>1310</Number>
+       <Entry>
+         <Name>Васили1-210</Name>
+         <UserName>1310.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334590 -->
+    <Description>Васили1-211</Description>
+    <Number>1311</Number>
+       <Entry>
+         <Name>Васили1-211</Name>
+         <UserName>1311.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334591 -->
+    <Description>Васили1-212</Description>
+    <Number>1312</Number>
+       <Entry>
+         <Name>Васили1-212</Name>
+         <UserName>1312.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334592 -->
+    <Description>Васили1-213</Description>
+    <Number>1313</Number>
+       <Entry>
+         <Name>Васили1-213</Name>
+         <UserName>1313.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334593 -->
+    <Description>Васили1-214</Description>
+    <Number>1314</Number>
+       <Entry>
+         <Name>Васили1-214</Name>
+         <UserName>1314.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334594 -->
+    <Description>Васили1-215</Description>
+    <Number>1315</Number>
+       <Entry>
+         <Name>Васили1-215</Name>
+         <UserName>1315.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name>rhfg  </Name>
+         <UserName>2525</UserName>
+         <Registrar>127.0.0.1</Registrar>
+       </Entry>
+    <!-- Phone: 1122334595 -->
+    <Description>Васили1-216</Description>
+    <Number>1316</Number>
+       <Entry>
+         <Name>Васили1-216</Name>
+         <UserName>1316.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334596 -->
+    <Description>Васили1-217</Description>
+    <Number>1317</Number>
+       <Entry>
+         <Name>Васили1-217</Name>
+         <UserName>1317.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334597 -->
+    <Description>Васили1-218</Description>
+    <Number>1318</Number>
+       <Entry>
+         <Name>Васили1-218</Name>
+         <UserName>1318.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334598 -->
+    <Description>Васили1-219</Description>
+    <Number>1319</Number>
+       <Entry>
+         <Name>Васили1-219</Name>
+         <UserName>1319.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334599 -->
+    <Description>Васили1-220</Description>
+    <Number>1320</Number>
+       <Entry>
+         <Name>Васили1-220</Name>
+         <UserName>1320.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334600 -->
+    <Description>Васили1-221</Description>
+    <Number>1321</Number>
+       <Entry>
+         <Name>Васили1-221</Name>
+         <UserName>1321.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334601 -->
+    <Description>Васили1-222</Description>
+    <Number>1322</Number>
+       <Entry>
+         <Name>Васили1-222</Name>
+         <UserName>1322.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334602 -->
+    <Description>Васили1-223</Description>
+    <Number>1323</Number>
+       <Entry>
+         <Name>Васили1-223</Name>
+         <UserName>1323.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334603 -->
+    <Description>Васили1-224</Description>
+    <Number>1324</Number>
+       <Entry>
+         <Name>Васили1-224</Name>
+         <UserName>1324.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334604 -->
+    <Description>Васили1-225</Description>
+    <Number>1325</Number>
+       <Entry>
+         <Name>Васили1-225</Name>
+         <UserName>1325.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 1122334605 -->
+    <Description>Васили1-226</Description>
+    <Number>1326</Number>
+       <Entry>
+         <Name>Васили1-226</Name>
+         <UserName>1326.000000</UserName>
+         <Registrar>192,168,1,44</Registrar>
+       </Entry>
+    <!-- Phone: 1122334606 -->
+    <Description>Васили1-1327</Description>
+    <Number>1327</Number>
+       <Entry>
+         <Name>Васили1-1327</Name>
+         <UserName>989898.000000</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 4455662211 -->
+    <Description></Description>
+    <Number>7878</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 989845451214 -->
+    <Description></Description>
+    <Number>7514</Number>
+       <Entry>
+         <Name>7514</Name>
+         <UserName>7514</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 78124565 -->
+    <Description></Description>
+    <Number>9823</Number>
+       <Entry>
+         <Name>9823</Name>
+         <UserName>9823</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name>6523</Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: aaddee334455 -->
+    <Description></Description>
+    <Number>36546342</Number>
+       <Entry>
+         <Name>36546342</Name>
+         <UserName>36546342</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 55448866ee -->
+    <Description></Description>
+    <Number>4574</Number>
+       <Entry>
+         <Name>4574</Name>
+         <UserName>4574</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 405539A2AB54 -->
+    <Description></Description>
+    <Number>110</Number>
+       <Entry>
+         <Name>110</Name>
+         <UserName>110</UserName>
+         <Registrar>192.168.88.111</Registrar>
+       </Entry>
+       <Entry>
+         <Name>113</Name>
+         <UserName>113</UserName>
+         <Registrar>192.168.88.111</Registrar>
+       </Entry>
+       <Entry>
+         <Name>114</Name>
+         <UserName>114</UserName>
+         <Registrar>192.168.88.111</Registrar>
+       </Entry>
+       <Entry>
+         <Name>115</Name>
+         <UserName>115</UserName>
+         <Registrar>192.168.88.111</Registrar>
+       </Entry>
+       <Entry>
+         <Name>1001</Name>
+         <UserName>1001</UserName>
+         <Registrar>192.168.88.150</Registrar>
+       </Entry>
+  <!-- Domain: branch-1 -->
+    <!-- Phone: 998877665544 -->
+    <Description></Description>
+    <Number>3232</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+  <!-- Domain: Вынос 2 (Цех Б) -->
+    <!-- Phone: aa0011223344 -->
+    <Description></Description>
+    <Number>9696</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: ff0000334466 -->
+    <Description></Description>
+    <Number>9896</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: dd009988776600 -->
+    <Description></Description>
+    <Number>4578</Number>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name>Дисплай Наме</Name>
+         <UserName>Юзер наме</UserName>
+         <Registrar>10.10.10.10</Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+  <!-- Domain: New_Domain -->

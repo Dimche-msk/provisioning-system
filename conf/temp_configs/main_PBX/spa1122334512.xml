@@ -1,0 +1,63 @@
+<flat-profile>
+<!-- line 1 -->
+<User_ID_1_>1233.000000</User_ID_1_>
+<Password_1_>SipPasswd$</Password_1_>
+<Register_Expires_1_> 120 </Register_Expires_1_>
+<Line_Enable_1_> Yes </Line_Enable_1_>
+<SIP_Port_1_>5060</SIP_Port_1_>
+<Default_Ring_1_>7</Default_Ring_1_>
+<Proxy_1_>192.168.88.150</Proxy_1_>
+<Use_Outbound_Proxy_1_> No </Use_Outbound_Proxy_1_>
+<Register_1_> Yes </Register_1_>
+<Extension_1_>1</Extension_1_>
+<Short_Name_1_>Васили1-133</Short_Name_1_>
+<Dial_Plan_1_> (0[12345789]S0|[1-7]xxS0|8[2-9]xxxxxxxxxS0|810xx.|81[123456789]S0|*xx.|xx.) </Dial_Plan_1_>
+<Preferred_Codec_1_>G711a</Preferred_Codec_1_>
+<Use_Pref_Codec_Only_1_>Yes   </Use_Pref_Codec_Only_1_>
+
+
+
+<Enable_CDP>No</Enable_CDP>
+
+
+<!-- Phone Input Gains -->
+
+<Handset_Input_Gain> 6 </Handset_Input_Gain>
+<Headset_Input_Gain> 6 </Headset_Input_Gain>
+
+<Dial_Tone>420@-19,420@-19;10(*/0/1+2)</Dial_Tone>
+<Outside_Dial_Tone>420@-16;10(*/0/1)</Outside_Dial_Tone>
+<Busy_Tone>420@-19,420@-19;10(.5/.5/1+2)</Busy_Tone>
+<Ring_Back_Tone>420@-19,420@-19;*(2/4/1+2)</Ring_Back_Tone>
+<DND_Serv>No</DND_Serv>
+<!-- User Supplementary Services -->
+
+<Time_Format> 12hr </Time_Format>
+<Date_Format> day/month </Date_Format>
+
+
+<!-- Time Zone Selection -->
+<Daylight_Saving_Time_Enable>No</Daylight_Saving_Time_Enable>
+<Time_Zone>GMT+03:00 </Time_Zone>
+
+<!-- System Configuration -->
+
+<Enable_Web_Server>           Yes       </Enable_Web_Server>
+<Web_Server_Port>             80        </Web_Server_Port>
+<Enable_Web_Admin_Access>     Yes       </Enable_Web_Admin_Access>
+<Admin_Passwd>                			</Admin_Passwd>
+<User_Password>                         </User_Password>
+<Resync_Periodic>       3520      </Resync_Periodic>
+<Resync_Random_Delay>       600         </Resync_Random_Delay>
+
+<!-- Optional Network Configuration -->
+
+<Primary_DNS>      8.8.8.8  </Primary_DNS>
+<Secondary_DNS>    8.8.4.4  </Secondary_DNS>
+<DNS_Server_Order> Manual         </DNS_Server_Order>
+<DNS_Query_Mode>   Parallel       </DNS_Query_Mode>
+
+<Primary_NTP_Server>pool.ntp.org</Primary_NTP_Server>
+<Idle_Key_List>em_login|1;acd_login|1;acd_logout|1;avail|3;unavail|3;redial|5;dir|6;cfwd|7;|8;lcr|9;pickup|10;gpickup|11;unpark|12;em_logout</Idle_Key_List>
+<Group_Paging_Script group="Phone/Multiple_Paging_Group_Parameters"></Group_Paging_Script>
+</flat-profile>
