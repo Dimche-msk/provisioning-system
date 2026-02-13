@@ -197,7 +197,7 @@
         return parts.join(": ");
     }
 
-    async function deletePhone(phone: Phone) {
+async function deletePhone(phone: Phone) {
         if (
             !confirm(
                 $t("phone.confirm_delete") ||

@@ -1,5 +1,5 @@
 server:
-  port: "8090"
+  port: "8080"
   serve_configs: true
   # New fields:
   log_device_access: full  # Options: none, access, error, full
@@ -19,12 +19,12 @@ database:
 # При скачивании файла, сначала файл ищется в первом домене, а потом в других. Т.е. Общие файлы конфигурации будут из первого домена
 domains:
   - name: "main_PBX"
-    # deploy_cmd: "echo 'Deploying {{.FilePath}} to default server'" # Legacy
+    deploy_cmd: "echo 'Deploying {{.Phone.MacAddress}} to default server'" # Legacy
     # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy
-    deploy_commands:
-      - "echo '1. Uploading config for {{.Phone.MacAddress}} to server ({{.Vars.http_prov_server}})'"
-      - "echo '2. Creating Asterisk peer for {{.Phone.MacAddress}}'"
-      - "echo '3. Reloading Asterisk: asterisk -rx \"sip reload\"'"
+    #deploy_commands:
+    #  - "echo '1. Uploading config for {{.Phone.MacAddress}} to server ({{.Vars.http_prov_server}})' > 123.txt"
+    #  - "echo '2. Creating Asterisk peer for {{.Phone.MacAddress}}'"
+    #  - "echo '3. Reloading Asterisk: asterisk -rx \"sip reload\"'"
     delete_commands:
       - "echo '1. Removing config for {{.Phone.MacAddress}} from server'"
       - "echo '2. Removing Asterisk peer for {{.Phone.MacAddress}}'"
@@ -34,13 +34,17 @@ domains:
       ntp_server: "pool.ntp.org"
       sip_server_ip: "192.168.88.150"
       sip_server_port: "5060"
+      sip_proxy_address: "172.20.25.10"
+      sip_proxy_port: "5060"
+      sip_registrar_address: "172.20.25.10"
+      sip_registrar_port: "5060"
       sip_server2_ip: "10.0.0.150"
       sip_server2_port: "5060"
       #vlan_voip: "100"
       #vlan_pc: "1"
       # time_zone: ""
       http_prov_server: "192.168.88.111"
-      http_prov_server_port: "8090"
+      http_prov_server_port: "8080"
       sip_password: "SipPasswd$"
       admin_password: "Admin"
       user_password: "User"

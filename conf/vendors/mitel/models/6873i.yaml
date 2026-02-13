@@ -1,0 +1,35 @@
+id: mitel-6873
+name: Mitel 6873i
+image: mitel6873i.png
+type: phone
+own_soft_keys: 78
+own_hard_keys: 12
+max_account_lines: 24
+supported_expansion_modules:
+  - M680
+  - M685
+maximum_expansion_modules: 3
+keys:
+  - index: 1
+    type: Line
+    account: 1
+    label: "L1"
+    x: 440
+    y: 355
+  - index: 2
+    type: Line
+    account: 2
+    label: "L2"
+    x: 440
+    y: 325
+  - index: 3
+    type: Free
+    label: "Top SK1"
+    x: 100
+    y: 100
+  - index: 4
+    type: Free
+    label: "Top SK2"
+    x: 200
+    y: 100
+

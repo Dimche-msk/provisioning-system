@@ -1,7 +1,6 @@
 package provisioner
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -145,6 +144,24 @@ func (m *Manager) LoadVendors(vendorsDir string) error {
 						log.Printf("Warning: Failed to parse features file %s: %v", featuresPath, err)
 					} else {
 						vc.Features = features
+					}
+				}
+			}
+		}
+
+		// Load Accounts if defined
+		if vc.AccountsFile != "" {
+			accountsPath := filepath.Join(vendorDir, vc.AccountsFile)
+			if _, err := os.Stat(accountsPath); err == nil {
+				accountsData, err := os.ReadFile(accountsPath)
+				if err != nil {
+					log.Printf("Warning: Failed to read accounts file %s: %v", accountsPath, err)
+				} else {
+					var accounts []Feature
+					if err := yaml.Unmarshal(accountsData, &accounts); err != nil {
+						log.Printf("Warning: Failed to parse accounts file %s: %v", accountsPath, err)
+					} else {
+						vc.Accounts = accounts
 					}
 				}
 			}
@@ -428,182 +445,202 @@ func (m *Manager) copyStaticFiles(srcDir, dstDir string) error {
 	})
 }
 
-// GeneratePhoneConfigs генерирует конфигурации для списка телефонов
 func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) ([]string, error) {
-	// ... (existing implementation)
 	var warnings []string
 
 	for _, phone := range phones {
-		// ... (existing loop body)
 		mac := ""
 		if phone.MacAddress != nil {
 			mac = *phone.MacAddress
 		}
-		number := ""
-		if phone.PhoneNumber != nil {
-			number = *phone.PhoneNumber
-		}
+		// Log generation start
+		log.Printf("Generating config for phone %s", mac)
+		_ = mac // Use to avoid unused variable error if not logging
 
 		vendor, ok := m.getVendorByID(phone.Vendor)
-		if !ok {
-			msg := fmt.Sprintf("Warning: Vendor %s not found for phone %s", phone.Vendor, mac)
-			log.Println(msg)
-			warnings = append(warnings, msg)
-			continue
+		if !ok || vendor.PhoneConfigFile == "" || vendor.PhoneConfigTemplate == "" {
+			continue // Skip if no config support
 		}
 
-		if vendor.PhoneConfigFile == "" || vendor.PhoneConfigTemplate == "" {
-			continue // Вендор не поддерживает генерацию конфигов телефонов
-		}
-
-		// Process Lines and Keys
-		var lines []map[string]interface{}
-		var keysConfig []string
-
-		// Map features for quick lookup
+		// Prepare Maps for Quick Lookup
 		featuresMap := make(map[string]Feature)
 		for _, f := range vendor.Features {
 			featuresMap[f.ID] = f
 		}
+		accountTemplates := vendor.Accounts
 
-		// Calculate Max Lines and Used Lines
-		maxLines := 1 // Default
-		if model, ok := m.getModelByID(phone.ModelID); ok {
-			maxLines = model.MaxAccountLines
-		}
-
-		linesRange := make([]int, maxLines)
-		for i := 0; i < maxLines; i++ {
-			linesRange[i] = i + 1
-		}
-
-		usedLineNumbers := make(map[int]bool)
+		// Map Account Data from DB
+		phoneAccounts := make(map[int]map[string]interface{})
 		for _, l := range phone.Lines {
-			if l.Type == "line" {
-				usedLineNumbers[l.Number] = true
+			if l.Type == "Line" {
+				accData := l.GetAdditionalInfoMap()
+				accData["account_number"] = l.AccountNumber
+				phoneAccounts[l.AccountNumber] = accData
 			}
 		}
 
+		// Map DB Assignments (Panel-Key overrides)
+		dbLinesMap := make(map[string]models.PhoneLine)
 		for _, l := range phone.Lines {
-			lineData := map[string]interface{}{
-				"type":                    l.Type,
-				"number":                  l.Number,
-				"expansion_module_number": l.ExpansionModuleNumber,
-				"key_number":              l.KeyNumber,
+			key := fmt.Sprintf("%d-%d", l.PanelNumber, l.KeyNumber)
+			dbLinesMap[key] = l
+		}
+
+		// Main Rendering Loop - Based on Model
+		var keysConfig []string
+		model, modelOk := m.getModelByID(phone.ModelID)
+		if !modelOk {
+			continue
+		}
+
+		// 1. Process Main Device Keys
+		for _, mk := range model.Keys {
+			keyID := fmt.Sprintf("0-%d", mk.Index)
+			dbLine, hasOverride := dbLinesMap[keyID]
+
+			assignmentType := mk.Type
+			accNum := mk.Account
+			lineData := make(map[string]interface{})
+
+			if hasOverride {
+				assignmentType = dbLine.Type
+				accNum = dbLine.AccountNumber
+				lineData = dbLine.GetAdditionalInfoMap()
 			}
 
-			// Parse AdditionalInfo
-			var additionalInfo map[string]interface{}
-			if l.AdditionalInfo != "" {
-				if err := json.Unmarshal([]byte(l.AdditionalInfo), &additionalInfo); err == nil {
-					for k, v := range additionalInfo {
-						lineData[k] = v
-					}
+			// Base Context
+			ctx := pongo2.Context{
+				"key_index":        mk.Index,
+				"key_number":       mk.Index,
+				"panel_number":     0,
+				"expansion_module": 0,
+				"key_type":         mk.Type,
+				"type":             assignmentType,
+				"label":            mk.Label,
+				"settings":         mk.Settings,
+				"x":                mk.X,
+				"y":                mk.Y,
+			}
+
+			// Add Account Data
+			if acc, ok := phoneAccounts[accNum]; ok {
+				ctx["account"] = acc
+				ctx["account_number"] = accNum
+				for k, v := range acc {
+					ctx["account_"+k] = v
 				}
 			}
-			lines = append(lines, lineData)
 
-			// Generate Key Config if it matches a feature
-			featureType := l.Type
-			if t, ok := lineData["type"].(string); ok && t != "" {
-				featureType = t
+			// Add Assignment Overrides
+			for k, v := range lineData {
+				ctx[k] = v
 			}
 
-			if feature, ok := featuresMap[featureType]; ok {
+			// Render
+			if assignmentType == "Line" {
+				for _, accFeature := range accountTemplates {
+					for _, param := range accFeature.Params {
+						m.renderAndAppend(&keysConfig, param, ctx, mk.Settings)
+					}
+				}
+			} else if feature, ok := featuresMap[assignmentType]; ok {
 				for _, param := range feature.Params {
-					var val interface{}
-					if param.Value != "" {
-						val = param.Value
-					} else {
-						if v, exists := lineData[param.ID]; exists {
-							val = v
-						}
-					}
-
-					if val != nil && param.ConfigTemplate != "" {
-						tmpl := param.ConfigTemplate
-						tmpl = strings.ReplaceAll(tmpl, "{{key_index}}", fmt.Sprintf("%d", l.Number))
-						tmpl = strings.ReplaceAll(tmpl, "{{value}}", fmt.Sprintf("%v", val))
-						keysConfig = append(keysConfig, tmpl)
-					}
+					m.renderAndAppend(&keysConfig, param, ctx, mk.Settings)
 				}
 			}
 		}
 
-		// Подготавливаем контекст домена (флатеним переменные)
+		// 2. Process Expansion Modules (To be implemented when we have M685/M680 models)
+		// ...
+
+		// 3. Render Final Config
 		domainConfig := m.Config.GetEffectiveDomainConfig(phone.Domain)
 		domainCtx := make(map[string]interface{})
 		for k, v := range domainConfig.Variables {
 			domainCtx[k] = v
 		}
-		domainCtx["name"] = domainConfig.Name
 
-		// Подготавливаем контекст
-		ctx := pongo2.Context{
-			"account": map[string]interface{}{
-				"id":                phone.ID,
-				"domain":            phone.Domain,
-				"vendor":            phone.Vendor,
-				"mac_address":       mac,
-				"phone_number":      number,
-				"ip_address":        phone.IPAddress,
-				"type":              phone.Type,
-				"lines":             lines,
-				"max_lines":         maxLines,
-				"lines_range":       linesRange,
-				"used_line_numbers": usedLineNumbers,
-			},
-			"domain":      domainCtx,
+		context := pongo2.Context{
+			"phone":       phone,
+			"vendor":      vendor,
+			"variables":   domainCtx,
 			"keys_config": keysConfig,
 		}
 
-		// 1. Генерируем имя файла
-		filenameTpl, err := pongo2.FromString(vendor.PhoneConfigFile)
+		// Render main template
+		tplPath := filepath.Join(vendor.Dir, vendor.PhoneConfigTemplate)
+		tplData, err := os.ReadFile(tplPath)
 		if err != nil {
-			msg := fmt.Sprintf("Warning: Failed to parse filename template for vendor %s: %v", vendor.Name, err)
-			log.Println(msg)
-			warnings = append(warnings, msg)
-			continue
-		}
-		filename, err := filenameTpl.Execute(ctx)
-		if err != nil {
-			msg := fmt.Sprintf("Warning: Failed to execute filename template for phone %s: %v", mac, err)
-			log.Println(msg)
-			warnings = append(warnings, msg)
+			log.Printf("Error reading phone template %s: %v", tplPath, err)
 			continue
 		}
 
-		// 2. Генерируем содержимое
-		templatePath := filepath.Join(vendor.Dir, vendor.PhoneConfigTemplate)
-		tpl, err := pongo2.FromFile(templatePath)
+		mainTpl, err := pongo2.FromString(string(tplData))
 		if err != nil {
-			msg := fmt.Sprintf("Warning: Failed to load template %s: %v", templatePath, err)
-			log.Println(msg)
-			warnings = append(warnings, msg)
-			continue
-		}
-		content, err := tpl.Execute(ctx)
-		if err != nil {
-			msg := fmt.Sprintf("Warning: Failed to execute template for phone %s: %v", mac, err)
-			log.Println(msg)
-			warnings = append(warnings, msg)
+			log.Printf("Error parsing phone template %s: %v", tplPath, err)
 			continue
 		}
 
-		// 3. Записываем файл
-		targetDir := filepath.Join(outputDir, phone.Domain)
-		if err := os.MkdirAll(targetDir, 0755); err != nil {
-			return warnings, fmt.Errorf("failed to create directory %s: %v", targetDir, err)
+		finalConfig, err := mainTpl.Execute(context)
+		if err != nil {
+			log.Printf("Error executing phone template %s: %v", tplPath, err)
+			continue
 		}
-		targetFile := filepath.Join(targetDir, filename)
-		if err := os.WriteFile(targetFile, []byte(content), 0644); err != nil {
-			msg := fmt.Sprintf("Warning: Failed to write config file %s: %v", targetFile, err)
-			log.Println(msg)
-			warnings = append(warnings, msg)
+
+		// Save to file
+		fileNameTpl, err := pongo2.FromString(vendor.PhoneConfigFile)
+		if err != nil {
+			log.Printf("Error parsing phone config name template: %v", err)
+			continue
+		}
+		fileName, err := fileNameTpl.Execute(context)
+		if err != nil {
+			log.Printf("Error executing phone config name template: %v", err)
+			continue
+		}
+
+		fullPath := filepath.Join(outputDir, phone.Domain, fileName)
+		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+			log.Printf("Error creating directory %s: %v", filepath.Dir(fullPath), err)
+			continue
+		}
+
+		if err := os.WriteFile(fullPath, []byte(finalConfig), 0644); err != nil {
+			log.Printf("Error writing config file %s: %v", fullPath, err)
 			continue
 		}
 	}
+
 	return warnings, nil
+}
+
+func (m *Manager) renderAndAppend(keysConfig *[]string, param FeatureParam, ctx pongo2.Context, modelSettings map[string]string) {
+	val := ctx[param.ID]
+	if val == nil {
+		if param.Value != "" {
+			val = param.Value
+		}
+	}
+
+	if val != nil && param.ConfigTemplate != "" {
+		renderCtx := make(pongo2.Context)
+		for k, v := range ctx {
+			renderCtx[k] = v
+		}
+		renderCtx["value"] = val
+		renderCtx["id"] = param.ID
+
+		for k, v := range param.Extra {
+			renderCtx[k] = v
+		}
+		if tag, ok := modelSettings[param.ID]; ok {
+			renderCtx["tag"] = tag
+		}
+
+		if out, err := renderPongoTemplate(param.ConfigTemplate, renderCtx); err == nil {
+			*keysConfig = append(*keysConfig, out)
+		}
+	}
 }
 
 // DeletePhoneConfig удаляет конфигурационный файл для телефона
@@ -663,4 +700,16 @@ func (m *Manager) DeletePhoneConfig(outputDir string, phone models.Phone) error 
 	}
 
 	return nil
+}
+
+func renderPongoTemplate(tplStr string, ctx pongo2.Context) (string, error) {
+	tpl, err := pongo2.FromString(tplStr)
+	if err != nil {
+		return "", fmt.Errorf("error parsing template: %w", err)
+	}
+	out, err := tpl.Execute(ctx)
+	if err != nil {
+		return "", fmt.Errorf("error executing template: %w", err)
+	}
+	return out, nil
 }

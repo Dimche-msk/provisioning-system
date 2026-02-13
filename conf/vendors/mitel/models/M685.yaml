@@ -1,0 +1,7 @@
+id: M685
+name: Mitel M685 Expansion Module
+type: expansion-module
+own_hard_keys: 28
+own_soft_keys: 56
+keys: []
+settings: []

@@ -190,7 +190,54 @@ name: Cisco                   # Display Name
 static_dir: static            # Folder with static files (firmware, images) to be copied as is
 phone_config_file: "spa{{account.mac_address}}.xml" # Configuration file name template
 phone_config_template: templates/phone.tpl          # Path to the main configuration template
+features_file: templates/features.yaml              # [Optional] Path to advanced features definition
 ```
+
+### Advanced Feature Configuration (features.yaml)
+
+The `features_file` allows you to define complex programmable keys (BLF, Speed Dial, etc.) with custom UI fields and configuration templates. Templates are processed using **Pongo2** (Jinja2-like syntax), allowing for conditions, filters, and dynamic tag mapping.
+
+#### File Structure
+The file contains a list of features. Each feature has:
+*   **`id`**: Unique identifier for the feature type.
+*   **`name`**: Human-readable name displayed in the UI dropdown.
+*   **`params`**: List of parameters for this feature.
+
+#### Parameter Fields
+*   **`id`**: Parameter identifier.
+*   **`label`**: Label displayed in the phone editing form.
+*   **`type`**: UI field type (`string`, `boolean`, `number`, `select`, `hidden`).
+*   **`value`**: (Optional) Fixed value for this parameter (useful with `hidden` type).
+*   **`source`**: (Optional) For `select` type, specifies the data source (e.g., `lines`).
+*   **`config_template`**: Template for the generated configuration line.
+
+#### Placeholders in `config_template`
+Templates are rendered using **Pongo2** and have access to the following context:
+
+**Parameter Context:**
+*   **`{{id}}`**: The ID of the current parameter (from `features.yaml`).
+*   **`{{value}}`**: The value of the current parameter.
+*   **`{{[custom_field]}}`**: Any arbitrary fields defined for the parameter in `features.yaml` (e.g., `{{param}}`).
+
+**Key/Line Context (from Model and Database):**
+*   **`{{key_index}}`**: Sequential index of the line/key (1-N).
+*   **`{{key_number}}`**: Physical button index on the device or module.
+*   **`{{expansion_module}}`**: Number of the expansion module (0 for main device).
+*   **`{{key_type}}`**: Type of the key defined in the model (e.g., `line`, `soft_key`).
+*   **`{{label}}`**: Label of the key defined in the model.
+*   **`{{tag}}`**: Vendor-specific tag mapping for the current parameter ID from model `settings`.
+*   **`{{settings}}`**: Full map of all settings defined for this key in the model.
+
+#### Example (Mitel BLF with Custom Parameter)
+In `features.yaml`:
+```yaml
+- id: blf
+  params:
+    - id: label
+      param: const
+      config_template: "{{tag}}/{{param}}:{{value}}"
+```
+If Model defines `tag` for `label` as `softkey3 label`, result: `softkey3 label/const: MyValue`
 
 ### Templates
 

@@ -4,7 +4,31 @@ set -e
 # Create releases directory
 mkdir -p release
 
-echo "Starting build process using Docker (Alpine)..."
+echo "Starting build process..."
+
+# 0. Build Frontend
+echo "Building Frontend..."
+cd frontend
+pnpm install
+pnpm build
+cd ..
+
+echo "Updating Backend static files..."
+rm -rf backend/cmd/server/static/*
+cp -r frontend/build/* backend/cmd/server/static/
+
+# macOS (Darwin)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Building for macOS Intel (AMD64)..."
+    GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -C backend -o ../release/provisioning-system-darwin-amd64 cmd/server/main.go
+    
+    echo "Building for macOS Apple Silicon (ARM64)..."
+    GOOS=darwin GOARCH=arm64 CGO_ENABLED=1 go build -C backend -o ../release/provisioning-system-darwin-arm64 cmd/server/main.go
+else
+    echo "Skipping macOS build (not running on macOS)."
+fi
+
+echo "Starting build process using Docker (Alpine) for other platforms..."
 
 # Linux AMD64
 echo "Building for Linux AMD64 (Static)..."

@@ -13,9 +13,10 @@
         Save,
         X,
         Check,
+        Target,
     } from "lucide-svelte";
     import { toast } from "svelte-sonner";
-    import type { Phone, PhoneLine } from "$lib/types";
+    import type { Phone, PhoneLine, DeviceModel, ModelKey } from "$lib/types";
 
     export let lines: PhoneLine[] = [];
     export let maxSoftKeys = 0;
@@ -26,15 +27,23 @@
     export let maxLines = 0;
     export let open = false;
     export let phone: Phone = {} as Phone;
+    export let model: DeviceModel | null = null;
 
     const dispatch = createEventDispatcher();
 
     let workingLines: PhoneLine[] = [];
+    let selectedLine: PhoneLine | null = null;
 
     // Reset working copy when opening
-    $: if (open) {
-        // Deep copy to avoid modifying parent state by reference
-        workingLines = JSON.parse(JSON.stringify(lines));
+    $: if (open && lines) {
+        workingLines = JSON.parse(JSON.stringify(lines)).map((l: any) => ({
+            ...l,
+            account_number: l.account_number || l.number || 1,
+            panel_number: l.panel_number || l.expansion_module_number || 0,
+            key_number: l.key_number || 0,
+            type: l.type || "Line",
+        }));
+        selectedLine = null;
     }
 
     let searchQuery = "";
@@ -48,19 +57,19 @@
     // Filtered lines
     $: filteredLines = workingLines.filter((l) => {
         const q = searchQuery.toLowerCase();
-        // Parse info for search
         let info: Record<string, any> = {};
         try {
             info = JSON.parse(l.additional_info || "{}");
         } catch (e) {}
 
         const searchStr = [
-            l.number,
+            l.account_number,
+            l.panel_number,
+            l.key_number,
             l.type,
             info.display_name,
             info.user_name,
             info.label,
-            info.value,
         ]
             .join(" ")
             .toLowerCase();
@@ -78,16 +87,53 @@
 
     let originalLine: PhoneLine | null = null;
 
-    $: imageUrl =
+    // Background Image logic
+    $: baseImageUrl =
         image && phone.vendor
             ? `/api/vendors-static/${phone.vendor}/static/${image}`
             : "";
 
+    // Find custom image for selected line
+    $: currentModelKey =
+        model && selectedLine
+            ? model.keys.find(
+                  (k) =>
+                      k.index === selectedLine?.key_number &&
+                      (selectedLine?.panel_number || 0) === 0,
+              )
+            : null;
+
+    $: myImageUrl =
+        currentModelKey?.my_image && phone.vendor
+            ? `/api/vendors-static/${phone.vendor}/static/${currentModelKey.my_image}`
+            : "";
+
+    $: activeImageUrl = myImageUrl || baseImageUrl;
+
     let imageLoadError = false;
-    $: if (imageUrl) imageLoadError = false;
+    $: if (activeImageUrl) imageLoadError = false;
+
+    // Get coordinates for highlighting
+    $: highlightCoords = (() => {
+        if (!selectedLine || !model) return null;
+        const mk = model.keys.find(
+            (k) =>
+                k.index === selectedLine?.key_number &&
+                (selectedLine?.panel_number || 0) === 0,
+        );
+        if (mk && mk.x > 0 && mk.y > 0) {
+            return { x: mk.x, y: mk.y };
+        }
+        return null;
+    })();
+
+    function selectLine(line: PhoneLine) {
+        selectedLine = line;
+    }
 
     function edit(line: PhoneLine) {
         originalLine = line;
+        selectedLine = line;
         editForm = { ...line };
         try {
             additionalInfo = JSON.parse(line.additional_info || "{}");
@@ -97,109 +143,52 @@
     }
 
     function add() {
-        // Calculate next number
-        const maxNum = workingLines.reduce(
-            (max, l) => (l.number > max ? l.number : max),
-            0,
-        );
-
         originalLine = null;
+        selectedLine = null;
         editForm = {
-            type: "line",
-            number: maxNum + 1,
-            expansion_module_number: 0,
-            key_number: 0,
+            type: "Line",
+            account_number: 1,
+            panel_number: 0,
+            key_number: 1,
             additional_info: "{}",
         };
         additionalInfo = {};
     }
 
     function save() {
-        if (!editForm || !editForm.number) {
-            toast.error("Number is required");
+        if (!editForm || !editForm.account_number) {
+            toast.error("Account Number is required");
             return;
         }
 
         // Ensure numbers are integers
-        const newNumber = parseInt(String(editForm.number), 10);
-        const newExpModule = editForm.expansion_module_number
-            ? parseInt(String(editForm.expansion_module_number), 10)
-            : 0;
-        const newKeyNumber = editForm.key_number
-            ? parseInt(String(editForm.key_number), 10)
-            : 0;
-
-        editForm.number = newNumber;
-        editForm.expansion_module_number = newExpModule;
-        editForm.key_number = newKeyNumber;
-
-        // Check Limits
-        if (editForm.type === "soft_key") {
-            const count = workingLines.filter(
-                (l) => l.type === "soft_key" && l !== originalLine,
-            ).length;
-            if (count >= maxSoftKeys) {
-                toast.error(
-                    `Maximum number of soft keys (${maxSoftKeys}) reached.`,
-                );
-                return;
-            }
-        }
-        if (editForm.type === "hard_key") {
-            const count = workingLines.filter(
-                (l) => l.type === "hard_key" && l !== originalLine,
-            ).length;
-            if (count >= maxHardKeys) {
-                toast.error(
-                    `Maximum number of hard keys (${maxHardKeys}) reached.`,
-                );
-                return;
-            }
-        }
+        editForm.account_number = parseInt(String(editForm.account_number), 10);
+        editForm.panel_number = parseInt(String(editForm.panel_number), 10);
+        editForm.key_number = parseInt(String(editForm.key_number), 10);
 
         // Validation: Check for duplicates
         for (const line of workingLines) {
-            // Skip if we are editing this exact line
             if (originalLine && line === originalLine) continue;
 
-            // Check 1: Unique Sequential Number (Per Type)
-            if (line.number === newNumber && line.type === editForm.type) {
+            if (
+                line.panel_number === editForm.panel_number &&
+                line.key_number === editForm.key_number
+            ) {
                 toast.error(
-                    `Key number ${newNumber} is already in use for type ${editForm.type}.`,
+                    `Panel ${editForm.panel_number} / Key ${editForm.key_number} is already assigned.`,
                 );
                 return;
             }
-
-            // Check 2: Unique Physical Location (Exp Module + Key)
-            // Only if Key Number is set (assuming 0 means undefined/auto)
-            if (newKeyNumber > 0) {
-                const lineExp = line.expansion_module_number || 0;
-                const lineKey = line.key_number || 0;
-
-                if (lineExp === newExpModule && lineKey === newKeyNumber) {
-                    const locName =
-                        newExpModule === 0
-                            ? "Main Phone"
-                            : `Exp Module ${newExpModule}`;
-                    toast.error(
-                        `Key ${newKeyNumber} on ${locName} is already assigned.`,
-                    );
-                    return;
-                }
-            }
         }
 
-        // Pack additional info
         editForm.additional_info = JSON.stringify(additionalInfo);
 
         if (originalLine) {
-            // Update
             const idx = workingLines.indexOf(originalLine);
             if (idx !== -1) {
                 workingLines[idx] = { ...editForm };
             }
         } else {
-            // Create
             workingLines = [...workingLines, { ...editForm }];
         }
         originalLine = null;
@@ -209,6 +198,7 @@
 
     function remove(line: PhoneLine) {
         workingLines = workingLines.filter((l) => l !== line);
+        if (selectedLine === line) selectedLine = null;
     }
 
     function cancelEdit() {
@@ -232,8 +222,8 @@
             info = JSON.parse(line.additional_info || "{}");
         } catch (e) {}
 
-        if (line.type === "line") {
-            return info.display_name || info.user_name || info.auth_name || "";
+        if (line.type === "Line") {
+            return info.display_name || info.label || "";
         } else {
             return info.label || info.value || "";
         }
@@ -274,7 +264,9 @@
             <div class="flex justify-between items-center mb-4 shrink-0">
                 <div>
                     <h2 class="text-lg font-semibold">
-                        {$t("lines.title") || "Line Configuration"}. {$t("phone.number")}: {phone.phone_number}
+                        {$t("lines.title") || "Line Configuration"}. {$t(
+                            "phone.number",
+                        )}: {phone.phone_number}
                     </h2>
                     <p class="text-sm text-muted-foreground">
                         {$t("lines.description") ||
@@ -288,16 +280,45 @@
             </div>
 
             <div class="flex gap-6 flex-1 min-h-0">
-                {#if imageUrl && !imageLoadError}
+                {#if activeImageUrl}
                     <div
-                        class="w-1/3 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 flex items-center justify-center border dark:border-slate-700"
+                        class="w-1/3 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border dark:border-slate-700 relative overflow-hidden"
                     >
-                        <img
-                            src={imageUrl}
-                            alt="Phone"
-                            class="max-w-full max-h-full object-contain"
-                            on:error={() => (imageLoadError = true)}
-                        />
+                        <div
+                            class="relative w-full h-full flex items-center justify-center"
+                        >
+                            <img
+                                src={activeImageUrl}
+                                alt="Phone"
+                                class="max-w-full max-h-full object-contain"
+                                on:error={() => (imageLoadError = true)}
+                            />
+                            {#if highlightCoords}
+                                <div
+                                    class="absolute pointer-events-none flex items-center justify-center"
+                                    style="left: {highlightCoords.x}px; top: {highlightCoords.y}px; transform: translate(-50%, -50%);"
+                                >
+                                    <div class="relative">
+                                        <!-- Ring animation -->
+                                        <div
+                                            class="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-75"
+                                        ></div>
+                                        <Target
+                                            class="h-8 w-8 text-red-600 drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]"
+                                        />
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                        {#if imageLoadError}
+                            <div
+                                class="absolute inset-0 flex items-center justify-center bg-muted/50"
+                            >
+                                <span class="text-sm text-muted-foreground"
+                                    >Image not found</span
+                                >
+                            </div>
+                        {/if}
                     </div>
                 {/if}
 
@@ -339,59 +360,50 @@
                                         class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         bind:value={editForm.type}
                                     >
-                                        <option value="line">Line</option>
+                                        <option value="Line">Line</option>
+                                        <option value="Free">Free</option>
+                                        <option value="topsoftkey"
+                                            >Top Softkey</option
+                                        >
+                                        <option value="softkey">Softkey</option>
+                                        <option value="bottomkey"
+                                            >Bottom Key</option
+                                        >
                                         {#if maxHardKeys > 0}
                                             <option value="hard_key"
                                                 >Hard Key</option
                                             >
                                         {/if}
-                                        {#if maxSoftKeys > 0}
-                                            <option value="soft_key"
-                                                >Soft Key</option
-                                            >
-                                        {/if}
                                     </select>
                                 </div>
                                 <div class="space-y-2">
-                                    <Label>Number (Sequential)</Label>
+                                    <Label>Account #</Label>
                                     <Input
                                         type="number"
-                                        bind:value={editForm.number}
+                                        bind:value={editForm.account_number}
                                     />
                                 </div>
-                                {#if hasExpansionModules}
-                                    <div class="space-y-2">
-                                        <Label>Location</Label>
-                                        <select
-                                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            bind:value={
-                                                editForm.expansion_module_number
-                                            }
-                                        >
-                                            <option value={0}>Main Phone</option
-                                            >
-                                            {#each Array(phone.expansion_modules_count || 0) as _, i}
-                                                <option value={i + 1}
-                                                    >Exp Module {i + 1}</option
-                                                >
-                                            {/each}
-                                        </select>
-                                    </div>
-                                    {#if editForm.expansion_module_number > 0}
-                                        <div class="space-y-2">
-                                            <Label>Key # on Module</Label>
-                                            <Input
-                                                type="number"
-                                                min="1"
-                                                bind:value={editForm.key_number}
-                                            />
-                                        </div>
-                                    {/if}
-                                {/if}
+                                <div class="space-y-2">
+                                    <Label>Panel #</Label>
+                                    <Input
+                                        type="number"
+                                        min="0"
+                                        max={phone.expansion_modules_count || 0}
+                                        bind:value={editForm.panel_number}
+                                    />
+                                </div>
+                                <div class="space-y-2">
+                                    <Label>Key #</Label>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        bind:value={editForm.key_number}
+                                    />
+                                </div>
                             </div>
 
                             <!-- Dynamic Fields based on Type -->
-                            {#if editForm.type === "line"}
+                            {#if editForm.type === "Line"}
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-2">
                                         <Label>Line Number</Label>
@@ -494,10 +506,10 @@
                                                             <option value=""
                                                                 >Select Line</option
                                                             >
-                                                            {#each workingLines.filter((l) => l.type === "line") as line}
+                                                            {#each workingLines.filter((l) => l.type === "Line") as line}
                                                                 <option
-                                                                    value={line.number}
-                                                                    >Line {line.number}</option
+                                                                    value={line.account_number}
+                                                                    >Line {line.account_number}</option
                                                                 >
                                                             {/each}
                                                         </select>
@@ -570,16 +582,20 @@
                     {/if}
 
                     <!-- Table -->
-                    <div class="border rounded-md">
+                    <div class="border rounded-md overflow-hidden">
                         <Table.Root>
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.Head>#</Table.Head>
-                                    <Table.Head>Type</Table.Head>
+                                    <Table.Head class="w-[80px]"
+                                        >Acc #</Table.Head
+                                    >
+                                    <Table.Head class="w-[120px]"
+                                        >Panel / Key</Table.Head
+                                    >
+                                    <Table.Head class="w-[100px]"
+                                        >Type</Table.Head
+                                    >
                                     <Table.Head>Description</Table.Head>
-                                    {#if hasExpansionModules}
-                                        <Table.Head>Exp/Key</Table.Head>
-                                    {/if}
                                     <Table.Head class="text-right"
                                         >Actions</Table.Head
                                     >
@@ -587,52 +603,70 @@
                             </Table.Header>
                             <Table.Body>
                                 {#each paginatedLines as line}
-                                    <Table.Row>
-                                        <Table.Cell>{line.number}</Table.Cell>
-                                        <Table.Cell>{line.type}</Table.Cell>
+                                    <Table.Row
+                                        on:click={() => selectLine(line)}
+                                        class="cursor-pointer transition-colors {selectedLine ===
+                                        line
+                                            ? 'bg-blue-50 dark:bg-blue-900/20'
+                                            : ''}"
+                                    >
+                                        <Table.Cell class="font-medium">
+                                            {line.account_number}
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            {line.panel_number === 0
+                                                ? "Main"
+                                                : `Exp ${line.panel_number}`} / {line.key_number}
+                                        </Table.Cell>
+                                        <Table.Cell>
+                                            <span
+                                                class="capitalize text-xs font-semibold px-2 py-1 rounded bg-muted"
+                                            >
+                                                {line.type.replace("_", " ")}
+                                            </span>
+                                        </Table.Cell>
                                         <Table.Cell
                                             >{getLineDescription(
                                                 line,
                                             )}</Table.Cell
                                         >
-                                        {#if hasExpansionModules}
-                                            <Table.Cell
-                                                >{line.expansion_module_number ||
-                                                    "-"}/{line.key_number ||
-                                                    "-"}</Table.Cell
-                                            >
-                                        {/if}
                                         <Table.Cell class="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                on:click={() => edit(line)}
-                                                disabled={!!editForm}
-                                            >
-                                                <Pencil class="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                class="text-destructive"
-                                                on:click={() => remove(line)}
-                                                disabled={!!editForm}
-                                            >
-                                                <Trash2 class="h-4 w-4" />
-                                            </Button>
+                                            <div class="flex justify-end gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    on:click={(e) => {
+                                                        e.stopPropagation();
+                                                        edit(line);
+                                                    }}
+                                                    disabled={!!editForm}
+                                                >
+                                                    <Pencil class="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                    on:click={(e) => {
+                                                        e.stopPropagation();
+                                                        remove(line);
+                                                    }}
+                                                    disabled={!!editForm}
+                                                >
+                                                    <Trash2 class="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                         </Table.Cell>
                                     </Table.Row>
                                 {/each}
                                 {#if paginatedLines.length === 0}
                                     <Table.Row>
                                         <Table.Cell
-                                            colspan={hasExpansionModules
-                                                ? 5
-                                                : 4}
-                                            class="text-center text-muted-foreground"
+                                            colspan={5}
+                                            class="text-center py-8 text-muted-foreground"
                                         >
                                             {$t("common.no_results") ||
-                                                "No lines found"}
+                                                "No lines configured."}
                                         </Table.Cell>
                                     </Table.Row>
                                 {/if}

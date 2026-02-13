@@ -1,0 +1,3991 @@
+Русский
+AQUARIUS_3 prompts| 
+Net. General Info| Сведения о сети
+Net. Persist. Data| Данные о пост. сети
+Net. DHCP Info| Инф. о DHCP сети
+Net. QoS| Статич. QoS сети
+Message Key Launch Voicemail App| Кнопка сообщ. для прилож. голос. почты
+AQUARIUS_4 prompts| 
+Network Persist. Data| Данные о пост. сети
+Network QoS| Статич. QoS сети
+Message Key Launches Voicemail Application| Кнопка сообщ. для прилож. голос. почты
+AQUARIUS_5 prompts| 
+Network General Info| Сведения о сети
+Network DHCP Info| Инф. о DHCP сети
+480iCT prompts| 
+No handsets are currently paired| Нет спаренной гарнитуры.
+Cordless Handset Feature Key Configuration| Программ.функц.клавиш
+None| Нет
+Attempting to pair...| Попытка соединения
+Pairing successful| Соед-е установлено
+Pairing failed       | Нет соединения       
+Try again| Попробуйте еще раз
+Remove Handset:| Отключить гарнитуру
+Attempting to remove| Попытка удаления
+Wait...| Ждите...
+Removal successful| Удаление завершено
+Cordless| Беспровод.
+Cordless Handsets| Беспровод. гарнитура
+None Registered| Не зарегистрирован
+Sync| Синхр-я
+Private Line| Частная линия
+Sending Directory| Отправка каталога
+to Handsets| к гарнитурам
+System Unavailable| Система недоступна
+Handset Pairing| Гарнитура подкл.
+Handset Keys| Кнопки гарнитуры
+Feature Key programming complete.| Настройка функциональных клавиш
+Two Call Support| Поддержка двух вызовов
+Intercom| Интерком
+Sending Directory to Handsets| Пересылка каталога в радиотрубку
+No Public Number Found| Городской номер не найден
+480i prompts| 
+Initializing Components| Инициал-ия компонентов
+Checking DECT| Проверка DECT
+Time Format| Формат времени
+    NOT MATCH !!!|  НЕ СОВПАДАЮТ !
+Erase local config?| Удалить конфиг.?
+Alternate Server| Резервный сервер
+Contrast Level| Ур-нь контраста
+TypeService SIP| Тип сервиса SIP
+TypeService RTP| Тип сервиса RTP
+TypeService DSCP| Тип сервиса DSCP
+TypeService RTCP| Тип сервиса RTCP
+Dn| Вниз
+Rt| Вправо
+Lf| Влево
+Del| Удалить
+System Info Upload| Загрузка системной информации
+Up| Вверх
+Copyright| Авторские права
+Reset| Сброс
+Phone will restart automatically after finishing.| После завершения телефон перезагрузиться автоматически.
+Please login| Авторизуйтесь
+Incorrect password| Неверный пароль
+Reset Configuration?| Сброс конфигурации?
+Cfg. Svr.| Срв. Нстр.
+Enable| Включить
+List| Список
+Move Up| Вверх
+Move Down| Вниз
+Firmware Loaded| Прошивка загружена
+802.1x Authenticating| Аутентиф-я 802.1x 
+LLDP| LLDP
+DHCP: Waiting for IP| DHCP: Ожидание IP
+Bluetooth Upgrade .. Please wait| Обновление Bluetooth.. Подождите
+Contacting Redirector| Обращение к редиректору
+Redirecting Step 1| Переадресация Шаг 1
+Redirecting Step 2| Переадресация Шаг 2
+Redirecting Step 3| Переадресация Шаг 3
+Redirecting Step 4| Переадресация Шаг 4
+Redirecting Step 5| Переадресация Шаг 5
+Redirecting Step 6| Переадресация Шаг 6
+Auto Discovery...| Автоопределение..
+Starting in Generic SIP Mode| Старт в режиме SIP
+Starting in AastraLink Mode| Старт в режиме AastraLink 
+Updating config| Обновление конфигурации
+Waiting assignment| Ожидание задачи
+Checking for Firmware  Do not unplug phone!| Проверка прошивки. Не выключайте телефон!
+New Firmware. Do not unplug phone!| Новая прошивка. Не выключайте телефон!
+New Firmware. Restarting...| Новая прошивка. Перезагрузка...
+Downloading configuration| Загрузка конфигурации
+Downloading Language Packs| Загрузка языковых пакетов
+Network| Сеть
+UPnP device not found| UPnP ус-во не найдено
+Port Map In Progress| Привязка портов
+Port Map Incomplete| Прив-ка п-в не заверш
+DSP| DSP
+SIP| SIP
+Tone| Тон
+Interface| Интерфейс
+Web| Веб
+Done| Завершено
+CopyToAll| Копир.всем
+Cannot use firmware.| Не возм исп прошивку
+No available lines| Нет доступных линий
+Current Password:| Старый пароль:
+New Password:| Новый пароль:
+Re-enter Password:| Повторите пароль
+  Password Changed|   Пароль изменен
+Change| Изменить
+Use DHCP?| Вкл. DHCP?
+Advanced| Расшир
+DNS| DNS
+Ringer | Звонок
+ ERROR: invalid port| ОШИБКА: неверн порт
+SIP Register| SIP Регистратор
+Register?| Зарегистрировать?
+Authentication Name| Имя для аутентификац
+Nortel NAT| Nortel NAT
+Reset phone to| Сбросить телефон в
+factory defaults?| заводские настройки?
+Setting phone back to| Вернуть настройки в
+Factory Defaults| заводские
+  Please enter the   |   Пожалуйста введите 
+    administrator    |     пароль 
+      password.      |      администрат.    
+Password: | Пароль:
+Quit| Выход
+More| Подробнее
+Timeserver Address:| Адрес серв. времени:
+Network Time Disabled| Сетевое Время откл.
+Dialing| Набор
+Incoming| Входящий
+Calling| Вызов
+Pause| Пауза
+Pickup| Перехват
+Previous| Предыдущий
+Enter Time:| Введите время:
+Message Waiting| Ожидающее Сообщение
+Live Dialpad| Live Dialpad
+Live Dialpad is| Live Dialpad это
+Options List| Список функций
+    Access denied    |     Доступ закрыт
+Directory is full| Каталог заполнен
+30min summertime| +30мин летнее время
+1h    summertime| +1ч    летнее время
+No Link| Нет Соед.
+Next| Следующий
+Retry| Повторить
+Negotiation| Взаимодействие
+Live Dialpad disabled| Live Dialpad отключен
+Link State| СтатусСоед
+Headset Mic Volume| Громкость микрофона
+Gateway IP Address:| IP-адрес Шлюза
+Enter Date (y-m-d):| Укажите дату(г-м-д):
+Enter| Ввод
+Enable| Включить
+Full 10Mbps| Full 10Mbps
+Full 100Mbps| Full 100Mbps
+Full 1000Mbps| Full 1000Mbps
+Half 10Mbps| Half 10Mbps
+Half 100Mbps| Half 100Mbps
+Half 1000Mbps| Half 1000Mbps
+Default| По умолч-ю
+Add New| Доб. Новый
+DeleteList| Уд. Список
+Delete entire| Удалить запись
+Directory?| Каталог?
+Enter Number:| Введите Номер:
+Network disconnected| Сеть не подключена
+Network connected| Сеть подключена
+Entry Saved| Запись сохранена
+Entry Removed| Запись удалена
+Private| Частный
+Public| Публичный
+Delete entry?| Удалить запись?
+Delete?| Удалить?
+Delete number| Удалить номер
+or delete all| или удалить все
+entries?| записи?
+Name is full| Имя заполнено
+Empty| Пусто
+Redial List| Список повтор. набора
+Details| Подробнее
+Copy| Копировать
+Select| Выбор
+Voicemail| Голосовая почта
+DeleteItem| УдалЗапись
+Delete All| Удал. Все
+Entry copied to| Запись скопирована в
+Entry Exists| Запись уже существует
+All items erased| Все записи удалены
+Sort| Сортировка
+Resume| Продолжить
+EditNum| РедактНом.
+DeleteList again to| УдалСписок снова для
+Delete again to| Удалить снова для
+erase this item| стирания этой записи
+erase all calls| стирания всех вызовов
+ new caller|  новый абонент
+ new callers|  новые аб-ты
+Press 1st letter| Нажмите 1ю букву
+Handset | Трубка 
+ Missed Call|  Пропущенный вызов
+ Missed Calls|  Пропущенн. вызовы
+Call Forward Mode| Режим переадресации
+CFWD All| Переадр. Все
+CFWD Busy| Переадр.Занято
+CFWD NoAnswer| Переадр.Нет ответа
+Call| Вызов
+Select TFTP| Выбор TFTP
+Use %c for new| Исп.%c для нового
+Use %c to view| Исп.%c для просм
+Download Protocol| Протокол загрузки
+OFF| ВЫКЛ.
+ON| ВКЛ.
+Add Number| Доб. Номер
+Arrange| Упорядоч.
+%cmore| %cподробн.
+Office| Рабочий
+Home| Домашний
+Cell| Сотовый
+Pager| Пейджер
+VLAN Settings| Настройки VLAN
+Softkeys and XML| Софтклавиши и XML
+Softkeys Configuration| Настройка Софтклавиш
+Bottom Keys| Нижние клавиши
+Top Keys| Верхние клавиши
+Page1| Стр.1
+Page2| Стр.2
+Page3| Стр.3
+Page4| Стр.4
+Page5| Стр.5
+Idle| Свободный
+Outgoing| Исходящий
+Empty| Пустой
+Enter server name/IP:| ВведитеИмя/IPСервера:
+Enter HTTPS port:| Введите HTTPS порт:
+Erase| Удалить
+Proxy IP/Port| IP/Порт Прокси
+Registrar IP/Port| IP/ПортРегистрат.
+Erasing local config| Стираю локал.конфиг.
+Proxy Port:| Порт Прокси:
+Registrar Port:| Порт Регистрации:
+Proxy Server:| Прокси Сервер:
+Registrar Server:| Сервер Регистрации:
+Contrast Level:| Контраст:
+Erase Local Config.| Стереть локал.конфиг
+Administrator Menu| Меню Администратора
+Backlight On Time| Время включен. подсветки
+Redirect HTTP->HTTPS?| ПеренапрHTTP->HTTPS?
+Block XML HTTP POSTs?| БрокирXML HTTP POSTs?
+HTTP->HTTPS| HTTP->HTTPS
+XML HTTP POSTs| XML HTTP POSTs
+Client Method| Метод клиента
+To unlock the phone| Для разблок. телефона
+No more softkeys| Больше нет софтклавиш
+Ignore| Игнориров.
+Answer| Ответ
+Configuration Server| Сервер конфигурации
+Primary Path| Основн. путь
+Alternate Path| Альтернат. путь
+Logging in| Вход
+Login Failed| Вход неудачный
+Enable?| Включить?
+Check Expires| Проверить срок
+Check Hostnames| Проверить имя хоста
+Conf. Unavailable| Конфигурац.недоступна
+Ringing...| Вызов...
+Error Messages| Сообщения об ошибках
+No Error Messages| Нет сообщ. об ошибках
+Download Options| Настройка загрузки
+Abc| Абв
+123| 123
+&%*| &%*
+Abc2| Абв2
+Abc3| Абв3
+more| Подробнее
+A # &| А # &
+  Invalid password   |   Неверный пароль   
+Upload Sys Info| Загрузка системной информации
+Config is updated. Restarting...| Конфигурация обновляется. Рестарт...
+CFWD Filtering| Фильтрация переадресации
+Checking for Firmware| Проверка прошивки
+for new| для обновления
+9133i prompts| 
+Password Changed| Пароль изменен
+Leave| Отменить
+Time Format| Формат времени
+Erase local cfg?| Удал.локал конф?
+TypeService SIP| Тип сервиса SIP
+TypeService RTP| Тип сервиса RTP
+TypeService DSCP| Тип сервиса DSCP
+TypeService RTCP| Тип сервиса RTCP
+Alternate Server| Резервный сервер
+Contrast Level| Ур-нь контраста
+Options List| Список функций
+DELETE to erase item  or # to erase Number| УДАЛИТЬ-стереть пункт, #-номер
+Upload Sys Info| Загрузка системной информации
+Directory Empty. Use Save to add| Каталог пуст. Нажмите кл. СОХР
+Directory Empty Use Save to add| Каталог пуст Нажмите кл. СОХР
+  NOT MATCH !!!|  НЕ СОВПАДАЮТ !
+DELETE again to erase this item| УДАЛИТЬ снова для стиран. записи
+System Info Upload| Загрузка системной информации
+Phone will restart after| Телефон перезагрузится после
+Copyright| Авторские права
+Reset| Сброс
+Use DHCP?| Вкл. DHCP?
+Full 10Mbps| Full 10Mbps
+Full 100Mbps| Full 100Mbps
+Half 10Mbps| Half 10Mbps
+Half 100Mbps| Half 100Mbps
+Full 1000Mbps| Full 1000Mbps
+Half 1000Mbps| Half 1000Mbps
+Cfwd Destination| Номер переадрес.
+Please login| Авторизуйтесь
+Incorrect password| Неверный пароль
+Reset Configuration?| Сброс конфигурации?
+Cfg. Svr.| Конф.серв.
+Net disconnected| Сеть не подключ.
+Live Dialpad| Live Dialpad
+Firmware Loaded| Прошивка загружена
+802.1x Authenticating| Аутентификация 802.1x
+LLDP| LLDP
+Initializing network| Инициализация сети
+Bluetooth Upgrade| Обновление Bluetooth
+Contacting Redirector| Связь со службой переадресации...
+Redirecting Step 1| Шаг переадресации 1
+Redirecting Step 2| Шаг переадресации 2
+Redirecting Step 3| Шаг переадресации 3
+Redirecting Step 4| Шаг переадресации 4
+Redirecting Step 5| Шаг переадресации 5
+Redirecting Step 6| Шаг переадресации 6
+Auto Discovery| Автопоиск
+Starting in Generic SIP Mode| Старт в режиме SIP
+Starting in Aastra Link Mode| Старт в режиме Aastra Link 
+Updating configuration| Обновление конфигурации
+Waiting assignment| Ожидание задачи
+Checking for new firmware| Проверка новой прошивки
+New Firmware: PLEASE DO NOT UNPLUG THE PHONE| Новая прошивка: НЕ ОТКЛЮЧАЙТЕ ТЕЛЕФОН
+New Firmware: Restarting...| Новая прошивка:Перезагрузка...
+Downloading configuration| Загрузка конфигурации
+DNLD Aastra config| DNLD конфиг. Aastra
+DNLD Startup config| DNLD конфиг. Startup
+DNLD Mac config| DNLD конфиг. Mac
+DNLD Model config| DNLD конфиг. модели
+DNLD config| DNLD конфиг.
+Downloading Language Packs| Загрузка языковых пакетов
+Network| Сеть
+UPnP Gateway Not Found| UPnP шлюз не найден
+UPnP Port Map In Progress| UPnP привязка портов в процессе
+UPnP Port Map Incomplete| UPnP привязка портов не завершена
+DSP| DSP
+SIP| SIP
+Tone| Тон
+Registering with the voice network...| Регистрация в голосовой сети...
+Web| Веб
+Done| Выполнено
+Cannot use| Эту прошивку
+this firmware.| использ. нельзя.
+All lines in use| Все линии заняты
+Current Password| Текущий пароль
+New Password| Новый пароль
+Enter Again| Введите еще раз
+Ringer volume   | Громкость звонка
+DELETE again to| Еще УДАЛИТЬ для
+erase all calls| стирания вызовов
+Caller is erased| Контакт удален
+Network Time| Время в Сети
+Change| Изменить
+Options| Настройки
+Access denied| Доступ закрыт
+Directory full| Каталог полон
+Link Active| Соед-е активно
+No Link| Нет соединения
+Live Dialpad is\nnot available.| Live Dialpad \nне доступен
+Live Dialpad is\nON| Live Dialpad \nВКЛ
+Live Dialpad is\nOFF| Live Dialpad \nВЫКЛ
+-  confirmed   -| - подтверждено -
+Contrast | Контраст
+Set| Уст-ть
+DHCP\nON| DHCP\nВКЛ
+DHCP\nOFF| DHCP\nВЫКЛ
+Enable?\nYes| Включить?\nДа
+Enable?\nNo| Включить?\nНет
+Check Expires| Проверить сроки
+Check Expires?\nYes| ПроверСроки?\nДа
+Check Expires?\nNo| Пров.Сроки?\nНет
+Check Hostnames| Проверить Имена
+Check Hostnames?\nYes| Проверить Имена?\nДа
+Check Hostnames?\nNo| Проверить Имена?\nНет
+Cancel| Отмена
+SIP Register\nON| SIP Регистр\nВКЛ
+SIP Register\nOFF| SIP Регистр\nВЫК
+Nortel NAT\nEnabled| Nortel NAT\nВкл
+Nortel NAT\nDisabled| Nortel NAT\nВыкл
+Next| Далее
+Done| Заверш
+Retry| Повтор
+Exit| Выход
+Pickup| Перехват
+Call held| Вызов на удерж.
+Calls held| Вызовы на удерж.
+Country Code: | Код страны:
+*List Countries| *Список стран
+Enter| Ввод
+Admin Password| Пароль админист.
+yyyy-mm-dd | гггг-мм-дд 
+Restart phone?| ПерезагрТелефон?
+#Confirm| #Подтверждение
+RestoreDefaults?| Восст.Умолчания?
+Call Agent 1| Агент1
+Call Agent 2| Агент2
+Call Agent 3| Агент3
+Invalid Code    | Неверный код    
+E: Invalid port!| Неверный порт!
+Application:| Приложение:
+Boot ROM:| Boot ROM:
+Negotiation:| Взаимодействие:
+30m summertime| 30м летнее время
+1h summertime| 1ч летнее время
+Invalid password| Неверный пароль
+  disconnected|   нет соединения
+   connected|    подключено
+    Network|     Сеть
+erase all items| для стир. всего
+Enter Number>| Введите Номер>
+Setting phone to| Устан.телефона в
+Use Save to end| Нажмите кл. СОХР
+to enter name>| для ввода имени>
+Saved: Directory| Сохр:Каталог
+Retrying config | Повторн.загрузка
+download...     | загрузка... 
+empty| пусто
+No Match| Не совпадает
+Save to?| Сохранить в?
+Saved Memory key| Кнопка Запомнить
+Removed Key| Кнопка Удалить
+Key saved | Кнопка Запомнить
+Key removed| Кнопка Удалить
+Press 1st letter| Набер.1-ю букву
+Speaker volume  | Громк. динамика 
+Handset volume  | Громкость трубки
+Headset volume  | Громк. гарнитуры
+Factory Defaults| Завод.настройки
+ Missed Call|  Пропущ.Вызов
+ Missed Calls|  Пропу.Вызовы
+Cfwd State| Статус переадр.
+Cfwd Number| Номер переадрес.
+Cfwd Mode| Режим переадрес.
+CFWD All| Переадр Все
+CFWD Busy| Переад.при Занят
+CFWD NoAnswer| Переад.при Неотв
+Select TFTP\nPrimary| УкажОсновн\nTFTP
+Select TFTP\nAlternate| УкажРезерв\nTFTP
+DownloadProtocol| Протокол.Загруз.
+VLAN Settings| Настройки VLAN 
+Server Name/IP?| Имя/IP Сервера
+HTTPS Port?| Порт HTTPS?
+Client Method\nSSL 3.0| Client Method\nSSL 3.0
+Client Method\nTLS 1.0| Client Method\nTLS 1.0
+HTTP->HTTPS\nRedirect| HTTP->HTTPS\nПереадресовывать
+HTTP->HTTPS\nDo not redirect| HTTP->HTTPS\nНе переадресов.
+Redirect| Переадресация
+Do not redirect| Не Переадр.
+XML HTTP POSTs\nDo not block| XML HTTP POSTs\nНе блокировать
+XML HTTP POSTs\nBlock| XML HTTP POSTs\nБлокировать
+Do not block| Не блокировать
+Block| Блокировать
+Erasing config| Удал Конфигур-ю
+Pri TFTP Path| Перв.TFTP путь
+Alt TFTP Path| Альт.TFTP путь
+Backlight Mode| Режим подсветки
+Backlight Time| Врем.откл.подсв.
+Answer| Ответ
+Ignore| Игнор.
+Cfwd| ПрАд
+Copy to All?| Копировать все?
+Apply Changes?| Применить изм-я?
+Logging in| Вход
+Login Failed| Вход не удачный
+Conf Unavailable| Конфер.Недоступ.
+Error Messages| Сообщ.об ошибках
+No Error Messages| Нет ошибок
+Delete All| Удал Все
+Download Options| Настр. Загрузки
+Config updated. Restarting...| конфигурации. Рестарт...
+DELETE again to erase all calls| УДАЛЕНИЕ-стереть все звонки 
+Firmware Check| Проверка прошивки
+Fwd Filtering| Фильтр переадрес
+CFWD Filtering| Фильтр переадр
+DELETE again to erase all items| Еще раз УДАЛИТЬ для стир. всего
+Upload Sys Info| Загрузка системной информации
+6739i prompts| 
+SID_ENTER_ADMIN_PASSWORD| Пароль администратора
+Error Msg| Сообщения об ошибках
+Unlock the phone?|  Разблокировать телефон?
+ Enter Unlock Password|  Введ. пароль разблок.
+softkey| клавишу
+Edit Number| Изменить номер
+Lock the phone| Заблок. телефон.
+keypad| клавиатуру
+Unlock| Разблокировать
+ Cust Feat| ПользФунк
+Phone is locked| Телефон заблок.
+Unlock the phone| Разблокировать Телефон
+GoodBye| До свидания
+Pass Thru Port| Pass Thru Port
+First| Имя
+Last| Фам
+Name| имя
+Add| Доб
+Edit| Изм
+Space| Проб
+Bksp| Удал.
+caps| caps
+CAPS| CAPS
+Reject| Отклонить
+Silence| Тишина
+Transfer| Переадр
+>| >
+Lines| Линии
+Settings| Настройки
+Device Name| Название
+Bluetooth Devices| Устр. BT
+Bluetooth Status:| Cост. Bluetooth:
+Search| Поиск
+Searching...| Поиск...
+device(s) found.| уст-ва не обнар
+Press on a device to start pairing.| Нажмите на устр-ве для подключения.
+Enter PIN| Введите ПИН
+Add Device| Добавить устройство
+Active| Активно
+Are you sure?| Вы уверены?
+ALL| ВСЕ
+Phone No:| Номер Тлф:
+Copy to all modes| Копия для всех режимов
+BUSY| ЗАНЯТ
+NO ANSWER| НЕТ ОТВЕТА
+CFWD NO ANS:| ПЕРЕАДР НЕТ ОТВЕТА:
+CFWD BUSY:| ПЕРЕАДР ЗАНЯТ:
+CFWD ALL:| ПЕРЕАДР ВСЕ:
+Audio| Аудио
+Calibrate Screen| Калибровка экрана
+Recalibrate Touchscreen?| Калибровать Touchscreen?
+Softkeys| Кнопки
+Headset Mic Volume| Громкость микр. Гарнтитуры
+Headset Device| Гарнитура
+Bluetooth| Bluetooth
+Wired| Проводная
+Restart | Перезагрузка
+No Calls| Нет вызовов
+Brightness Timer| Таймер подсветки
+Brightness Level| Уровень подсветки
+Add to Directory| Добавить в Каталог
+Waiting for Touch Screen activity to subside ...| Ожидание активизации Touch Screen ...
+Touch the UPPER-LEFT corner of the screen| Нажмите в ВЕРХНИЙ-ЛЕВЫЙ угол экрана
+Touch the UPPER-RIGHT corner of the screen| Нажмите в ПРАВЫЙ-ВЕРХНИЙ угол экрана
+Touch the LOWER-RIGHT corner of the screen| Нажмите в ПРАВЫЙ-НИЖНИЙ угол экрана
+Touch the LOWER-LEFT corner of the screen| Нажмите в ЛЕВЫЙ-НИЖНИЙ угол экрана
+Received unreliable data. You will be asked to touch the same point again| Ненадёжные данные. Нажмите на ту же точку снова.
+Processing ...| Обработка...
+Validating calibration data ... please wait| Проверка данных... пожалуйста, подождите
+Sanity Check OK. Save changes?| Проверка пройдена. Сохранить изменения?
+Sanity Check Failed| Проверка не пройдена
+Retry| Повторить
+Quit| Выход
+Please Enter| Введите 
+Submit| Отправить
+User ID:| ID пользователя:
+Password:| Пароль:
+Transferring| Передача вызова
+No. Rings| Кол-во звонков
+Line| Линия
+Unable to Pair| Невозможно подключить
+Please Wait...| Ждите...
+Add new device...| Доб. новое устр:
+Detected:| Обнаружен:
+Connecting:| Подключение:
+Disonnecting:| Отключение:
+Connected:| Подключен:
+ALL| ВСЕ
+BUSY| ЗАНЯТ
+NO ANSWER| НЕТ ОТВЕТА
+CFWD ALL:| ПЕРЕАД ВСЕ:
+CFWD BUSY:| ПЕРАД ЗАНЯТ:
+CFWD NO ANSWER:| ПРД НЕТ ОТВ:
+Copy to all modes| Копир. все реж
+OFF| ВЫКЛ.
+Off| ВЫКЛ.
+Phone Number:| Номер Тлф:
+Level 1| Уровень 1
+Level 2| Уровень 2
+Level 3| Уровень 3
+Level 4| Уровень 4
+Level 5| Уровень 5
+(Min: %d  Max: %d)| (Мин: %d  Макс: %d)
+ Enter Administrator Password| Введите пароль Администратора
+Phone will restart automatically after finishing.| После завершения, телефон перезагрузиться автоматически.
+Conference| Конференция
+Conf| Конференция
+Reset Configuration?| Сброс конфигурации?
+Hide| Прят
+Live Dialpad| Live Dialpad
+Live Dial| Live Dial
+Lock| Блокировать
+Lock the phone?| Заблок. телефон?
+Directory| Каталог
+Phone Number:| Номер Тлф:
+Common prompts| 
+None| Нет
+Disable| Отключить
+Logout failed| Сбой выхода
+Logout successful| Выход выполнен
+Login successful| Вход выполнен
+Logout user %s| Выход пользователя %s
+Login/Logout| Вход/выход
+User ID| ID пользователя
+User ID required| Требуется ID пользователя
+Application busy. Please try again later.| Приложение занято. Повторите попытку позже.
+Page Expired. Please reload the page.| Страница устарела. Перезагрузите страницу.
+Check Expires| Проверить сроки
+Check Hostnames| Проверить имя хоста
+Use DHCP?| Вкл. DHCP?
+Restart Phone?| ПерезагрТелефон?
+12 Hour| 12 часов
+Hold| Удержание
+Speeddial| Быстр. набор
+Erase local cfg?| Удал.лок.конфиг?
+Spd Dial| Уск.Набор
+Backup Outbound Proxy Server| Резервный исход. прокси-сервер
+Backup Outbound Proxy Port| Резервный исход. прокси-порт
+Firmware Info| Информ. о ПО
+DHSG| DHSG
+DHSG is ON| DHSG ВКЛ
+DHSG is OFF| DHSG ВЫКЛ+P288
+Backlight On Time| Время включен. подсветки
+Use Alt TFTP| Исп.Резервн.TFTP
+Pri TFTP Path| Перв.TFTP путь
+Alt TFTP Path| Альт.TFTP путь
+RestoreDefaults?| Восст.Умолчания?
+HTTP Init Failed| HTTP не инициализ
+Get aastra.lic| Чит.aastra.lic
+Get mac.lic| Читать mac.lic
+Firmware not licensed for use on this phone| ПО не лицензировано для этого телефона
+Redial List is empty| Сисок повторного набор пустой
+Callers List is empty| Список вызовов пустой
+Callers List| Список вызовов
+Redial List| Список повтор. набора
+Directory| Каталог
+License Information| Информация о лицензии
+XML Application URI:| XML URL:
+Missing User ID| Отсутствует ID пользователя
+TFTP| TFTP
+FTP| FTP
+HTTP| HTTP
+HTTPS| HTTPS
+Use| Исп
+Active Features| Активные функции
+WWW MMM DD| WWW MMM DD
+DD-MMM-YY| DD-MMM-YY
+YYYY-MM-DD| YYYY-MM-DD
+DD/MM/YYYY| DD/MM/YYYY
+DD/MM/YY| DD/MM/YY
+DD-MM-YY| DD-MM-YY
+MM/DD/YY| MM/DD/YY
+MMM DD| MMM DD
+DD MMM YYYY| DD MMM YYYY
+WWW DD MMM| WWW DD MMM
+DD MMM| DD MMM
+DD.MM.YYYY| DD.MM.YYYY
+24 Hour| 24 часа
+XML Application Title:| Название XML-приложения:
+License Status| Статус лицензии
+FTP| FTP
+to view| для просм
+Contact Name already exists| Контакт уже существует
+Leave| Отменить
+Contact Mismatch| Несоответствие контакту
+ Call Terminated| Вызов завершен
+IP and gateway have to be on same subnet| Адрес IP и шлюза должны быть в одной подсети
+IP cannot be equal to gateway address| Адрес IP не может быть равен адресу шлюза
+Call Waiting Tone Period| Период сигнала Ожидание вызова
+OK| ОК
+Directory empty| Каталог пуст
+Files Sent| Файлы отправлены
+Upload System Info| Загрузка системной информации
+Upload| Загрузка 
+Call Transferred| Вызов переведен
+Firmware Information| Информация о ПО
+Contact Name already exists| Контакт уже существует
+Replace| Заменить
+No Services| Нет Сервиса
+Merge| Слияние
+Enter Name:| Введите имя:
+Call Hold Reminder| Напоминание о вызове на удержании
+Others| Другие
+Call Hold Reminder During Active Calls| Напоминание о вызове на удержании во время активного вызова
+Out of service| Не работает
+Reason: | Причина:
+Add blank record?| Доб. пуст. зап.?
+Audio Setting| Настройка звука
+Delete Item| Удалить запись
+Services| Сервисы
+Server| Сервер
+Service Disabled| Сервис отключен
+Port| Порт
+Path| Путь
+Username| Имя пользователя
+No. Rings| Нет звонка
+Use xx to view| Исп.хх для просм
+User Password| Пароль пользователя
+Time and Date| Время и Дата
+Language| Язык
+Screen Language| Язык экрана
+Tones| Тоны
+Tone Set| Тоны
+Ring Tone| Звонок
+State| Статус
+State:| Статус:
+User-Busy| Абонент-Занят
+Unconditional| Безусловная
+Time of day| Время дня
+Deflection|Отклонение
+Follow Me| Следуй за мной
+Away| Отошел
+Busy| Занят
+Restart| Перезапуск
+All On| Все ВКЛ
+All Off| Все ВЫКЛ
+AllAccts| Все Аккаун
+Conference| Конференция
+Flash| Флеш
+Dial| Набор
+Directory| Каталог
+Callers| Списки выз
+Icom| Интерком
+Icom| Интерком
+Dir| Каталог
+Xfer| Трансфер
+Conf| Конференц.
+SIP Settings| Настройки SIP
+Proxy Port| Порт Прокси
+Registrar Port| Порт Регистрации
+User Name| Имя Пользователя
+Screen Name| Имя на экране
+Proxy Server| Прокси-сервер
+Registrar Server| Сервер Регистр.
+Auth. Name| Логин
+Nortel NAT| Nortel NAT
+Sylantro| Sylantro
+Broadsoft| BroadSoft
+Display Name| Отображаемое имя
+RTP Port Base| RTP Порт
+Static NAT| Статичный NAT
+NAT Settings| Настройки NAT
+NAT IP| NAT IP
+NAT SIP Port| NAT SIP Порт
+NAT RTP Port| NAT RTP Порт
+NAT HTTPS Port| NAT HTTPS Порт
+Phone Status| Статус телефона
+Auto Discovery| Автоопределение
+Trying...| Поиск...
+Remote| Удаленн
+Reset| Сброс.
+Choose Server| Выбрать сервер
+Select| Выбр.
+Select| Выбр.
+Ring Tone:| Мелодия звонка:
+Silent| Тишина
+Network Settings| Настройки сети
+Clear| Очистить
+Speaker | Динамик 
+Headset | Трубка 
+Speaker/Headset| Динамик/Трубка
+Headset/Speaker| Трубка/Динамик
+Audio Mode| Аудио режим
+Low| Низкий
+Medium| Средний
+High| Высокий
+OFF| ВЫКЛ.
+Off| ВЫКЛ.
+ON| ВКЛ.
+DHCP Settings| Настройки DHCP
+DHCP User Class| Класс DHCP Польз
+Hostname| Хост
+IP Address| IP адрес
+Subnet Mask| Маска подсети
+Subnet Mask:| Маска подсети:
+Gateway| Шлюз
+Primary DNS| Основной DNS
+Secondary DNS| Вторичный DNS
+TFTP Settings| Настройки TFTP
+VLAN| VLAN
+VLAN ID| VLAN ID
+PC Port VLAN ID| ПК порт  VLAN ID
+LAN Port VLAN| LAN Port VLAN
+PC Port VLAN| ПК порт VLAN
+Priority| Приоритет
+VLAN Enabled\nYes| VLAN Включен\nДа
+VLAN Enabled\nNo| VLAN Включ\nНет
+PC Port Priority| Приор Порта ПК
+LAN Port VLAN ID| LAN Порт VLAN ID
+UPnP| UPnP
+Use UPnP| Исп-ть UPnP
+Select Gateway| Выбрать шлюз
+Portmap Started| Привяз.порт.вкл.
+Portmap Error| Ошиб.привяз.порт
+LLDP| LLDP
+LLDP packet interval| LLDP Пакетн Инт
+LLDP Settings| Настройки LLDP
+Use LLDP ELIN| Исп LLDP ELIN
+TypeService DSCP| TypeService DSCP
+Type of Service DSCP| Тип Service DSCP
+VLAN Priority| Приоритет VLAN
+Other Priority| Другой приоритет
+SessionBorderCtl| SessionBorderCtl
+Session Border Ctrl| Session Border Ctrl
+Select SBC| Выбрать SBC
+SBC Settings| Настройки SBC
+Kagoor| Kagoor
+Update Interval (sec)| Инт.Обновл (сек)
+Backspace| <-------
+No| Нет
+Yes| Да
+DHCP Download Options| Опции DHCP
+DHCP Download Option| Опции DHCP
+Firmware Version| Версия прошивки
+Restart Phone| Перезап.Телефон
+Show| Показать
+is OFF| ВЫКЛ.
+Password| Пароль
+Restarting...| Перезапуск...
+Speed| Скорость
+Manual| Вручн.
+Auto| Авто
+Auto| Авто
+Half| Полу
+Full| Полный
+Duplex| Дуплекс
+ ERROR: |  ОШИБКА: 
+Invalid IP addr.| Неверн. IP адрес
+Invalid mask| Неверная Маска
+Range is 1-4094| Диапазон 1-4094
+Range is 1-4095| Диапазон 1-4095
+Range is 1-4095| Диапазон 1-4095
+Range is 0-63| Диапазон 0-63
+Range is 0-7| Диапазон 0-7
+DND| Не беспок.
+DND On| Не беспок. ВКЛ
+Time Server| Сервер времени
+Set Time| Время
+Set Date| Настройка даты
+Date Format| Формат даты
+Time Zone| Часовой пояс
+Daylight Savings| Летнее время
+Invalid Time| Неверное время
+Invalid Date| Неверная дата
+Invalid IP| Неверный IP
+ Invalid Number|  Неверный номер
+On| ВКЛ.
+On| ВКЛ.
+On| ВКЛ.
+OFF| ВЫКЛ.
+Automatic| Автоматически
+Conf Hold| Конф. на удерж.
+No Service| Нет Сервиса
+Mute| Без звука
+Connected| Соединено
+Drop| Сброс
+Park| Парковка
+PickUp| Перехват
+Redial| Повторн. Набор
+DCP| DCP
+DCP List| Список DCP
+Cancel| Отмена
+Done| Конец
+Callers List| Список вызовов
+No changes made| Изменений нет
+Key is Locked| Кнопка заблокир.
+Cannot Save| Не сохранено
+1 item| 1 запись
+ items|  записи
+No User| Нет пользователя
+DHCP failed| Ошибка DHCP
+Unknown Name| Неизвестное Имя
+Unknown Number| Неизв. номер
+Unknown Line| Неизв. линия
+Item is erased| запись удалена
+Unknown| Неизвестно
+NextSpace| Следующий
+Dot "."| Точка"."
+Transfer Failed| Ошибка трансфера
+Call Forward| Переадресация
+Call Fwd| ПрАд
+All| Все
+All| Все
+Any| Любой
+NoAns| Нет ответа
+BusyNoAns| Занят
+Number:| Номер:
+Mode:| Реж:
+No. Rings:| Кол.Звонков:
+Line: | Линия:
+Contrast Level| Ур-нь контраста
+ Message|  Сообщение
+ Messages|  Сообщения
+Loading Page...| Загр. страницы..
+Abort Loading...| Отмена загрузки
+Connect Timeout| Таймаут подкл.
+Data Timeout| Таймаут данных
+File Not Found| Файл не найден
+Page Load Error| Страниц.не загр.
+Cannot display| Не отображается
+Skip| Пропустить
+Call Failed| Вызов не устан.
+Primary Server| Основной сервер
+Primary Server| Основной сервер
+Alternate Server| Резервный сервер
+Primary| Основной
+Alternate| Резервный
+Bad encrypted cfg| Ош-каШифр-яКонф.
+Use TFTP| Вкл. TFTP
+Use FTP| Вкл. FTP
+Use HTTP| Вкл. HTTP
+Use HTTPS| Вкл. HTTPS
+FTP Settings| Настройки FTP
+FTP Server| FTP Сервер
+FTP Path| Путь FTP
+FTP Username| Имя пользов. FTP
+FTP Password| FTP пароль
+HTTP Settings| Настройки HTTP
+HTTP Server| HTTP сервер
+HTTP Path| Путь HTTP
+HTTP Port| Порт HTTP
+HTTPS Settings| Настройки HTTPS
+Download Server| Сервер загрузки
+Download Path| Путь загрузки
+Download Port| Порт загрузки
+HTTPS Server| Сервер HTTPS
+HTTPS Path| Путь HTTPS
+HTTPS Port| Порт HTTPS
+HTTPS Client| HTTPS Клиент
+SSL 3.0| SSL 3.0
+TLS 1.0| TLS 1.0
+Bad Certificate| Ошибка Сертиф.
+Certificates| Сертификаты
+Cert Validation| Проверка Сертиф.
+All defaults| Все по умолчанию
+Config default| Настр. умолчаний
+AM| AM
+PM| PM
+Factory Default| Заводские настр.
+Factory Default?| Заводские настр.?
+Erase Local Cfg.| Удал.локал.конф.
+New IP Obtained| Новый IP получен
+New NAT IP| Новый NAT IP
+Server IP Change| Измен.IP сервера
+AastraLink Menu| Меню AastraLink
+Server Options| Настройк.сервера
+AastraLink Info| AastraLink инфо.
+Server Remote IP| IP удал.сервера
+Server Local IP| IP локал.сервера
+Preferences| Настройки
+Network Status| Статус сети
+MAC Address:| MAC Адрес:
+MAC Address| MAC Адрес
+BT MAC Address:| BT MAC Адрес:
+Invalid Key| Неверный ключ
+Speed Dial Edit:| Ред.Быстр.Набор:
+Press SD button| Нажм. кнопку SD
+From: | От кого:
+To: | Кому:
+Via: | Через:
+Diverted: | Переадресованы:
+Log Off| Выход
+Customer Support| Поддержка пользователей
+Status| Статус
+Operation| Операции
+Basic Settings| Основные настройки
+Advanced Settings| Расширенные настройки
+System Information| Системная информация
+Down| Вниз
+Up| Вверх
+n/a| н/д
+10Mbps| 10Мб/сек
+100Mbps| 100Мб/сек
+1000Mbps| 1000Мб/сек
+Attribute| Атрибут
+Link State| Статус соединения
+Negotiation| Взаимодействие
+Hardware Information| Информация об оборудовании
+Firmware Information| Информация о ПО
+Firmware Release Code| Релиз ПО
+Value| Значение
+Platform| Платформа
+Boot Version| Версия загрузчика
+Date/Time| Дата/Время
+DND Key Mode| Режим кнопки Не беспокоить
+Call Forward Key Mode| Режим кнопки Переадресация
+Option 160| Опция 160
+Option 159| Опция 159
+Option 66| Опция 66
+Option 43| Опция 43
+Account| Аккаунт
+Both| Оба
+Line| Линия
+Line 1| Линия 1
+Line 2| Линия 2
+Line 3| Линия 3
+Line 4| Линия 4
+Line 5| Линия 5
+Line 6| Линия 6
+Line 7| Линия 7
+Line 8| Линия 8
+Line 9| Линия 9
+Line 10| Линия 10
+Configuration Line %d| Настройка Линии %d
+Basic SIP Authentication Settings| Базовые настройки SIP аутентификации
+Screen Name| Имя 1 на экране
+Screen Name 2| Имя 2 на экране
+Phone Number:| Номер Тлф:
+Phone Number| Номер Тлф
+Caller ID| АОН
+Authentication Name| Имя пользователя
+Password| Пароль
+BLA Number| Номер BLA
+Line Mode| Режим линии
+Generic| Стандартный
+SCA| SCA
+%s SCA| %s SCA
+BLA| BLA
+Asterisk SLA| Asterisk SLA
+Basic SIP Network Settings| Основные настройки сети SIP
+Outbound Proxy Server| Исходящий Прокси-Сервер
+Outbound Proxy Port| Исходящий Прокси-Порт
+Registration Period| Период регистрации
+RTP Settings| Настройки RTP
+Autodial Settings| Настройка автонабора
+Autodial Number| Номер автонабора
+Autodial Timeout| Таймаут автонабора
+Use Global Settings| Исп. глоб. настр.
+DTMF Method| DTMF Метод
+SIP INFO| SIP INFO
+BOTH| ОБА
+Save Settings| Сохранить настройки
+Global SIP| Глобальный SIP
+Global SIP Settings| Глобальные настройки SIP
+RTP Encryption| RTP шифрование
+SRTP Disabled| SRTP отключен
+SRTP Preferred| SRTP предпочтительнее
+SRTP Only| Только SRTP
+Advanced SIP Settings| Расширенные настройки SIP
+Explicit MWI Subscription| Explicit MWI Subscription
+Explicit MWI Subscription Period| Explicit MWI Subscription Period
+MWI for BLA account| MWI для BLA аккаунта
+Enabled| Включен
+Send MAC Address in REGISTER Message| Отправлять MAC-адрес в сообщении REGISTER
+Send Line Number in REGISTER Message| Отправлять номер линии в сообщении REGISTER
+Session Timer| Таймер сессии
+T1 Timer| T1 таймер
+T2 Timer| T2 таймер
+Transaction Timer| Таймер транзакции
+Transport Protocol| Транспортный протокол
+UDP and TCP| UDP и TCP
+UDP| UDP
+TCP| TCP
+TLS| TLS
+Persistent TLS| Предпочтительный TLS
+Registration Failed Retry Timer| Время повтора неудачной регистрации
+Registration Timeout Retry Timer| Задержка при повторе регистрации
+Registration Renewal Timer| Таймер обновления регистрации
+BLF Subscription Period| Период подписки BLF
+ACD Subscription Period| Период подписки ACD
+BLA Subscription Period| Период подписки BLA
+Blacklist Duration| Срок Черного списка
+ Park Pickup Config|  Настройка парковки
+RTP Port| RTP Порт
+Basic Codecs| Основные кодеки
+Force RFC2833 Out-of-Band DTMF| Force RFC2833 Out-of-Band DTMF
+Codec Preference List| Список предпочтительных кодеков
+Silence Suppression| Подавление периодов молчания
+Provisioning complete.| Автонастройка закончена.
+You must restart the phone before the new settings will take effect.| 
+You must restart the phone before the new settings take effect.| Перезапустите телефон для активации изменений.
+ERROR: Maximum number of connections reached.| ОШИБКА:Максимальное число соединений достигнуто
+Logout Complete| Выход завершен
+Your session has ended.  Please close the browser.| Ваша Сессия Истекла. Закройте браузер.
+Session Expired| Сессия истекла
+Please close the browser or use the link below to log in again.| Пожалуйста, закройте браузер или используйте нижеуказанную ссылку для повторного входа.
+Log In| Вход
+Log Out| Выход
+Log Out| Выход
+Avail| Доступ.
+Avail| Доступ.
+Unavail| Недост.
+Unavail| Недост.
+Reset User Password| Сбросить пароль пользователя
+Please enter the current and new passwords| Пожалуйста, укажите текущий и новый пароли
+Current Password| Существующий пароль
+New Password| Новый пароль
+Password Confirm| Подтвердите пароль
+Please Enter| Нажмите Ввод
+Submit| Отправ.
+ABC...| АБВ...
+abc...| абв...
+123...| 123...
+Authorizing...| Авторизация...
+Authorization Failed| Ошибка авторизации
+Auth Failed| Ошибка авториз.
+Current password is incorrect.| Неверный существующий пароль.
+Please try again.| Попробуйте еще раз.
+The new password fields do not match.| Поля нового пароля не совпадают.
+The new password can not be saved.| Новый пароль не может быть сохранен.
+The user password has been changed.| Новый пароль сохранен.
+Task and Stack Info| Task и Stack Info
+Back| Назад
+Files Available for Download| Файлы для загрузки
+Custom| Персональные
+Save As...| Сохранить как...
+Directory List| Каталог
+Current Settings| Текущие настройки
+Restore To Factory Defaults| Восстановить Заводские настройки
+Restore| Восстановить
+Remove Local Configuration Settings| Удалить локальную конфигурацию
+Remove| Удалить
+Restarting the hardware...| Перезапуск оборудования...
+Please return to the main page after your phone restarts.| Пожалуйста, вернитесь в  главная страница после рестарта телефона.
+User not authorized to make changes.| Пользователь на авторизован делать изменения.
+Local configuration file has been deleted.| Локальный файл конфигурации удален.
+Please restart the phone for the settings to take effect.| Перезапустите телефон для активации изменений.
+Phone has been set to factory Defaults.| Настройки телефона сброшены в заводские.
+Action URI| Action URI
+Action URI Configuration| Настройка Action URI
+Event| Событие
+StartUp| Запуск
+Successful Registration| Успешная регистрация
+Registration Event| Событие регистрации
+Incoming Call| Входящий вызов
+Outgoing Call| Исходящий вызов
+Offhook| Трубка снята
+Onhook| Готов
+Disconnected| Отключен
+Poll| Пул
+Poll 1| Пул 1
+Poll 2| Пул 2
+Poll 3| Пул 3
+Interval| Интервал
+Settings saved.| Настройки сохранены.
+Settings could not be saved.| Настройки не могут быть сохранены.
+Firmware Update| Обновление прошивки
+TLS Support| Поддержка TSL
+Manual Firmware Update| Обновление прошивки вручную
+Enter the server's IP address and the name of the firmware below to initiate a firmware update.| Укажите IP-адрес сервера и имя прошивки для запуска обновления ПО.
+Configuration Server| Сервер конфигурации
+Configuration Server Settings| Настройки сервера конфигурации
+Server IP| IP сервера
+File Name| Имя файла
+Configure File Names| Настройки имен файлов
+Root and Intermediate Certificates Filename| Корневые и промежуточные сертификаты
+Local Certificate Filename| Имя файла сертификата
+Private Key Filename| Имя файла ключа
+Trusted Certificates Filename| Имя файла доверенных сертификатов
+Download Firmware| Скачать прошивку
+Firmware upgrade in progress.  Please wait.| Идет обновление прошивки. Ждите.
+Please enter a valid filename and TFTP server IP address.| Укажите правильное имя файла и IP-адрес TFTP-сервера.
+Invalid TFTP server IP address| Неверный IP адрес TFTP севера
+Invalid download settings.| Неверные настройки загрузки
+Unable to upgrade firmware.| Невозможно обновить прошивку.
+The phone is restarting...| Телефон перезагружается...
+Firmware upgrade successful.| Обновление прошивки завершено успешно.
+This firmware already exists on the phone.| Эта прошивка уже существует
+No upgrade is needed.| Обновление не требуется.
+Troubleshooting| Поиск неисправностей
+Module| Модуль
+Log Settings| Настройки событий
+Log IP| IP для событий
+Log Port| Порт для событий
+Debug Level| Отладочный уровень
+Support Information| Информация для поддержки
+Get local.cfg| Получить локальную конфигурацию
+Get server.cfg| Получить конфигурацию с сервера
+Show Task and Stack Status| Показать статус задач и стека
+Settings| Настройки
+Download Protocol| Протокол загрузки
+Auto-Resync| Авто-ресинхронизация
+Days| Дней
+Maximum Delay| Максимальная задержка
+Mode| Режим
+Configuration Files| Файлы настройки
+Time (24-hour)| Время (24 часа)
+XML Push Server List(Approved IP Addresses)| Список XML PUSH серверов (Утвержденные IP адреса)
+Phone-side Call Forward Settings| Переадресация вызова на Телефоне
+Global Settings| Глобальные настройки
+No Answer| Нет ответа
+Number| Номер
+Number of Rings| Количество звонков
+Local Line| Локальная линия
+Forward Number| Номер переадресации
+Global| Глобальные
+Enable| Включить
+Network| Сеть
+Must provision a valid default gateway IP if DHCP is enabled| Необходим существующий адрес шлюза, если включен DHCP
+Invalid IP Address| Неверный IP-адрес
+Invalid IP address| Неверный IP-адрес
+Invalid IP addr.| Неверный IP-адрес
+Invalid gateway address| Неверный адрес шлюза
+Invalid subnet mask| Неверная маска подсети
+Invalid primary DNS address| Неверный первичный DNS
+Invalid secondary DNS address| Неверный вторичный DNS
+Basic Network Settings| Основные настройки сети
+Advanced Network Settings| Расширенные настройки сети
+DHCP| DHCP
+NAT Port| NAT Порт
+Nortel NAT Traversal Enabled| Nortel NAT Traversal Включен
+Nortel NAT Timer (seconds)| Nortel NAT таймер (секунды)
+NTP Time Servers| Сервера NTP
+Time Server 1| Сервер времени 1
+Time Server 2| Сервер времени 2
+Time Server 3| Сервер времени 3
+SIP| SIP
+VLAN Enable| VLAN включен
+Non-IP Packet| Не-IP пакеты
+SIP Priority| SIP приоритет
+RTP Priority| RTP приоритет
+RTCP Priority| RTCP приоритет
+Preferences| Настройки
+General| Основной
+Idle Display Name 1| Имя 1 на дисплее
+Idle Display Name 2| Имя 2 на дисплее
+Local Dial Plan| Локальный номерной план
+Send Dial Plan Terminator| Задержка начала набора номера
+Digit Timeout (seconds)| Таймаут для цифр (секунды)
+Park Call:| Парковка вызова:
+Pick Up Parked Call:| Подобрать Запаркованный Вызов:
+Suppress DTMF Playback| Подавить отображение DTMF
+Display DTMF Digits| Отображать цифры DTMF
+Call Waiting| Ожидание вызова
+Call Waiting| Ожидание вызова
+Play Call Waiting Tone| Воспроизводить сигнал Ожидающего вызова
+Stuttered Dial Tone| Прерывистый тон ответа станции
+Incoming Call Interrupts Dialing| Прерывание Набора для Входящего Вызова
+Switch UI Focus To Ringing Line| Переключить интерфейс на звонки
+Outgoing Intercom Settings| Исходящие настройки Интеркома
+Type| Тип
+Phone-Side| На стороне телефона
+Server-Side| На стороне сервера
+Prefix Code| Префикс
+Incoming Intercom Settings| Настройки входящего Интеркома
+Microphone Mute| Отключение микрофона
+Play Warning Tone| Воспроизводить Сигнал предупреждения
+Allow Barge In| Разрешить Вторжение в разговор
+Auto-Answer| Автоответ
+Key Mapping| Привязка кнопок
+Map Redial Key To| Привязать кнопку Повторный набор к
+Map Conf Key To| Привязать кнопку Конференция к
+Ring Tones| Мелодии звонка
+Brazil| Бразилия
+France| Франция
+Germany| Германия
+Italy| Италия
+Italy2| Италия2
+Mexico| Мексика
+Russia| Русский
+UK| UK
+US| US
+Global Ring Tone| Звонки
+Tone 1| Тон 1
+Tone 2| Тон 2
+Tone 3| Тон 3
+Tone 4| Тон 4
+Tone 5| Тон 5
+Tone 6| Тон 6
+Tone 7| Тон 7
+Tone 8| Тон 8
+Tone 9| Тон 9
+Tone 10| Тон 10
+Tone 11| Тон 11
+Tone 12| Тон 12
+Tone 13| Тон 13
+Tone 14| Тон 14
+Tone 15| Тон 15
+Priority Alerting Settings| Настройки Приоритетного оповещения
+Enable Priority Alerting| Включить Приоритетное оповещение
+Group| Группа
+External| Внешняя
+Internal| Внутренняя
+Emergency| Экстренный
+Auto call distribution| АвтРаспредВызовов
+Auto Call Distribution Settings| Настройка АвтРаспредВызовов
+ACD| ACD
+Community 1| Сообщество 1
+Community 2| Сообщество 2
+Community 3| Сообщество 3
+Community 4| Сообщество 4
+Normal ringing| Нормальный Звонок
+Bellcore-dr2| Bellcore-dr2
+Bellcore-dr3| Bellcore-dr3
+Bellcore-dr4| Bellcore-dr4
+Bellcore-dr5| Bellcore-dr5
+Directed Call Pickup Settings| Настройки Прямого Перехвата Вызова
+Directed Call Pickup| Прямой перехват вызова
+Directed Call Pickup by Prefix| Прямой перехват вызова префиксом
+Play a Ring Splash| Воспроизводить сигнал Splash
+Auto Available| Автодоступность
+Auto Available Timer| Таймер Автодоступности
+Time and Date Setting| Настроки даты и времени
+Time Format| Формат времени
+Date Format| Формат даты
+Programmable Keys| Программируемые кнопки
+Programmable Keys Configuration| Программируемые кнопки
+Hard Key| Предустановленые кнопки
+Key| Кнопка
+BLF List URI:| Список BLF URI:
+Speeddial/Xfer| Быстрый Набор/Переадр
+Do Not Disturb| Не беспокоить
+BLF| BLF
+BLF/Xfer| BLF/Переадр
+BLF/List| BLF/Список
+XML| XML
+WebApps| WebПриложения
+Flash| Флеш
+Last Call Return| Возврат к последнему вызову
+Sprecode| Sprecode
+Transfer| Трансфер
+Conference| Конференция
+Save| Сохранить
+Delete| Удалить
+Data has been transmitted to the phone successfully.| Данные отправлены
+Data cannot be posted to the phone.| Данные не могут быть отправлены в телефон.
+Please ensure the data size is 512 bytes or less and the phone is configured to receive from the host.| Пожалуйста, убедитесь что размер данных не превосходит 512 байт и телефон настроен на прием с хоста.
+Expansion Modules| Модули расширения
+Expansion Module 1| Модуль Расширения 1
+Expansion Module 2| Модуль Расширения 2
+Expansion Module 3| Модуль Расширения 3
+Page 1| Страница 1
+Page 2| Страница 2
+Page 3| Страница 3
+List 1| Список 1
+List 2| Список 2
+List 3| Список 3
+List 4| Список 4
+List 5| Список 5
+List 6| Список 6
+Incompatible with phone model| Несовместимо с этой моделью телефона
+Backup Proxy Server| Резервный Прокси сервер
+Backup Proxy Port| Резервный Порт прокси
+Backup Registrar Server| Резервный сервер регистрации
+Backup Registrar Port| Резервный порт регистрации
+Phone is locked| Телефон заблок.
+Phone Lock| Блокировка тел.
+Lock the phone?| Заблок. телефон?
+Phone is unlocked| Телефон разблокирован
+Password:| Пароль:
+Emergency Dial Plan| Экстренный номерной план
+Account Configuration| Настройка аккаунта
+Lock| Блокировать
+Unlock| Разблокировать
+Unlock the phone?| Разблокировать телефон
+Lock or unlock the phone| Блокировровка или разблокировка телефона
+HTTPS Client Method| HTTPS Client Method
+HTTPS Server - Redirect HTTP to HTTPS| HTTPS Server -Переадресация HTTP в HTTPS
+HTTPS Server - Block XML HTTP POSTs| HTTPS Server - Блокировать XML HTTP POSTs
+Validate Certificates| Проверка Сертификатов
+Check Certificate Expiration| Проверить время истечения Сертификатов
+Check Certificate Hostnames| Проверить хосты Сертификатов
+Language Settings| Настройки языка
+Webpage Language| Язык веб-страницы
+Input Language| Язык ввода
+Input Language| Язык ввода
+Jan| Янв
+Feb| Фев
+Mar| Мар
+Apr| Апр
+May| Май
+Jun| Июн
+Jul| Июл
+Aug| Авг
+Sep| Сен
+Oct| Окт
+Nov| Ноя
+Dec| Дек
+Sun| Вс
+Mon| Пн
+Tue| Вт
+Wed| Ср
+Thu| Чт
+Fri| Пт
+Sat| Сб
+New Password Invalid.| Новый пароль неверный
+New password must be 10 characters or less.| Новый пароль должен быть не более10 символов.
+New password must be numeric.| Новый пароль должен быть числовым.
+New password and confirm password do not match.| Новый и подтвержденный пароли не совпадают.
+Error| Ошибка
+Are you sure you want to restart the phone?| Вы уверены, что хотите перезапустить телефон?
+This will restore the phone to default settings and cannot be undone.| Телефон будет установлен в первоначальные значения без возврата назад.
+This will remove the local configuration settings and cannot be undone.| Локальная конфигурация будет удалена без возврата назад.
+Continue| Продолжить
+Error: Intercom Settings| Ошибка:Настройки Интеркома
+Please enter a prefix code for server-side intercom.| Пожалуйста, введите префикс для интеркома на сервере.
+Value must be between| Значение должно быть между
+and| и
+Invalid Setting:| Неверные настройки:
+Please select at least one state for softkey| Выберите по крайней мере одну настройку софткнопки
+DSCP value| Значение DSCP
+is mapped to multiple priorities.| привязано к нескольким приоритетам.
+Please enter Admin name and password| Пожалуйста, укажите имя Администратора и пароль
+Please enter User name and password| Укажите имя пользователя и пароль
+Centralized Conference| Централизованная конференция
+Conference Server URI| URI Конференц-Сервера
+UPnP device not found| UPnP устройство не найдено
+Ethernet| Ethernet
+Ethernet Link| Ethernet Соед-е
+Ethernet & VLAN| Ethernet & VLAN
+Link| Соедин-е
+10M| 10M
+100M| 100M
+Unavailable| Недоступно
+Available| Доступен
+Server Info| Инф-я о сервере
+Unique ID:| Уникальный ID:
+UPnP Mapping Lines| UPnP привязка линий
+Port Failed| Ошибка порта
+Trying...| В процессе...
+Seize Failed| Не перехв.
+Missed Call Summary Subscription| Пропущенных звонков всего
+Missed Call Summary Subscription Period| Период пропущенных звонков
+AS-Feature-Event Subscription| Подписка на функцию AS-Feature-Event
+AS-Feature-Event Subscription Period| Период подписки на функцию AS-Feature-Event
+Goodbye Key Cancels Incoming Call| Сброс входящего вызова кнопкой
+Address Incomplete| Неполный адрес
+Admin Menu| Меню Админ-ра
+IP&MAC Addresses| IP&MAC Адреса
+LAN Port| Порт сети
+PC Port| Порт ПК
+Set Audio| Настройка Аудио
+Config. Server| Конф. Сервер
+IP Address:| IP адрес
+Error Messages| Сообщения об ошибках
+No Error Messages| Нет сообщений об ошибках
+ Errors|  Ошибки
+ Error|  Ошибка
+Disabled| Неактивно
+LAN Port Link| Порт LAN
+PC Port Link| Порт ПК
+RTP| RTP
+RTCP| RTCP
+Phone| Телефон
+Headset Mic Vol| ГромкМикрТрубки
+TypeService SIP| Тип сервиса SIP
+TypeService RTP| Тип сервиса RTP
+TypeService RTCP| Тип сервиса RTCP
+Authentic. Name| Имя Аутентиф.
+XML Beep Support| Поддержка XML зуммера
+Status Scroll Delay (seconds)| Задержка прокрутки статуса (секунды)
+Backlight| Подсветка
+Backlight| Подсветка
+Display| Дисплей
+Speed Dial Edit| Ред. быстр. наб.
+second| секунда
+seconds| секунд
+Label| Метка
+Message Waiting Indicator Line| Индикатор Ожидающего сообщения
+Keypad Speed Dial| Клавиши быстр. набора
+Digit| Цифра
+Whitelist Proxy| Белые прокси
+XML SIP Notify| Уведомление XML SIP
+Custom Feature| Пользов. функции
+User ID:| Польз. ID:
+Domain Id| Id домена
+Domain Id:| Id домена:
+Set Domain[0/1]| Настроить домен [0/1]
+Set Domain| Настроить домен
+Local SIP UDP/TCP Port| Локальный SIP UDP/TCP порт
+Local SIP TLS Port| Локальный SIP TLS порт
+802.1x Support| Поддержка 802.1x
+EAP Type| EAP Type
+EAP-MD5| EAP-MD5
+EAP-TLS| EAP-TLS
+Identity| Идентификатор
+MD5 Password| MD5 пароль
+PC Port PassThru Enable/Disable| PC Порт PassThru Включить/Выключить
+EAP-TLS Settings| Настройки EAP-TLS
+EAP-MD5 Settings| Настройки EAP-MD5
+Enable PassThru Port| Вкл PassThru порта
+PC Port Enabled\nYes| Порт ПК Вкл\nДа
+PC Port Disabled\nNo| Порт Пк Выкл\nNo
+802.1x Settings| Настройки 802.1x
+802.1x Mode| Режим 802.1x
+EAP-MD5 Settings| Настр EAP-MD5
+EAP-TLS Settings| Настр EAP-TLS
+STUN Server| STUN сервер
+STUN Port| STUN порт
+TURN Server| TURN сервер
+TURN Port| TURN порт
+TURN User ID| TURN ID польз
+TURN Password| TURN пароль
+Paging| Пейджинг
+Streaming| Поток
+Group Paging RTP Settings| Настройки Group Paging RTP
+Paging Listen Addresses| Адреса для пейджинга
+Rport (RFC 3581)| Rport (RFC 3581)
+SIP Account| Учетная запись SIP 
+Backup Registrar Used?| Использ. резерв. сервер регистр.?
+Unregistered| Не зарегистрирован
+Registered| Зарегистрирован
+SIP Status| SIP статус
+Server Error| Ошибка сервера
+Swap| Замена
+LLDP\nEnabled| LLDP\nВключен
+LLDP\nDisabled| LLDP\nВыключен
+LLDP Support| Поддержка LLDP
+Preferred line| Предпочтит.линия
+Preferred line Timeout (seconds)| Таймаут предпочтит. линии (сек.)
+Invalid URI| Неверный URI
+WebApps| Web-прил.
+Watchdog| Watchdog
+Speeddial/Conf| Быстрый набор/конф.
+Call is on Hold| Вызов на удерж.
+No subscription| Нет подписки
+MDot1xFailedStartup| Ошибка запуска MDot1х
+802.1x Startup Failed| Ошибка запуска 802.1x
+LLDP Startup Failed| Ошибка запуска LLDP
+Failed to config Line Manager| Ошибка конфиг. Line Manager
+Line in use| Линия занята
+Get Crash Log| Получить журнал аварии
+Time Unavailable| Время недоступно
+Packetization Interval| Интервал пакетизации
+Basic| Основной
+Note: Basic Codecs Include| Замечание: Включены основные кодеки
+Default| По умолчанию
+Not Configured| Нет настр.
+America| Америка
+Asia| Азия
+Atlantic| Атлантический
+Pacific| Тихоокеанский
+Australia| Австралия
+Europe| Европа
+Malaysia| Malaysia
+Invalid Setting| Неверные настройки
+Must not be empty| Не может быть пустым
+Must be a valid number| Должно быть действительное число
+Must be a nonzero number| Не может быть равно нулю
+Not in range| Вне диапазона
+Invalid Hostname| Неверн. имя хоста
+802.1x Failed| Ошибка 802.1x
+Admin Password:| Пароль админист:
+Voicemail| Голосовая почта
+Voicemail| Голосовая почта
+HTTPS Failed| Ошибка HTTPS
+LLDP Failed| Ошибка LLDP
+TR69 connect Err| Сбой соедин.TR69
+Downloading Language Packs| Загрузка языковых пакетов
+Please Wait...| Ждите...
+to edit| редакт.
+Cfg Svr Failure| Сбой конфиг.серв
+Lines| Линии
+LDAP Directory| Каталог LDAP
+Ldap Directory| Каталог Ldap
+Item| Запись
+item| запись
+Certificate Revoked| Сертификат аннулирован
+Certificate Unknown| Неизв. сертификат
+Delete entire| Удалить полностью
+LDAP Search Filter| Фильтр для LDAP
+Ldap Search Filter| Фильтр для Ldap
+LDAP Server| LDAP сервер
+Ldap Server| Ldap сервер
+Certificate Expired| Сертификат истёк
+Unsupported Certificate| Сертиф. не поддержив.
+No Certificate| Нет сертификата
+Options List| Список опций
+Directory?| Каталог?
+Work| Работа
+No available lines| Линии не доступны
+Search| Поиск
+Ldap Base DN| Ldap Base DN
+items| записи
+Spddial| Уск.Наб
+Ldap Number Attributes| Атриб.номера LDAP
+Ldap Max Hits| LDAP Max Hits
+Ldap Settings| Параметры LDAP
+Ldap Name Attributes| Атриб.имени LDAP
+Timezone zoneAmerica| 
+AG-Antigua| AG-Антигуа
+AI-Anguilla| AI-Ангилья
+AN-Curacao| AN-Кюрасао
+AR-Buenos Aires| AR-Буэнос-Айрес
+AR-San Luis| AR-Сан-Луис
+AW-Aruba| AW-Аруба
+BB-Barbados| BB-Барбадос
+BO-La Paz| BO-Ла-Пас
+BR-Araguaina| BR-Арагуаяна
+BR-Belem| BR-Белен
+BR-Boa Vista| BR-Боа-Вишта
+BR-Cuiaba| BR-Куяба
+BR-Eirunepe| BR-Эйрунепе
+BR-Fortaleza| BR-Форталеза
+BR-Maceio| BR-Масейо
+BR-Manaus| BR-Манаус
+BR-Noronha| BR-Норонья
+BR-Porto Velho| BR-Порту-Велью
+BR-Recife| BR-Ресифи
+BR-Rio Branco| BR-Риу-Бранку
+BR-Sao Paulo| BR-Сан-Паулу
+BS-Nassau| BS-Нассау
+BZ-Belize| BZ-Белиз
+CA-Atlantic| CA-Атлантическая Канада
+CA-Central| CA-Центральная Канада
+CA-Eastern| CA-Восточная Канада
+CA-Mountain| CA-Горная Канада
+CA-Newfoundland| CA-Ньюфаундленд
+CA-Pacific| CA-Тихоокеанское побережье Канады
+CA-Saskatchewan| CA-Саскачеван
+CA-Yukon| CA-Юкон
+CL-Easter| CL-Восток Чили
+CL-Santiago| CL-Сантьяго
+CO-Bogota| CO-Богота
+CR-Costa Rica| CR-Коста-Рика
+CU-Havana| CU-Гавана
+DM-Dominica| DM-Доминика
+DO-Santo Domingo| DO-Санто-Доминго
+GD-Grenada| GD-Гренада
+GF-Cayenne| GF-Кайенна
+GP-Guadeloupe| GP-Гваделупа
+GT-Guatemala| GT-Гватемала
+GY-Guyana| GY-Гайана
+HN-Tegucigalpa| HN-Тегусигальпа
+HT-Port-au-Prince| HT-Порт-о-Пренс
+JM-Jamaica| JM-Ямайка
+KY-Cayman| KY-Кайман
+LC-St Lucia| LC-Сент-Люсия
+MQ-Martinique| MQ-Мартиника
+MS-Montserrat| MS-Монтсеррат
+MX-Cancun| MX-Канкун
+MX-Chihuahua| MX-Чиуауа
+MX-Hermosillo| MX-Эрмосильо
+MX-Mazatlan| MX-Масатлан
+MX-Merida| MX-Мерида
+MX-Mexico City| MX-Мехико
+MX-Monterrey| MX-Монтеррей
+MX-Tijuana| MX-Тихуана
+NI-Managua| NI-Манагуа
+PA-Panama| PA-Панама
+PE-Lima| PE-Лима
+PR-Puerto Rico| PR-Пуэрто-Рико
+PY-Asuncion| PY-Асунсьон
+SR-Paramaribo| SR-Парамарибо
+SV-El Salvador| SV-Сальвадор
+TT-Port of Spain| TT-Порт-оф-Спейн
+US-Alaska| US-Аляска
+US-Aleutian| US-Алеутские острова
+US-Central| US-Центральная часть США
+US-Eastern| US-Восточное побережье США
+US-Hawaii| US-Гавайи
+US-Mountain| US-Горная часть США
+US-Pacific| US-Тихоокеанское побережье США
+UY-Montevideo| UY-Монтевидео
+VE-Caracas| VE-Каракас
+Timezone zoneAsia| 
+AE-Dubai| AE-Дубай
+AZ-Baku| AZ-Баку
+CN-Beijing| CN-Пекин
+CY-Nicosia| CY-Никосия
+GE-Tbilisi| GE-Тбилиси
+HK-Hong Kong| HK-Гонконг
+JP-Tokyo| JP-Токио
+MU-Mauritius| MU-Маврикий
+OM-Muscat| OM-Мускат
+RU-Anadyr| РФ-Анадырь
+RU-Irkutsk| РФ-Иркутск
+RU-Kamchatka| РФ-Камчатка
+RU-Krasnoyarsk| РФ-Красноярск
+RU-Magadan| РФ-Магадан
+RU-Novosibirsk| РФ-Новосибирск
+RU-Omsk| РФ-Омск
+RU-Sakhalin| РФ-Сахалин
+RU-Vladivostok| РФ-Владивосток
+RU-Yakutsk| РФ-Якутск
+RU-Yekaterinburg| РФ-Екатеринбург
+SA-Saudi Arabia| SA-Саудовская Аравия
+SG-Singapore| SG-Сингапур
+TW-Taipei| TW-Тайпей
+Timezone zoneAtlantic| 
+BM-Bermuda| BM-Бермуды
+ES-Canary| ES-Канары
+FK-Stanley| FK-Порт-Стэнли
+FO-Faeroe| FO-Фареры
+GS-South Georgia| GS-Южная Георгия
+IS-Reykjavik| IS-Рейкьявик
+PT-Azores| PT-Азорские острова
+PT-Madeira| PT-Мадейра
+Timezone zoneAustralia| 
+AU-Adelaide| AU-Аделаида
+AU-Brisbane| AU-Брисбен
+AU-Broken Hill| AU-Брокен-Хилл
+AU-Darwin| AU-Дарвин
+AU-Lindeman| AU-Линдеман
+AU-Lord Howe| AU-Лорд-Хау
+AU-Melbourne| AU-Мельбурн
+AU-Perth| AU-Перт
+AU-Sydney| AU-Сидней
+AU-Tasmania| AU-Тасмания
+Timezone zoneEurope| Врем. зона Европа
+AD-Andorra| AD-Андорра
+AL-Tirane| AL-Тирана
+AT-Vienna| AT-Вена
+BA-Sarajevo| BA-Сараево
+BE-Brussels| BE-Брюссель
+BG-Sofia| BG-София
+BY-Minsk| BY-Минск
+CH-Zurich| CH-Цюрих
+CZ-Prague| CZ-Прага
+DE-Berlin| DE-Берлин
+DK-Copenhagen| DK-Копенгаген
+EE-Tallinn| EE-Таллин
+ES-Madrid| ES-Мадрид
+FI-Helsinki| FI-Хельсинки
+FR-Paris| FR-Париж
+GB-Belfast| GB-Белфаст
+GB-London| GB-Лондон
+GI-Gibraltar| GI-Гибралтар
+GR-Athens| GR-Афины
+HR-Zagreb| HR-Загреб
+HU-Budapest| HU-Будапешт
+IE-Dublin| IE-Дублин
+IT-Rome| IT-Рим
+LI-Vaduz| LI-Вадуц
+LT-Vilnius| LT-Вильнюс
+LU-Luxembourg| LU-Люксембург
+LV-Riga| LV-Рига
+MC-Monaco| MC-Монако
+MD-Chisinau| MD-Кишинёв
+MK-Skopje| MK-Скопье
+MT-Malta| MT-Мальта
+NL-Amsterdam| NL-Амстердам
+NO-Oslo| NO-Осло
+PL-Warsaw| PL-Варшава
+PT-Lisbon| PT-Лиссабон
+RO-Bucharest| RO-Бухарест
+RU-Kaliningrad| RU-Калининград
+RU-Moscow| RU-Москва
+RU-Samara| RU-Самара
+SE-Stockholm| SE-Стокгольм
+SI-Ljubljana| SI-Любляна
+SK-Bratislava| SK-Братислава
+SM-San Marino| SM-Сан-Марино
+TR-Istanbul| TR-Стамбул
+UA-Kiev| UA-Киев
+VA-Vatican| VA-Ватикан
+YU-Belgrade| YU-Белград
+Timezone zonePacific| 
+AS-Pago Pago| AS-Паго-Паго
+CK-Rarotonga| CK-Раротонга
+FJ-Fiji| FJ-Фиджи
+GU-Guam| GU-Гуам
+NR-Nauru| NR-Науру
+NU-Niue| NU-Ниуэ
+NZ-Auckland| NZ-Окленд
+NZ-Chatham| NZ-Чатем
+Timezone zoneOthers| 
+DP-Dhcp| DP-Dhcp
+Live Dialpad| Live Dialpad
+1h    summertime| +1ч    летнее время
+Link Down| Нет связи
+Slovakia| Словакия
+Cfg. Svr.| Срв. Нстр.
+Custom| Польз.
+HPQ Enable| HPQ Включен
+Checking For Firmware| Проверка прошивки
+Firmware Check| Проверка прошивки
+Speeddial/MWI| Быстрый Набор/MWI
+Handset| Трубка
+WBand RX Filters| WBand RX фильтры
+HS Setting1| Настройки1
+HS Setting2| Настройки2
+HS Setting3| Настройки3
+HS Setting4| Настройки4
+Spkr Setting1| Настройки1
+Spkr Setting2| Настройки2
+Spkr Setting3| Настройки3
+Spkr Setting4| Настройки4
+Hold Failed| Ошибка удержания
+Can not save record without number| Не сохран. запись без номера
+Feature Name| Имя функц.
+Source| Источ.
+License File| Файл лиценз.
+SW Version Restrictions| Огранич. версии ПО
+Unlimited| Неогран.
+Expiration| Законч.
+Upgrade| Обновл
+License Server| Лиценз. сервер
+License Info| Информация о лицензии
+License PBX| PBX лицензии
+Voice Recording| Запись речи
+BLF List Subscription Period| Период подписки BLF Список
+Conf Failed| Ошибка Конфер.
+Push| Нажать
+Forward Filtering| Фильтр пресылки
+OUT| ВЫХОД
+Opt Status| Статус
+Filter| Фильтр
+Filtering| Фильтрация
+Executives| Исполнит.
+IN| ВХОД
+Divert| Перенаправл.
+Divert to Number| Перенап. на номер
+ Enter Unlock Password|  Введ. пароль разблок.
+ Enter Administrator Password| Введите пароль Администратора
+Today| Сегодня
+Yesterday| Вчера
+Two Days Ago| 2 дня назад
+Three Days Ago| 3 дня назад
+Four Days Ago| 4 дня назад
+Five Days Ago| 5 дней назад
+Six Days Ago| 6 дней назад
+Last Week| Прошл недел
+Two Weeks Ago| 2 неели назад
+Three Weeks Ago| 3 недели назад
+Last Month| Прошл мес.
+Older| Стар.
+Monday| Понед.
+Tuesday| Вторн.
+Wednesday| Среда
+Thursday| Четв.
+Friday| Пятн.
+Saturday| Суббота
+Sunday| Воскр.
+Upload Sys Info| Загрузка системной информации
+Cfwd State| Статус переадр.
+Cfwd Number| Номер переадрес.
+Cfwd Mode| Режим переадрес.
+Set| Уст-ть
+#Confirm| #Подтверждение
+Call held| Вызов на удерж.
+Calls held| Вызовы на удерж.
+Apply Changes?| Применить изм-я?
+Dialpad| Dialpad
+Edit| Изм
+Quit| Выход
+Directory Empty| Каталог пуст
+Saved Memory key| Кнопка Запомнить
+Speaker volume  | Громк. динамика 
+Handset volume  | Громкость трубки
+Headset volume  | Громк. гарнитуры
+Ringer volume   | Громкость звонка
+Enter Number:| Ввод номера:
+Full 10Mbps| Full 10Mbps
+Full 100Mbps| Full 100Mbps
+Full 1000Mbps| Full 1000Mbps
+Half 10Mbps| Half 10Mbps
+Half 100Mbps| Half 100Mbps
+Half 1000Mbps| Half 1000Mbps
+Delete All| Удал Все
+Erase Local Configuration?| Удалить конфиг.?
+Audio| Аудио
+Application| Приложение
+NAT| NAT
+DSCP| DSCP
+User| Пользователь
+802.1x| 802.1x
+Enter Date (m/d/y):| Укажите дату(м/д/г):
+Brightness Timer| Таймер подсветки
+Brightness Level| Уровень подсветки
+Level 1| Уровень 1
+Level 2| Уровень 2
+Level 3| Уровень 3
+Level 4| Уровень 4
+Level 5| Уровень 5
+(Min: %d  Max: %d)| (Мин: %d  Макс: %d)
+Line: %d| Линия: %d
+Line %d: %s| Линия %d: %s
+Invalid %s (%d to %d)| Неверный %s (%d to %d)
+Sys Info| Сист инф
+keypad| клавиатуру
+Login| Вход
+Seized| Занято
+Active| Активно
+Held| Удержание
+Ringing| Вызов
+Park Failed| Ошиб парк.
+Canada| Канада
+Press a contact button on the left to view contact information.| Нажмите клав. контакты слева от информации
+Press a contact button to view contact info.| Нажмите клав. контакты для просмотра.
+No info available. Please press a contact button.| Нет доступ. информац. Нажмите клавишу контактов.
+Set Date and Time| Дата и время
+Ethernet Ports| Порты ethernet
+Call Server| Сервер выз.
+Use Network Time| Сетевое время
+Speed Dial Key %d| Быст. набор %d
+Speed Dial Key| Быст. Набор
+%d/%d records| %d/%d записей
+%d days stored| %d дней сохр.
+1 day stored| Сохр. 1 день
+Upload System Info Files?| Выгрузить системн. файлы?
+Entries Saved| Ввод сохранён
+Storage| Хранен.
+IP and gateway are equal| IP и шлюз не совпадают
+IP gateway subnet mismatch| IP сеть шлюза не совпадает
+Bridge active| Мост активен
+Please enter a number| Введите Номер:
+Deleted| Удалено
+No Matches Found| Соответствие не найдено
+Name| Имя
+Contact already exists| Контакт уже существует
+Left Softkey %d| Левая клав. %d
+Bottom Softkey %d| Нижние клавиши %d
+New Call| Новый вызов 
+All Accounts| Все учетные записи
+Exp. Mod. %d Key %d| Доп. панель %d клав. %d
+Add Num| Доб. Номер
+Diverted to: | Переадрес.:
+No lines are configured| Линии не настроенны
+"Dot ""."""| Точка"."
+Mode %d| Режим %d
+Top Softkey %d| Верх. клав. %d
+Home Screen Mode| Режим
+Screen Saver Timer| Таймер хран. экр. 
+Home Screen| Домашний экран
+Cannot add new number. Limit reached.| Нельзя добавить номер. Достигнут предел.
+Key is already programmed for functionality in a non-idle state| Клавиша уже запрограммирована на функцию при занятости
+Please enter a name| Пожалуйста введите имя
+Top Softkeys| Верхн. прогр. клавиши
+Left Softkeys| Лев. прогр. клавиши
+Bottom Softkeys| Нижн. прогр. клавиши
+Brightness| подсветки
+Speed Dial 8| Быстр. Набор 8
+A filename-related error occurred. Rename the specified file and try again.| Ошибка, связанная с именем файла. Переименуйте файл и повторите попытку.
+An HTTP-related error occurred. Please try again (or restart the phone if you have already received this error before).| Ошибка, связанная с HTTP. Повторите попытку (или перезагрузите телефон, если эта ошибка появилась снова).
+A system-related error occurred. Please restart the phone and try again.| Системная ошибка. Перезагрузите телефон и повторите попытку.
+Xsi Enterprise Directory| Корпоративный каталог Xsi
+Xsi Personal Contacts| Личные контакты Xsi
+Xsi| Xsi
+%s Xsi| %s Xsi
+Business Fax| Служебный факс
+By First Name| По имени
+By Last Name| По фамилии
+CSV 1| CSV 1
+CSV 2| CSV 2
+Cannot add new record. Limit reached.| Невозможно добавить новую запись. Достигнут лимит.
+City| Город
+Corporate| Корпоративный
+Country| Страна
+Custom Ringtones| Свои рингтоны
+Delete %s from %s?| Удалить %s из %s?
+Delete all entries in %s?| Удалить все записи в %s?
+Directory import failed| Сбой импорта каталога
+Directory loading| Загрузка каталога
+Directory not available at this time| Каталог сейчас недоступен
+Display Name Order| Порядок отображения имени
+Name Order| Порядок имен
+Edit Details| Изменить сведения
+Email| Эл. почта
+Email 1| Эл. почта 1
+Email 2| Эл. почта 2
+Email 3| Эл. почта 3
+Enabled also in call| Также включено в разговоре
+Enterprise Directory| Корпоративный каталог
+Exchange Contacts| Обмен контактами
+Explicit| Явные
+External Sources| Внешние источники
+Failed to retrieve contact details| Сбой при извлечении сведений о контакте
+First Last| Имя фамилия
+First name| Имя
+Home 1| Домашний 1
+Home 2| Домашний 2
+Home Address| Домашний адрес
+Implicit| Неявные
+Invalid Subscription Time| Недопустимое время подписки
+Job Title| Должность
+LDAP| LDAP
+Last%c First| Послед.%c Перв.
+Last First| Фамилия имя
+Last Name| Фамилия
+Local| Местный
+Microsoft Exchange| Microsoft Exchange
+Mobile| Мобильный
+New Contact| Новый контакт
+Numbers| Номера
+Organization| Организация
+Other| Другое
+Personal| Личный
+Personal Contacts| Личные контакты
+Province/State| Область/регион
+Request Failed| Сбой запроса
+Sorting Preferences| Параметры сортировки
+Sorting| Сортировка
+Street Address| Улица, дом
+Test| Тест
+Test Connection| Проверка соединения
+The phone does not have enough space to store this file.| На телефоне недостаточно места для сохранения файла.
+The specified file is too large. Each file cannot exceed 1 MB in size.| Указанный файл слишком большой. Размер файла не может превышать 1 МБ.
+UA-Profile-Event Subscription| UA-Profile-Event Subscription
+UA-Profile-Event Subscription Period| UA-Profile-Event Subscription Period
+Undefined| Неопределенные
+Work 1| Рабочий 1
+Work 2| Рабочий 2
+Work Address| Рабочий адрес
+Zip/Postal Code| Почтовый индекс
+Credentials| Учетные данные
+Enable/Disable| PC Порт PassThru Включить/Выключить
+Labels| Отключить
+Ringtone files must be in WAV format| Файлы рингтонов должны быть в формате WAV
+Copy| Копировать
+Add New| Доб. Новый
+ALU SCA| ALU SCA
+Accessory Info| Сведения о периферии
+Add| Доб
+Alerting| Вызывной сигнал
+Delete selected item or delete all items?| Удалить выбранный элемент или все элементы?
+DialingIn| Входной набор
+DialingOut| Выходной набор
+Disconnecting| Отключение
+Enter First Name| Введите имя
+Enter Last Name| Введите фамилию
+Enter Number| Введите Номер
+Enter Password>| Введите пароль>
+Enter Password| Введите пароль
+Enter Username>| Введите имя пользователя>
+Enterprise Dir.| Корпорат. каталог
+Exp. Mod. 1 Version| Истек. мод. 1 версия
+Exp. Mod. 2 Version| Истек. мод. 2 версия
+Exp. Mod. 3 Version| Истек. мод. 3 версия
+Get user.cfg| Чит.user.cfg
+Get user_local.cfg| Чит.user_local.cfg
+Keyboard Version| Версия клавиатуры
+F| F
+H1| H1
+H2| H2
+M| М
+O| O
+W1| W1
+W2| W2
+OnHold| На удержании
+Pending| На рассмотрении
+Phone Info| Сведения о телефоне
+Please Login| Авторизуйтесь
+Please select a file to upload| Выберите файл для загрузки
+Saved| Сохранено
+Unmute| Включить звук
+Line 11| Линия 11
+Line 12| Линия 12
+Line 13| Линия 13
+Line 14| Линия 14
+Line 15| Линия 15
+Line 16| Линия 16
+Line 17| Линия 17
+Line 18| Линия 18
+Line 19| Линия 19
+Line 20| Линия 20
+Line 21| Линия 21
+Line 22| Линия 22
+Line 23| Линия 23
+Line 24| Линия 24
+Line 25| Линия 25
+Client Method| Метод клиента
+#Edit| #Изм
+#Copy| #Копировать
+Action forbidden| Действие запрещено
+Action not supported| Действие не поддерживается
+ Additional Settings|  Дополнительные настройки
+ Barge-In|  Вторжение 
+Congestion| Перегрузка
+Discreet| Вежливо
+Discreet Ringing| Вежливый звонок
+Executives list is empty| Список руководителей пуст
+Extension not registered| Расширение не зарегистрировано
+Internal error| Внутренняя ошибка
+Invalid Password| Неверный пароль
+Invalid forwarding number| Неверный номер переадресации
+ Listen|  Слушать
+ Normal|  Нормальный
+Phone not registered| Телефон не зарегистрирован
+ Pressing the Silent Softkey toggles on/off the intrusion warning tone.|  Нажатие софт-клавиши "Без звука" включает/отключает сигнал о вмешательстве.
+Prv| Личн
+Pub| Публ
+Record not found| Запись не найдена
+SCAP-Bridged| Связь SCAP
+SCAP-Held| Удержание SCAP
+ Select Barge-In Mode|  Выбрать режим вмешательства
+ UA-Profile-Event Subscription Period|  UA-Profile-Event Subscription Period
+Unique ID| Уникальный ID
+ Whisper|  Шепот
+Missed Calls| Пропущенн. вызовы
+Silence| Тишина
+As-Feature-Event Subscription| Подписка на функцию As-Feature-Event
+As-Feature-Event Subscription Period| Период подписки на функцию As-Feature-Event
+Feature-Status-Exchange Subscription| Подписка Feature-Status-Exchange
+Feature-Status-Exchange Subscription Period| Период подписки Feature-Status-Exchange
+Action superseded by a previous command| Действие заменено предыдущей командой
+Attendant| Помощник
+BLF Privacy| Конфиденциальность BLF
+BLF Privacy Key Mode| Режим клавиши конфиденц. BLF
+Feature not configured| Функция не настроена
+Forward Type| Тип переадресации
+Live Keyboard| Активная архитектура
+Not assigned| Не назначено
+PIN| PIN-код
+Pin Required| Требуется PIN
+Privacy| Конфиденц.
+Privacy On| Конфиденц. вкл.
+Restart | Перезагрузка
+Capture| Запись
+Get capture file| Получить файл записи
+Mute All| Отключить звук всем
+No Participant| Не участник
+Private Call| Личный звонок
+Start| Пуск
+Stop| Стоп
+TLS Preferred| Предпочт. TLS
+Timeout| 
+Unmute All| Включить звук всем
+Speeddial/Mwi| Быстрый Набор/MWI
+Phone will restart automatically after finishing.| После завершения, телефон перезагрузиться автоматически.
+Idle| Свободный
+CFWD Filtering| Фильтрация переадресации
+Volume| Громкость
+DTMF| DTMF
+All Accounts| ВСЕ
+Outgoing| Исходящий
+Call History is Empty| История вызовов пуста
+No Outgoing Calls| Нет исходящих вызовов
+No Missed Calls| Нет пропущенных вызовов
+No Received Calls| Нет полученных вызовов
+Received| Получено
+Missed| Пропущено
+Screenshot| Скриншот
+Xsi Enterprise Common Directory| Корпоративный общий каталог Xsi
+Enterprise Common Directory| Корпоративный общий каталог
+Enterprise Common Dir.| Корпоративный общий каталог
+Xsi Group Directory| Каталог группы Xsi
+Group Directory| Каталог группы
+Xsi Group Common Directory| Общий каталог группы Xsi
+Group Common Directory| Общий каталог группы
+Call Settings| Настройки вызовов
+%s Call Settings| Настройки вызовов %s
+Hide Number| Скрыть номер
+Xsi Password Not Configured| Пароль Xsi не установлен
+Xsi User Not Configured| Пользователь Xsi не настроен
+Xsi Authentication Failure| Сбой аутентификации Xsi
+Xsi File Not Found| Файл Xsi не найден
+Xsi Invalid URI| Недопустимый URI Xsi
+Xsi Invalid Download Configuration| Недопустимая конфигурация скачивания Xsi
+Call History| История вызовов
+Bluetooth| Bluetooth
+Scan| Поиск
+Timeout [1..168 h]| Время ожидания [1..168 ч]
+Paired Devices| Связанные устройства
+Available Devices| Доступные устройства
+Swipe the toggle switch to the right to enable Bluetooth| Проведите переключатель вправо, чтобы включить Bluetooth
+Pairing| Связывание
+Connecting| Подключение
+Device| Устройство
+No paired devices| Нет связанных устройств
+Connection successful| Подключено
+Connection failed| Подключение не выполнено
+Disconnection successful| Отключено
+Disconnection failed| Отключение не выполнено
+Pairing failed| Нет соединения       
+Operation failed| Сбой операции
+Connected| Подключен
+Retry| Повторить
+Do you want to forget this device?| Забыть это устройство?
+Close| Закрыть
+Enabling Bluetooth...| Включение Bluetooth...
+Disabling Bluetooth...| Отключение Bluetooth...
+Connecting...| Подключение...
+Disconnecting...| Отключение...
+Boot| Загрузчика
+App| Приложение
+USB disabled. Insufficient power for current configuration.| USB отключен. Недостаточно мощности для текущей конфигурации.
+The specified file does not meet the ringtone specifications required by the phone. Please refer to the User Guide for ringtone file requirements.| Файл не соответствует спецификациям рингтонов в телефоне. См. требования к рингтонам в руководстве пользователя.
+%d/%d| %d/%d
+%d days| %d дней
+1 day| 1 день
+System Messages| Системные сообщения
+Authorization Canceled| Авторизация отменена
+Crash Logs| Журналы сбоев
+Warning - All entries in %s will also be deleted| Предупреждение. Все записи в %s будут удалены
+TLS 1.1| TLS 1.1
+TLS 1.2| TLS 1.2
+Ring Tone| Звонок
+Identity| Идентификатор
+Extension| Внутренний номер
+Address| адрес
+Server Error| Ошибка сервера
+Use Global Ring Tone| 
+Standard Ring Tone| Стандартный рингтон
+Hide Number| Скрыть номер
+Remote Office| Удаленный офис
+Remote Office| Удаленный офис
+Phone Number/SIP-URI| Номер телефона/SIP-URI
+Simultaneous Ring Personal| Одновременный вызов для личных
+Simultaneous Ring| Одновременный вызов
+Do Not Ring if on a Call| Не звонить во время вызова
+Answer Confirmation Required| 
+Phone Num/SIP-URI| Номер/SIP-URI
+Alt Num/SIP-URI| Альт. номер/SIP-URI
+Ring for all Incoming Calls| Звонок для всех входящих вызовов
+Invalid Number or SIP-URI| Недопустимый номер или SIP-URI
+Anywhere| Anywhere
+%s Anywhere| %s Anywhere
+Portal Number| Номер портала
+Alert Locations for Click-To-Dial| Номера уведомлений для быстрого вызова
+Alert Locations for Group Paging| Номера уведомлений для групповой рассылки
+Phone Number| Номер телефона
+Description| Описание
+Alternate Number| 
+Call Control| Управление вызовом
+Diversion Inhibitor| Блокиратор переадресации
+Answer Confirmation| Подтверждение ответа
+Xsi Server Not Found| Сервер Xsi не найден
+Xsi Invalid Input| Недопустимый ввод Xsi
+Call Center| Колл-центр
+Presence| Присутствие
+My Status| Мой статус
+Contacts| Контакты
+Favorite| Избранное
+Available| Доступен
+Eager to Chat| Готов поболтать
+Busy| Занят
+Away| Отошел
+Extended Away| Надолго отошел
+Offline| Не в сети
+Unknown| Неизвестно
+Enter custom presence text here...| Введите текст присутствия...
+Status| Статус
+Custom| Персональные
+Favorites| Избранное
+All Contacts| Все контакты
+No contact in folder| Нет контактов в папке
+No phone number| Нет номера телефона
+No contact| Нет контакта
+Contact list currently not available| Список контактов недоступен
+Contact| Контакт
+Contact| Контакт
+Connection to server failed| Сбой подключения к серверу
+Configuration error| Ошибка конфигурации
+Authentication error| Ошибка аутентификации
+Connection to server lost| Подключение к серверу разорвано.
+Mobile| Мобильный
+Connect| Подключиться
+%s disconnected| %s нет соединения
+%s connected| %s подключено
+Confirm passkey is "%ld" to pair with "%s"| 
+Failed to disable Bluetooth| Сбой при отключении Bluetooth
+Failed to enable Bluetooth| Сбой при включении Bluetooth
+M685i: New Firmware. Do not unplug phone!| M685i: Новая прошивка. Не выключайте телефон!
+.| .
+Static Settings| Статические параметры
+Port Mirroring| Зеркалирование портов
+Audio Feedback| Акустическая обратная связь
+Audio Path| Аудиотракт
+Button Beep| Звук кнопки
+Error Beep| Звук ошибки
+Made| Совершенный
+To my prime line| На главную линию
+To any appearance| На любую линию
+Display Call Info| Информация о вызове
+Always| Всегда
+Busy Internal| Занято: внутр.
+Busy External| Занято: внеш.
+No Answer Internal| Нет ответа: внутр.
+No Answer External| Нет ответа: внеш.
+Copy to All?| Копировать все?
+Loading...| Загрузка...
+Password Changed| Пароль изменен
+Restore Default| Восстановить умолчания
+Restore Default| Восстановить умолчания
+Enter Again| Введите еще раз
+Erase| Удалить
+Set All| Настроить все
+VLAN Settings| Настройки VLAN 
+Broadsoft XSI| Broadsoft Xsi
+Advanced| Расшир
+Phonebook| Телефонная книга
+Update| Обнов.
+Copyright| Авторские права
+Pause| Пауза
+Incorrect password| Неверный пароль
+Please input duration between 1 to 1440 minutes| Введите длительность от 1 до 1440 минут
+Level 0| Уровень 0
+Static Network Settings| Статические параметры сети
+Enter| Ввод
+Reset Configuration?| Сброс конфигурации?
+TCP DUMP| TCP DUMP
+minutes| мин.
+IP and gateway have to be on the same subnet| IP-адрес и шлюз должны относиться к одной подсети
+Timeout (1-1440 Minutes)| Время ожидания (1-1440 минут)
+Timeout (1-5 Minutes)| Время ожидания (1-5 минут)
+Call Server IP Address| IP сервера вызовов
+TFTP Server IP Address| IP сервера TFTP
+IPA IP Address| IP-адрес IPA
+Ping| Проверка связи
+Test POE| Проверка POE
+Host Name or IP Address| Имя хоста или IP-адрес
+Please enter a valid HostName/IP Address| Введите действительное имя хоста/IP-адрес
+Pinging %s...| Обмен пакетами с %s...
+Add Contact| Добавить контакт
+Cannot dial a private number| Невозможно набрать личный номер
+Delete all contacts from %s?| Удалить все контакты из %s?
+Search contacts| Поиск в контактах
+CDP Settings| Параметры CDP
+Current Network Settings| Текущие параметры сети
+VLAN Id| VLAN ID
+DSCP Default| DSCP (по умолчанию)
+DSCP Voice| DSCP (голос)
+DSCP Signaling| DSCP (сигнал)
+DSCP Other| DSCP (другое)
+L2P Default| L2P (по умолчанию)
+L2P Voice| L2P (голос)
+L2P Signaling| L2P (сигнал)
+L2P Other| L2P (другое)
+Modify PIN| Изменить PIN-код
+Registering...| Регистрация...
+Erase PIN| Стереть PIN-код
+Erase PIN?| Стереть PIN-код?
+Duration| Длительность
+Details| Подробнее
+First Name| Имя
+Home| Домашний
+People| Люди
+Contacts - Add New| Контакты – добавить
+Work| Работа
+Entry copied to| Запись скопирована в
+Settings - Bluetooth| Параметры — Bluetooth
+Bluetooth| Bluetooth
+Screen Saver| Заставка
+Dimmer Level| Уровень подсветки
+Paired| Связано
+Press the Turn On softkey to enable Bluetooth| Нажмите программную клавишу "Вкл.", чтобы включить Bluetooth
+Connected successfully| Подключено
+Directory is full| Каталог заполнен
+Directory full| Каталог полон
+Do you want to connect this device?| Подключить это устройство?
+Do you want to disconnect this device?| Отключить это устройство?
+Connect| Подключиться
+%s audio connected| %s: соединение установлено
+%s audio connection failed| %s: сбой соединения
+Pair with %s\nPairing code - %06ld| Связать с %s\nКод связывания — %06ld
+Do you want to get the device's contacts?| Получить контакты устройства?
+Retrieving contacts...| Извлечение контактов...
+Contacts retrieved successfully| Контакты извлечены
+Phonebook retrieval unavailable| Извлечение телефонной книги недоступно
+ Failed to retrieve contacts|  Сбой при извлечении контактов
+Ongoing Call| Текущий звонок
+Scan| Поиск
+Stop| Стоп
+Close| Закрыть
+Press scan to find a device| Нажмите "Сканировать" для поиска устройств
+Please Wait. Scanning for nearby devices| Подождите. Поиск устройств
+Connect Automatically| Подключаться автоматически
+Pairing ...| Связывание...
+Successfully paired| Связь установлена
+Unable to pair with the device| Невозможно установить связь с устройством
+Does the passkey match?| Совпадает ли ключ доступа?
+Unpair| Отменить связывание
+Bluetooth is currently off.| Bluetooth отключен.
+Turn Off| Выкл.
+Turn On| Вкл.
+Sorry! Unable to turn Bluetooth on. | Извините! Невозможно включить Bluetooth. 
+Sorry! Too many devices paired.| Извините! Связано слишком много устройств.
+Only one Handset can be paired to a phone| С телефоном можно связать только одну трубку
+Forget| Забыть
+Unknown Caller| Неизвестный абонент
+Answer| Ответ
+Decline| Отклонить
+Push Call| Вызов Push
+End Call| Завершить
+Caller| Абонент
+Disconnect| Прервать подключение
+Capturing ...| Запись...
+Speaker| Динамик
+Headset| Гарнитура
+Ringer| Звонок
+Internal Ring| Внутренний звонок
+External Ring| Внешний звонок
+Classic 1| Классический 1
+Classic 2| Классический 2
+Classic 3| Классический 3
+Classic 4| Классический 4
+Classic 5| Классический 5
+Classic 6| Классический 6
+Classic 7| Классический 7
+Classic 8| Классический 8
+Classic 9| Классический 9
+Classic 10| Классический 10
+Call Notification| Уведомление о вызове
+Config Teleworker| Настройка удаленного пользователя
+Diagnostics| Диагностика
+MinetDump| MinetDump
+Float Keys| Плавающие клавиши
+Network Services| Сетевые службы
+DHCP Trace| Трассировка DHCP
+Firewall Settings| Параметры брандмауэра
+Wi-Fi| WiFi
+Port Info| Сведения о порте
+Phone Info| Сведения о телефоне
+Error Message| Сообщение об ошибке
+Current Call Server IP Address| IP-адрес текущего сервера вызовов
+TFTP Server Port| Порт сервера TFTP
+Primary DNS| Основной DNS
+Secondary DNS| Вторичный DNS
+Call Server1 IP Address| IP-адрес сервера вызовов 1
+Call Server2 IP Address| IP-адрес сервера вызовов 2
+Call Server3 IP Address| IP-адрес сервера вызовов 3
+Call Server4 IP Address| IP-адрес сервера вызовов 4
+DHCP Status| Состояние DHCP
+T1 (Seconds)| T1 (секунды)
+T1 Left (Seconds)| T1 оставш. (секунды)
+T2 (Seconds)| T2 (секунды)
+T2 Left (Seconds)| T2 оставш. (секунд)
+LAN Port Speed| Скорость порта LAN
+LAN Port Duplex| Дуплексный порт LAN
+PC Port Speed| Скорость порта компьютера
+PC Port Duplex| Дуплексный порт компьютера
+Model| Модель
+Call Server Rev.| Версия сервера вызовов
+Main Version| Основная версия
+802.1x| 802.1x
+Password| Пароль
+Save to Confirm or Cancel to Revert| Нажмите "Сохранить" для подтверждения или "Отмена" для возврата
+Hardware Rev.| Версия оборудования
+Change| Изменить
+Change Password| Изменить пароль
+Confirm Password| Подтверждение пароля
+ Blank|  Пусто
+ Wrong|  Неверно
+ Passwords don't match.|  Пароли не совпадают.
+No Link| Нет Соед.
+Half-Duplex| Полудуплекс
+Full_Duplex| Полный дуплекс
+Copyright Mitel Networks Corporation 2016.\nAll rights reserved.| © Mitel Networks Corporation, 2016.\nВсе права защищены.
+Proxy Logoff| Выход с прокси-сервера
+No Network| Нет сети
+Contacting Server| Подключение к серверу
+Private| Частный
+Miscellaneous| Разное
+Programmable Key| Программируемая клавиша
+Speed Call| Быстрый вызов
+Other Features| Другие функции
+Account Code Verified| Код учетной записи проверен
+Acct Verified| Уч. зап. проверена
+Call Forward Always| Переадресация вызовов: всегда
+Fwd Always| Переадр: всегда
+Do Not Disturb| Не беспокоить
+Phone Lock| Блокировка тел.
+Account Code Non Verified| Код учетной записи не проверен
+Acct Non-Ver| Уч. зап. не проверена
+Name or Number is empty| Имя или номер не указаны
+Label Name| Имя метки
+Rename| Переименовать
+Rename this device| Переименовать устройство
+PKM version| Версия PKM
+Department| Отдел
+Location| Расположение
+Softphone| Программный телефон
+My Phone| Мой телефон
+More ...| Подробнее...
+Restart| Перезагрузка
+Key is Programmed| Клавиша запрограммирована
+Advanced XML| Расширенный XML
+Too many answers - Refine your search| Слишком много ответов - Уточните условия поиска
+%s Search| % Поиск
+Searching| Поиск
+Server not configured| Сервер не настроен
+SimRing| Одновр. вызов
+Phone No/SIP-URI Not Configured| Не настроен номер телефона/SIP-URI
+ Xsi Server Update Failed|  Сбой обновления сервера Xsi
+Call Settings| Настройки вызовов
+Missing Config| Конфигурация отсутствует
+Deflect| Отклонить
+AnswerIcom| Ответ на вызов интеркома
+In a call| Звоню
+Chats| Чаты
+Chat| Чат
+Send| Отправить
+Delete all chat sessions?| Удалить все сеансы чатов?
+Delete chat session with %s?| Удалить сеанс чата с %s?
+No active chat session| Нет активных сеансов чатов
+Push Notifications| Push-уведомления
+Sound| Звук
+Bluetooth| Bluetooth
+Chat| Чат
+%s is typing...| %s печатает...
+Last message received %s at %s| Последнее сообщение получено %s в %s
+Last message received while offline| Последнее сообщение получено во время отсутствия в сети
+now| сейчас
+%ld secs ago| %ld с назад
+1 min ago| 1 мин назад
+%ld mins ago| %ld мин назад
+1 hour ago| 1 ч. назад
+%ld hours ago| %ld ч. назад
+yesterday| Вчера
+%ld days ago| %ld дн. назад
+while offline| во время отсутствия в сети
+Can't talk right now. I'll call you later.| Сейчас не могу говорить. Перезвоню позже.
+On another call| Разговариваю по телефону
+I'll call you back| Я перезвоню
+Call me back in 10 minutes| Перезвоните мне через 10 минут
+I’m not able to answer your call right now| 
+On my way| 
+I’m in a meeting| 
+Custom...| Персональные...
+Message to %s| Сообщение для %s
+Cancel - No message sent| Отмена - Сообщение не отправлено
+Chat Messages| Сообщения чата
+Reject Call Message Configuration| Настройка сообщения при сбросе вызова
+Message| Сообщение
+Server Failure| Сбой сервера
+Use ^v to view| Исп.^v для просм
+Answer| Ответ
+Log Issue| Сообщить о проблеме
+Logging Issue| Проблемы с ведением журнала
+Administrator access is disabled| Доступ администратора отключен
+Please input a duration between 1 and 1440 minutes| Введите длительность от 1 до 1440 мин
+Please input a duration between 1 and 5 minutes| Введите длительность от 1 до 5 мин
+Teleworker Settings| Настройки Teleworker
+Invalid TFTP Port| Недопустимый порт TFTP
+Cannot copy a private number| Невозможно скопировать личный номер
+Search Corporate| Поиск по компании
+Warning| Предупреждение
+Configuration changes detected\nApplication must be closed| Обнаружены изменения конфигурации\nНеобходимо закрыть приложение
+Desktop Portal URL| URL-адрес портала для ПК
+Velocity| Velocity
+Skyline| Skyline
+Rise| Rise
+Daybreak| Daybreak
+After Hours| After Hours
+Open Road| Open Road
+Pronto| Pronto
+Voyage| Voyage
+Bloom| Bloom
+Move| Move
+EAP-Type| Тип EAP
+Phone Numbers| Номера телефонов
+ Max Exceeded|  Превышено макс. значение
+Press "%s" key to search corporate contacts| Нажмите клавишу "%s" для отправки контактов компании
+Too many answers\nRefine your search| Слишком много ответов\nУточните условия поиска
+Not available\nConfiguration error| Недоступно\nОшибка конфигурации
+DHCP Trace information is not available| Сведения о трассировке DHCP недоступны
+EAP-MD5| EAP-MD5
+EAP-PEAP| EAP-PEAP
+IP Conflict Detected| Обнаружен конфликт IP
+Do you want to save this IP?| Сохранить этот IP?
+Max allowed Number length is 26| Макс. кол-во символов в номере: 26
+Enabling DHSG Headset...| Включение гарнитуры DHSG...
+Disabling DHSG Headset...| Отключение гарнитуры DHSG...
+Enter name| Введите имя
+Lastname Firstname| Фамилия Имя
+Call History currently not available| Журнал вызовов в данный момент недоступен
+Audio Diagnostics| Аудио Диагностика
+Avatars| Аватары
+Request timed out| Истекло время ожидания запроса
+Complete ...| Завершено...
+Collecting Logs ...| Сбор данных журналов...
+Pass Thru Port| Сквозной порт
+Page Expired. Please reload the page.| Страница устарела. Перезагрузите страницу.
+Application busy. Please try again later.| Приложение занято. Повторите попытку позже.
+User ID required| Требуется ID пользователя
+Directory file must be in WAV format| Файл каталога должен быть в формате WAV
+Local Directory Upload| Загрузка локального каталога
+Upload failed - Too many records detected in csv file| Сбой загрузки - в файле CSV слишком много записей
+Upload failed - No record detected in csv file| Сбой загрузки - в файле CSV нет записей
+Upload performed - %d records created| Выполнена загрузка - созданы записи (%d)
+minutes| мин.
+User ID| ID пользователя
+Any PBX| Любая АТС
+Screen Mode| Экранный режим
+Show Picture| Показать рисунок
+Request timed out| Тайм-аут запроса
+No Mobile phone connected| Мобильный телефон не подключен
+Only one Handset can be paired to the phone| С телефоном можно связать только одну трубку
+Only one Speaker can be paired to the phone| С телефоном можно связать только один динамик
+Maximum number of paired devices reached| Достигнуто максимальное число связанных устройств
+Reload| Перезагрузка
+Mobile Contacts| Мобильные контакты
+Mobile| Мобильный
+Press "Turn on" to enable Bluetooth| Нажмите "Вкл", чтобы включить Bluetooth
+Turn on| Включить
+Turn off| Выключить
+Mobile : %s| Мобильный: %s
+Pair| Соединение
+Connect| Подключиться
+Disconnect| Прервать подключение
+Forget| Забыть
+Rename| Переименовать
+Rename Device| Переименовать устройство
+Disabling Bluetooth will disconnect your Cordless Handset| Отключение Bluetooth приведет к отсоединению беспроводной трубки
+Warning| Предупреждение
+Do you want to continue?| Продолжить?
+Bluetooth pairing request| Запрос на связывание по Bluetooth
+Pair with %s| Связать с %s
+Pairing code - %06ld| Код для связи - %06ld
+External| Внешний
+Lock Settings| Блокировать настройки
+Proximity auto-lock| Автоблок. при приближении
+Delay before auto-lock| Отсрочка перед автоблок.
+Proximity auto-unlock| Авторазблок. при приближении
+Delay before auto-unlock| Отсрочка перед авторазблок.
+Proximity auto-lock| Автоблок. при приближении
+Proximity auto-unlock| Авторазблок. при приближении
+Delay before auto-lock (minutes)| Отсрочка перед автоблок. (минуты)
+Delay before auto-unlock (minutes)| Отсрочка перед авторазблок. (минуты)
+M695: New Firmware. Do not unplug phone!| M695: Новое встроенное ПО. Не отсоединяйте телефон от источника питания!
+Login/Logout| Вход/выход
+Logout user %s| Выход пользователя %s
+Login successful| Вход выполнен
+Logout successful| Выход выполнен
+Login failed| Сбой входа
+Logout failed| Сбой выхода
+Hot desk user can not pair handset please login as a local user| Пользователь "свободного стола" не может устанавливать связь с трубкой. Выполните вход как локальный пользователь
+Hot desk user can not pair speaker please login as a local user| Пользователь "свободного стола" не может устанавливать связь с динамиком. Выполните вход как локальный пользователь
+Hot desk user can not unpair handset please login as a local user| Пользователь "свободного стола" не может отменять связь с трубкой. Выполните вход как локальный пользователь
+Hot desk user can not unpair speaker please login as a local user| Пользователь "свободного стола" не может отменять связь с динамиком. Выполните вход как локальный пользователь
+Push Call| Вызов Push
+Cordless Handset| Беспроводная трубка
+Low Battery| Низкий заряд
+Critical Battery| Критический заряд
+Ongoing Call| Текущий звонок
+Incoming Call| Входящий вызов
+Incoming Call from %s| Входящий вызов от пользователя %s
+Incoming Call from %s (%s)| Входящий вызов от пользователя %s (%s)
+Voicemail access of Mobile Phone not supported| Доступ к голосовой почте мобильного телефона не поддерживается
+Device not supported| Устройство не поддерживается
+Phone not compatible| Телефон не совместим
+Dialing out through Mobile Line not supported| Выходной набор через мобильную линию не поддерживается
+Page Expired. Please reload the page.| Страница устарела. Перезагрузите страницу.
+Application busy. Please try again later.| Приложение занято. Повторите попытку позже.
+Invalid prefix length (0 to 128)| Недопустимая длина префикса (0–128)
+User ID required| Требуется ID пользователя
+IPv6 Settings| Настройки IPv6
+Basic Network Settings (IPv6)| Базовые настройки сети (IPv6)
+Basic Network Settings (IPv4)| Базовые настройки сети (IPv4)
+Ethernet Port Settings| Настройки порта Ethernet
+User ID| ИД пользователя
+Colon ":"| Столбец ":"
+Login/Logout| Вход/выход
+Logout user %s| Выход пользователя %s
+Login successful| Вход выполнен
+Logout successful| Выход выполнен
+Login failed| Сбой входа
+Logout failed| Сбой выхода
+IPv6| IPv6
+Enable IPv6| Включить IPv6
+Mode DHCPv6| Режим DHCPv6
+DHCPv6| DHCPv6
+Auto-configuration| Автонастройка
+Prefix Length| Длина префикса
+IPv6 Address| Адрес IPv6
+Local Directory Upload| Загрузка локального каталога
+Upload failed - Too many records detected in csv file| Сбой загрузки - в файле CSV слишком много записей
+Upload failed - No record detected in csv file| Сбой загрузки - в файле CSV нет записей
+Upload performed - %d records created| Выполнена загрузка - созданы записи (%d)
+Error: Upgrade/Downgrade rejected for incompatible firmware version| ОШИБКА: Изменение версии прошивки отклонено — версия несовместима
+Directory file must be in CSV format| Файл каталога должен быть файлом CSV
+Error: Upgrade/Downgrade rejected for incompatible firmware version| ОШИБКА: Изменение версии прошивки отклонено — версия несовместима
+6 +74| 6 +74
+Port Map Incomplete| Распределение портов не завершено
+DSP| DSP
+SIP| SIP
+| 
+Updating DECT Firmware| Обновление прошивки DECT
+Tone| Тон
+Interface| Интерфейс
+Web| Интернет
+7 +196| 7 +196
+Office| Офис
+Home| Дом
+Cell| Сотовый
+Pager| Пейджер
+VLAN Settings| Настройки VLAN
+Softkeys and XML| функциональные клавиши и XML
+Softkeys Configuration| Настройка функциональных клавиш
+6 +240| 6 +240
+Enable?| Включить?
+Conf. Unavailable| Конф. Недоступна
+Ringing...| Вызов...
+Is Calling...| Вызывает...
+Error Messages| Сообщения об ошибках
+No Error Messages| Нет сообщений об ошибках
+Download Options| Опции загрузки
+6 +591| 6 +591
+Conference| Конференция
+Flash| Flash
+Dial| Набор номера
+Whisper| Режим шёпота
+Consult| Консультация
+Directory| Справочник
+Callers| Абоненты
+Icom| Icom
+6 +601| 6 +601
+Push| Нажать
+Leave| Покинуть
+Conf| Конференция
+Coach| Подсказывать
+Barge| Вмешаться
+Monitor| Наблюдение
+SIP Settings| Настройки SIP
+Proxy Port| Порт прокси
+Registrar Port| Порт регистратора
+6 +635| 6 +635
+Network Settings| Настройки сети
+Clear| Удалить
+Speaker | Динамик 
+External Speaker | Внешний динамик 
+Headset | Гарнитура 
+Speaker/Headset| Динамик/Гарнитура
+Headset/Speaker| Гарнитура/Динамик
+6 +735| 6 +735
+Connected| Соединено
+Drop| Сбросить
+Park| Поставить на удержание
+UnPark| Снять с удержания
+Move| Переместить
+PickUp| Ответить на вызов
+Redial| Повтор
+DCP| DCP
+7 +765| 7 +765
+Transfer Failed| Передача не удалась
+Call Transferred| Вызов передан
+ Call Terminated|  Вызов прекращён
+Call Parked| Вызов поставлен на удержание
+Park Failed| Удержание не удалось
+UnPark Failed| Снятие с удержания не удалось
+Call Forward| Перенаправление вызова
+Call Fwd| Перенапр. вызова
+All| Все
+6 +1080| 6 +1080
+Debug Level| Уровень отладки
+Support Information| Информация для поддержки
+Get local.cfg| Получить local.cfg
+Get Log Files| Получить файлы журналов
+Get server.cfg| Получить server.cfg
+Get user_local.cfg| Получить user_local.cfg
+Get user.cfg| Получить user.cfg
+6 +1465| 6 +1465
+LLDP\nEnabled| LLDP\nВключён
+LLDP\nDisabled| LLDP\nОтключён
+LLDP Support| Пддержка LLDP
+Use LLDP-MED| Использовать LLDP-MED
+LLDP neighbor| сосед LLDP
+Cache LLDP-MED| Кэш LLDP-MED
+Preferred line| Первоочередная линия
+Preferred line Timeout (seconds)| Таймаут первоочередной линии (сек)
+Invalid URI| Неправильный URI
+6 +1485| 6 +1485
+Failed to config Line Manager| Не удалось настроить Менеджер линий
+Line in use| Линия используется
+Get Crash Log| Получить журнал аварийного завершения работы
+Logging Issue| Проблема с журналированием
+Time Unavailable| Время недоступно
+Packetization Interval| Интервал пакетизации
+Basic| Базовый
+6 +1533| 6 +1533
+Hold Failed| Постановка на удержание не удалась
+Server Error| Ошибка серв.
+Conf Failed| Настройка не удалась
+Conf In Progress| Выполняется настройка
+Lines| Линии
+Options List| Список опций
+Checking For Firmware| Проверка наличия прошивки
+6 +1663| 6 +1663
+AU-Lord Howe| AU-Лорд-Хау
+AU-Melbourne| AU-Мельбурн
+AU-Perth| AU-Перт
+AU-Eucla| AU-Евкла
+AU-Sydney| AU-Сидней
+AU-Tasmania| AU-Тасмания
+AD-Andorra| AD-Андорра
+6 +1734| 6 +1734
+Divert to Number| Перенаправить на номер
+Press a contact button to view contact info.| Нажмите кнопку контакта для просмотра информации о контакте.
+No info available. Please press a contact button.| Нет доступной информации. Нажмите кнопку контакта.
+ Enter Voicemail Password|  Введите пароль голосовой почты
+ Enter Administrator Password|  Введите пароль администратора
+ Enter Unlock Password|  Введите пароль разблокировки
+Phone will restart automatically after finishing.| Телефон автоматически перезапустится по окончании.
+6 +1794| 6 +1794
+Please enter a number| Введите номер
+Please enter a name| Введите имя
+Login| Вход
+Log Issue| Проблема с ведением журнала
+Log Out| Выйти
+Avail| Дст
+Unavail| Недост
+6 +2001| 6 +2001
+H2| H2
+O| O
+F| F
+P| P
+Last First| Фамилия имя
+#Edit| #Редактировать
+#Copy| #Копировать
+6 +2088| 6 +2088
+Disconnection failed| Отключение не выполнено
+Pairing failed| Синхронизация не удалась
+Operation failed| Сбой операции
+Pickup/unpark not permitted| Ответ/снятие с удержания не разрешено
+Unpark not permitted| Снятие с удержания не разрешено
+Connected| Соединено
+Retry| Повторить
+Do you want to forget this device?| Забыть это устройство?
+7 +2129| 7 +2129
+All Contacts| Все контакты
+Chats| Чаты
+Chat| Чат
+Send| Отправить
+Delete all chat sessions?| Удалить все сеансы чатов?
+Delete chat session with %s?| Удалить сеанс чата с %s?
+No contact in folder| Нет контактов в папке
+8 +2202| 8 +2202
+Incoming Call from %s (%s)| Входящий вызов от пользователя %s (%s)
+Voicemail access of Mobile Phone not supported| Доступ к голосовой почте мобильного телефона не поддерживается
+Device not supported| Устройство не поддерживается
+Not supported| Не поддерживается
+Phone not compatible| Телефон не поддерживается
+Dialing out through Mobile Line not supported| Выходной набор через мобильную линию не поддерживается
+Service unavalilable at this time| Служба в данный момент недоступна
+Hold not permitted on this call| Данный вызов запрещено ставить на удержание
+Action not permitted| Действие запрещено
+IPv6| IPv6
+Enable IPv6| Включить IPv6
+Mode DHCPv6| Режим DHCPv6
+44 +2235| 44 +2235
+Cloud Config Server 2| Облачный сервер настройки 2
+Cloud Staging Server| Облачный тестовый сервер
+Cloud Domain| Облачный домен
+Replay| Повтор
+Backward| Назад
+Forward| Переадр.
+Send To| Отправить
+Logout| Выход
+To Email| На адрес
+Delete Failure| Сбой удаления
+Play Failure| Сбой воспроизв.
+Play Failure due to a system error. See your system administrator.| Сбой воспроизведения из-за ошибки системы. Обратитесь к системному администратору.
+Save Failure| Сбой сохранения
+Add Contact| Добавить контакт
+Voicemail and Recordings| Голосовая почта и записи
+Voicemail User Login| Вход в голос. почту
+Send to| Отправить
+Cannot dial a private number| Невозможно набрать личный номер
+Cannot copy a private number| Невозможно скопировать частный номер
+Number not available| Номер недоступен
+Loading...| Загрузка...
+Login| Вход
+Contacts| Контакты
+Private| Частный
+To| Кому
+Send| Отправить
+Voicemail has been sent.| Запись отправлена.
+Error in sending Voicemail. Please send it again.| Ошибка при отправке сообщения голосовой почты. Повторите отправку.
+Voicemail has been sent to email.| Запись отправлена по эл. почте.
+Error in sending to Email.| Сбой отправки.
+New| Новое
+Recorded| Записано
+Receipt Confirmation| Подтверждение принятия
+Passcode| Секретный код
+Mailbox Number| № ящика
+Remember passcode| Запом. секр. код
+Passcode is incorrect. Enter a valid passcode.| Неправильный секретный код. Введите правильный секретный код.
+Invalid mailbox number.| Неверный № ящика
+Error - Mailbox in use| Ящик уже используется
+Error - maximum sessions exceeded| Превышено макс. кол-во сеансов
+Error - no session exists| Сеанс не существует
+Error - bad extension| Неверное расширение
+Mailbox locked for security reasons. See your system administrator.| Почтовый ящик заблокирован по соображениям безопасности. Обратитесь к системному администратору.
+Replay| Повтор
+Backward| Назад
+Forward| Переадр.
+Send To| Отправить
+Logout| Выход
+To Email| На адрес
+Move Message Failure| Не удалось переместить сообщение
+Play Failure| Сбой воспроизв.
+Play Failure due to a system error. See your system administrator.| Сбой воспроизведения из-за ошибки системы. Обратитесь к системному администратору.
+Save Failure| Сбой сохранения
+Add Contact| Добавить контакт
+Voicemail and Recordings| Голосовая почта и записи
+Voicemail User Login| Вход в голос. почту
+Send to| Отправить
+Cannot dial a private number| Невозможно набрать личный номер
+Cannot copy a private number| Невозможно скопировать частный номер
+Number not available| Номер недоступен
+Loading...| Загрузка...
+Login| Вход
+Contacts| Контакты
+Private| Частный
+To| Кому
+Send| Отправить
+Voicemail has been sent.| Запись отправлена.
+Error in sending Voicemail. Please send it again.| Ошибка при отправке сообщения голосовой почты. Повторите отправку.
+Voicemail has been sent to email.| Запись отправлена по эл. почте.
+Error in sending to Email.| Сбой отправки.
+Receipt Confirmation| Подтверждение принятия
+Passcode| Секретный код
+Mailbox Number| № ящика
+Remember passcode| Запом. секр. код
+Passcode is incorrect. Enter a valid passcode.| Неправильный секретный код. Введите правильный секретный код.
+Invalid mailbox number.| Неверный № ящика
+Error - Mailbox in use| Ящик уже используется
+Error - maximum sessions exceeded| Превышено макс. кол-во сеансов
+Error - no session exists| Сеанс не существует
+Error - bad extension| Неверное расширение
+Mailbox locked for security reasons. See your system administrator.| Почтовый ящик заблокирован по соображениям безопасности. Обратитесь к системному администратору.
+DECT Headset| Гарнитура DECT
+DECT Headset Version| Версия гарнитуры DECT
+DECT Headset Battery| Батарея гарнитуры DECT
+DECT Headset Rf Power| Мощность радиоизлучения гарнитуры DECT
+DECT Headset Rf Power| Мощность радиоизлучения гарнитуры DECT
+Very Low| Очень низкий
+Cloud Connect| Cloud Connect
+Service Type| Тип службы
+MiCloud Connect| MiCloud Connect
+MiVoice Border Gateway| MiVoice Border Gateway
+MiV Border Gateway| MiV Border Gateway
+User DID| Прямой входной набор пользователя
+Domain| Домен
+Call Back| Вызвать в ответ
+Play| Воспроизвести
+Exit| Выход
+Skip Back| Перебор назад
+Skip Forward| Перебор вперёд
+Pause| Пауза
+Inbox| Папка входящих сообщений
+MiCloud| MiCloud
+Cloud| Cloud
+Fetching Details| Получение подробной информации
+Additional Phone| Дополнительный телефон
+Agent state| Состояние сотрудника
+Availability| Доступность
+Standard| Стандартный
+In a meeting| На встрече
+Out of office| Не в офисе
+Extended Absence| Длительное отсутствие
+Do not disturb| Не беспокоить
+On the Phone| Разговаривает по телефону
+Assign| Назначение
+Assign user| Назначить пользователя
+Assign user failed| Не удалось назначить пользователя
+Assign user to phone in progress. Please wait...| Выполняется назначение телефону пользователя. Подождите...
+Extension or password invalid| Неправильный пароль или внутренний номер
+Unassign| Отменить назначение
+Unassign user| Отменить назначение пользователя
+Unassign user failed| Не удалось отменить назначение пользователя
+Unassign user?| Отменить назначение пользователя?
+Unassigning user...| Отмена назначения пользователя...
+Voicemail password| Пароль голосовой почты
+Ping| Проверка связи
+Host Name or IP Address| Имя хоста или IP-адрес
+Please enter a valid HostName/IP Address| Введите действительное имя хоста/IP-адрес
+Pinging %s...| Обмен пакетами с %s...
+Tracerouting...| Выполнение Traceroute...
+Tracerouting Complete| Выполнение Traceroute завершено
+Traceroute| трассировка
+Traceroute Command| Команда Traceroute
+Never| Никогда
+Always destination| Адрес отправки для категории "Всегда"
+No answer destination| Адрес отправки для категории "Без ответа"
+Busy destination| Адрес отправки для категории "Занят"
+Simulring| Simulring
+VPN| VPN
+Use VPN| Использовать VPN
+VPN gateway| Шлюз VPN
+VPN gateway port| Порт шлюза VPN
+Tunnel IP| Тоннель IP
+VPN protocol| Протокол VPN
+VPN debug mode| Режим отладки VPN
+System| Система
+Log upload| Загрузка журнала
+Log upload?| Загрузка журнала?
+Timeout (1-1440 Minutes)| Время ожидания (1-1440 минут)
+Please input a duration between 1 and 1440 minutes| Введите значение от 1 до 1440 минут
+User Settings| Настройки пользователя
+Diagnostic server| Сервер диагностики
+Diag Server| Диаг. сервер
+Wrap up| Завершить
+UnWrap| Отменить завершение
+ Open|  Открыть
+Confirm| Подтвер.
+New voicemail password| Новый пароль голосовой почты
+Password entries do not match| Введённые пароли не совпадают
+Password change succeeded| Пароль успешно изменён
+New password same as old password| Новый пароль совпадает со старым
+ Reply|  Ответить
+ ReplyAll|  Ответить всем
+ Compose|  Написать
+ Call VM|  Вызвать голосовое сообщение
+Cannot choose your own extension| Невозможно выбрать свой собственный внутренний номер
+Save Changes?| Сохранить изменения?
+Validating number...| Проверка номера...
+Invalid %s| Неправильный %s
+Upgrade Required| Требуется обновление
+Invalid DID or Password| Неправильный пароль или прямой входной набор
+Register| Зарегистрироваться
+Voice Service| Голосовая служба
+Start Over| Начать заново
+Empty domain name| Доменное имя не указано
+Registering| Регистрация
+DID or password no update| Пароль или прямой входной набор не обновлены
+Invalid domain name| Неправильное доменное имя
+ Registration cancelled|  Регистрация отменена
+Pager| Пейджер
+Phone not registered| Телефон не зарегистрирован
+Enterprise| Предприятие
+ Parameter Type|  Тип параметра
+ Filter Page|  Страница фильтра
+ Parameter Filter|  Фильтр параметров
+ Get Parameters|  Получить параметры
+Assigned| Назначен
+Assigning| Назначение
+Invalid extension| Неправильный внутренний номер
+Extension or password no update| Пароль или внутренний номер не обновлены
+Assignment cancelled| Назначение отменено
+Extension already assigned| Внутренний номер уже назначен
+ Select a call to unpark|  Выберите вызов для снятия с удержания
+ UnPark|  Снять с удержания
+Duration| Продолжительность
+Subject| Тема
+Uploading Fail| Загрузка не удалась
+Diagnostic server is empty| Диагностический сервер пуст
+Logs uploaded successfully| Журналы загружены успешно
+Urgent| Срочно
+Return Receipt| Приём возврата
+Include Original| Приложить исходное
+Re: Voice Message| Re: Голосовое сообщение
+Fw: Voice Message| Переслано: Голосовое сообщение
+Phone not assigned| Телефон не назначен
+Whisper Page| Страница режима шёпота
+Intercom| Внутренняя связь
+Silent Monitor| Монитор без звука
+Barge In| Вмешаться
+Silent Coach| Подсказывать беззвучно
+To Inbox| Во входящие
+Save Message?| Сохранить сообщение?
+By First| По первому
+By Last| По последнему
+Dial Voicemail| Набрать голосовую почту
+Dial VM| Набрать ГП
+ Invalid Phone Number|  Неправильный номер телефона
+Transfer not permitted on this call| Для этого вызова передача запрещена
+Conference not permitted on this call| Для этого вызова конференц-связь запрещена
+Remote log upload in progress| Выполняется загрузка удалённого файла журнала
+Remote capture upload in progress| Выполняется загрузка удалённого файла записи
+Standard| Стандартный
+Ring 2| Звонок 2
+Ring 3| Звонок 3
+Ring 4| Звонок 4
+Play Int| Воспроизвести внутр.
+Play Ext| Воспроизвести нар.
+Press "Upload" to upload a debug log| Нажмите "Загрузить" для загрузки журнала отладки
+Select a call to merge| Выберите вызов для объединения
+Add Caller:| Добавить абонента:
+Assign user?| Назначить пользователя?
+6 +74| 6 +74
+Port Map Incomplete| Преобразование портов не завершено
+DSP| DSP
+SIP| SIP
+Updating DECT Firmware| Обновление прошивки DECT
+Tone| Тон
+Interface| Интерфейс
+Web| Интернет
+7 +294| 7 +294
+Updating configuration| Обновление конфигурации
+Waiting assignment| Ожидающее задание
+Checking for new firmware| Проверка наличия новой прошивки
+Firmware Check| Проверка прошивки
+Firmware Check| Проверка прошивки
+New Firmware: PLEASE DO NOT UNPLUG THE PHONE| Новая прошивка: НЕ ОТКЛЮЧАЙТЕ ТЕЛЕФОН
+New Firmware: Restarting...| Новая прошивка: Перезапуск...
+Downloading configuration| Загрузка конфигурации
+9 +397| 9 +397
+erase all calls| удалить все вызовы
+DELETE again to erase this item| DELETE снова для удаления этой позиции
+DELETE to erase item  or # to erase Number| DELETE для удаления позиции или # для удаления номера
+DELETE again to erase all calls| DELETE снова для удаления всех вызовов
+DELETE again to erase all items| DELETE снова для удаления всех позиций
+Delete All| Удал.все
+DELETE again to erase all calls| DELETE снова для удаления всех вызовов
+DELETE again to erase all items| DELETE снова для удаления всех позиций
+Delete All| Удал.все
+Factory Defaults| Заводские настройки по умолчанию
+ Missed Call|  Пропущенный вызов
+ Missed Calls|  Пропущенные
+7 +596| 7 +596
+Icom| Icom
+Dir| Dir
+Xfer| Xfer
+Push| Нажмите
+Push| Нажмите
+Leave| Покинуть
+Conf| Conf
+SIP Settings| Настройки SIP
+8 +743| 8 +743
+Cannot Save| Не получается сохранить
+1 item| 1 позиция
+ items|  позиции
+item| позиция
+items| позиции
+item| позиция
+items| позиции
+No User| Нет пользователя
+Missing User ID| Отсутствует ID пользователя
+DHCP failed| Протокол DHCP не сработал
+7 +813| 7 +813
+TLS 1.2| TLS 1.2
+TLS Preferred| Предпочт. TLS
+Cfg Svr Failure| Неисправность сервера конфигураций
+Bad Certificate| Недопустимый сертификат
+Bad Cert/TLS Err| Недопустимый сертификат/Ошибка TLS
+Downloading Aastra config| Загрузка конфиг. Aastra
+Downloading Startup config| Загрузка конфиг. Startup
+Downloading Mac config| Загрузка конфиг. Mac
+Downloading Model config| Загрузка конфиг. модели
+Downloading config| Загрузка конфиг.
+Failed to download Aastra config| Не удалось загрузить конфиг. Aastra
+Failed to download Startup config| Не удалось загрузить конфиг. при запуске
+Failed to download Mac config| Не удалось загрузить конфиг. Mac
+Failed to download Model config| Не удалось загрузить конфиг. модели
+Certificates| Сертификаты
+Cert Validation| Проверка сертификатов
+All defaults| Все настройки по умолчанию
+6 +1070| 6 +1070
+Debug Level| Уровень отладки
+Support Information| Информация для поддержки
+Get local.cfg| Получить локальную конфигурацию
+Get Log Files| Получить файлы журналов
+Get server.cfg| Получить конфигурацию сервера
+Get user_local.cfg| Получить user_local.cfg
+Get user.cfg| Получить user.cfg
+12 +1104| 12 +1104
+Invalid subnet mask| Неправильная маска подсети
+Invalid primary DNS address| Неправильный адрес первичного сервера DNS
+Invalid secondary DNS address| Неправильный адрес вторичного сервера DNS
+Invalid prefix length (0 to 128)| Неправильная длина префикса (от 0 до 128)
+User ID required| Требуется ID пользователя
+IP cannot be equal to gateway address| IP-адрес не может совпадать с адресом шлюза
+IP and gateway have to be on same subnet| IP-адрес и адрес шлюза должны находиться в одной подсети
+IP and gateway are equal| IP-адрес совпадает с адресом шлюза
+IP gateway subnet mismatch| IP-адрес и адрес шлюза находятся в разных подсетях
+IPv6 Settings| Параметры IPv6
+Basic Network Settings| Основные настройки сети
+Basic Network Settings (IPv6)| Основные настройки сети (IPv6)
+Basic Network Settings (IPv4)| Основные настройки сети (IPv4)
+Advanced Network Settings| Расширенные настройки сети
+DHCP| DHCP
+NAT Port| Порт NAT
+7 +1281| 7 +1281
+The specified file is too large. Each file cannot exceed 1 MB in size.| Указанный файл слишком большой. Размер файла не может превышать 1 МБ.
+The phone does not have enough space to store this file.| На телефоне недостаточно места для сохранения файла.
+The specified file does not meet the ringtone specifications required by the phone. Please refer to the User Guide for ringtone file requirements.| Файл не соответствует спецификациям рингтонов в телефоне. См. требования к рингтонам в руководстве пользователя.
+Directory file must be in WAV format| Файл каталога должен быть в формате WAV
+Directory file must be in CSV format| Файл каталога должен быть файлом CSV
+Local Directory Upload| Загрузка локального каталога
+Upload failed - Too many records detected in csv file| Сбой загрузки - в файле CSV слишком много записей
+Upload failed - No record detected in csv file| Сбой загрузки - в файле CSV нет записей
+6 +1370| 6 +1370
+IP&MAC Addresses| IP- и MAC-адреса
+LAN Port| Порт локальной сети
+PC Port| Порт ПК
+Port Mirroring| Зеркалирование портов
+Set Audio| Установить аудио
+Config. Server| Конфиг. Сервер
+IP Address:| IP-адрес:
+7 +1463| 7 +1463
+App| Приложение
+Watchdog| Сторожевая программа
+Speeddial/Conf| Быстрый набор/Конфигурация
+Speeddial/MWI| Быстрый набор/MWI
+Speeddial/MWI| Быстрый набор/MWI
+Call is on Hold| Вызов на удержании
+No subscription| Без подписки
+802.1x Failed| Не удалось установить соединение по протоколу 802.1x
+6 +1473| 6 +1473
+Failed to config Line Manager| Не удалось настроить Менеджер линий
+Line in use| Линия занята
+Get Crash Log| Получить журнал аварийного завершения работы
+Logging Issue| Проблема с ведением журнала
+Time Unavailable| Продолжительность недоступности
+Packetization Interval| Интервал пакетизации
+Basic| Базовый
+6 +1650| 6 +1650
+AU-Lord Howe| AU-Лорд-Хау
+AU-Melbourne| AU-Мельбурн
+AU-Perth| AU-Перт
+AU-Eucla| AU-Евкла
+AU-Sydney| AU-Сидней
+AU-Tasmania| AU-Тасмания
+AD-Andorra| AD-Андорра
+15 +1710| 15 +1710
+NZ-Chatham| NZ-Чатем
+DP-Dhcp| DP-Dhcp
+Custom| Пользовательский
+IN| ВХОДЯЩИЕ
+OUT| ИСХОДЯЩИЕ
+Filter| Фильтр
+Filtering| Фильтрация
+Opt Status| Состояние выбора
+Executives| Руководящие сотрудники
+Forward Filtering| Прямая фильтрация
+Divert| Переадресация
+Divert to Number| Отклонить на номер
+IN| ВХОДЯЩИЕ
+OUT| ИСХОДЯЩИЕ
+Filter| Фильтр
+Filtering| Фильтрация
+Opt Status| Состояние выбора
+Executives| Руководящие сотрудники
+Forward Filtering| Прямая фильтрация
+Divert| Переадресация
+Divert to Number| Отклонить на номер
+Press a contact button to view contact info.| Нажмите кнопку контакта для просмотра информации о контакте.
+No info available. Please press a contact button.| Нет доступной информации. Нажмите кнопку контакта.
+ Enter Administrator Password|  Введите пароль администратора
+6 +1749| 6 +1749
+Level 4| Уровень 4
+Level 5| Уровень 5
+Dot "."| Точка "."
+Colon ":"| Двоеточие ":"
+(Min: %d  Max: %d)| (Мин: %d Макс: %d)
+Line: %d| Лин: %d
+Line %d: %s| Линия %d: %s
+6 +1780| 6 +1780
+Please enter a number| Введите номер
+Please enter a name| Введите имя
+Login| Вход
+Log Issue| Занести проблему в журнал
+Log Out| Выйти из системы
+Avail| Дст
+Unavail| Недост
+14 +1852| 14 +1852
+Show Picture| Показать рисунок
+Mode %d| Режим %d
+Screen Saver Timer| Таймер экранной заставки
+Enabled also in call| Также включено в разговоре
+Enabled also in call| Также включено в разговоре
+Invalid Subscription Time| Недопустимое время подписки
+Speed Dial 8| Ускоренный набор 8
+Request Failed| Сбой запроса
+Request timed out| Тайм-аут запроса
+Too many answers - Refine your search| Слишком много ответов - Уточните условия поиска
+New Contact| Новый контакт
+Edit Details| Изменить сведения
+Edit Details| Изменить сведения
+Failed to retrieve contact details| Сбой при извлечении сведений о контакте
+No Mobile phone connected| Мобильный телефон не подключен
+Only one Handset can be paired to the phone| С телефоном можно связать только одну трубку
+7 +2039| 7 +2039
+Volume| Громкость
+DTMF| DTMF
+Screenshot| Скриншот
+All| Все
+All| Все
+Missed| Пропущено
+Outgoing| Исходящий
+Received| Получено
+7 +2053| 7 +2053
+Paired Devices| Связанные устройства
+Available Devices| Доступные устройства
+Swipe the toggle switch to the right to enable Bluetooth| Проведите переключатель вправо, чтобы включить Bluetooth
+Press "Turn on" to enable Bluetooth| Нажмите "Вкл", чтобы включить Bluetooth
+Press "Turn on" to enable Bluetooth| Нажмите "Вкл", чтобы включить Bluetooth
+Turn on| Включить
+Turn off| Выключить
+Mobile : %s| Мобильный: %s
+9 +2067| 9 +2067
+Device| Устройство
+Rename Device| Переименовать устройство
+No paired devices| Нет связанных устройств
+Connection successful| Подключено
+Connection failed| Подключение не выполнено
+Disconnection successful| Отключено
+Connection successful| Подключено
+Connection failed| Подключение не выполнено
+Disconnection successful| Отключено
+Disconnection failed| Отключение не выполнено
+Pairing failed| Синхронизация не удалась
+Operation failed| Сбой операции
+7 +2153| 7 +2153
+%ld days ago| %ld дн. назад
+while offline| во время отсутствия в сети
+Can't talk right now. I'll call you later.| Сейчас не могу говорить. Перезвоню позже.
+On another call| Разговариваю по телефону
+On another call| Разговариваю по телефону
+I'll call you back| Я перезвоню
+Call me back in 10 minutes| Перезвоните мне через 10 минут
+Custom...| По умолчанию...
+8 +2176| 8 +2176
+Hot desk user can not pair speaker please login as a local user| Пользователь "свободного стола" не может устанавливать связь с динамиком. Выполните вход как локальный пользователь
+Hot desk user can not unpair handset please login as a local user| Пользователь "свободного стола" не может отменять связь с трубкой. Выполните вход как локальный пользователь
+Hot desk user can not unpair speaker please login as a local user| Пользователь "свободного стола" не может отменять связь с динамиком. Выполните вход как локальный пользователь
+Push Call| Вызов Push
+Cordless Handset| Беспроводная трубка
+Push Call| Вызов Push
+Cordless Handset| Беспроводная трубка
+Low Battery| Низкий заряд
+Critical Battery| Критический заряд
+Ongoing Call| Текущий звонок
+5 +2188| 5 +2188
+Device not supported| Устройство не поддерживается
+Phone not compatible| Телефон не совместим
+Dialing out through Mobile Line not supported| Выходной набор через мобильную линию не поддерживается
+IPv6| IPv6
+Enable IPv6| Включить IPv6
+Mode DHCPv6| Режим DHCPv6
+DHCPv6| DHCPv6
+Auto-configuration| Автонастройка
+Prefix Length| Длина префикса
+IPv6 Address| Адрес IPv6
+Error: Upgrade/Downgrade rejected for incompatible firmware version| Ошибка: Изменение версии прошивки отклонено — версия несовместима
+Audio Diagnostics| Диагностика аудио
+Diagnostics| Диагностика
+Timeout (1-5 Minutes)| Время ожидания (1-5 минут)
+Disconnect| Прервать подключение
+Capturing ...| Запись...
+Complete ...| Выполнено ...
+Collecting Logs ...| Сбор записей ...
+Collect Logs| Собрать записи
+Please input a duration between 1 and 5 minutes| Введите продолжительность от 1 до 5 минут
+Erase| Стереть
+Cloud Service| Облачная служба
+Enable Cloud Service| Включить облачную службу
+Cloud SIP| Облачный SIP
+Cloud Directory| Облачный справочник
+Active Config Server| Активный сервер настройки
+Cloud Config Server 1| Облачный сервер настройки 1
+Cloud Config Server 2| Облачный сервер настройки 2
+Cloud Staging Server| Промежуточный облачный сервер
+Cloud Domain| Облачный домен
+Replay| Повтор
+Backward| Назад
+Forward| Переадр.
+Send To| Отправить
+Logout| Выход
+To Email| На адрес
+Delete Failure| Сбой удаления
+Play Failure| Сбой воспроизв.
+Play Failure due to a system error. See your system administrator.| Сбой воспроизведения из-за системной ошибки. Обратитесь к системному администратору.
+Save Failure| Сбой сохранения
+Add Contact| Добавить контакт
+Voicemail and Recordings| Голосовая почта и записи
+Voicemail User Login| Вход в голос. почту
+Send to| Отправить
+Cannot dial a private number| Невозможно набрать личный номер
+Cannot copy a private number| Невозможно скопировать личный номер
+Number not available| Номер недоступен
+Loading...| Загрузка...
+Login| Вход
+Contacts| Контакты
+Private| Частный
+To| Кому
+Send| Отправить
+Voicemail has been sent.| Запись отправлена.
+Error in sending Voicemail. Please send it again.| Ошибка при отправке голосовой почты. Повторите отправку.
+Voicemail has been sent to email.| Запись отправлена по эл. почте.
+Error in sending to Email.| Сбой отправки.
+New| Новое
+Recorded| Записано
+Receipt Confirmation| Подтверждение получения
+Passcode| Секретный код
+Mailbox Number| № ящика
+Remember passcode| Запом. секр. код
+Passcode is incorrect. Enter a valid passcode.| Неправильный секретный код. Введите правильный секретный код.
+Invalid mailbox number.| Неверный № ящика
+Error - Mailbox in use| Ящик уже используется
+Error - maximum sessions exceeded| Превышено макс. кол-во сеансов
+Error - no session exists| Сеанс не существует
+Error - bad extension| Неверное расширение
+Mailbox locked for security reasons. See your system administrator.| Почтовый ящик заблокирован по соображениям безопасности. Обратитесь к системному администратору.
+DECT Headset| Гарнитура DECT
+DECT Headset Version| Версия гарнитуры DECT
+DECT Headset Battery| Аккумулятор гарнитуры DECT
+DECT Headset Rf Power| Мощность радиоизлучения гарнитуры DECT
+DECT Headset Rf Power| Мощность радиоизлучения гарнитуры DECT
+Very Low| Очень низко
+Downloading Font| Загрузка шрифта
+No calls to unpark| Нет вызовов для удал
+For ...| Для ...
+To Vm| к ГП
+Number of Packets Sent| Кол-во отпр. пакетов
+Number of Packets Received| Кол-во получ. пакетов
+RTT min/avg/max| RTT мин/ср/макс
+traceroute to| трассировка к
+hops max| хопов  макс
+byte max| байт макс
+Voicemail box is full| Ящик гол. почты заполнен
+ALL| ВСЕ
+REMOTE| УДАЛЕННО
+Local| Местный
+Not allowed on this call| Не допустимо в этом звонке
+ Whisper| 
+ Consult| 
+ Coach| 
+ Barge| 
+ Monitor| 
+ For|  Для
+ External Speaker| 
+ UnPark| 
+ Call Parked| 
+ UnPark Failed| 
+ Rev:|  Ред:
+ You must restart the phone before the new settings will take effect.|  Вы должны перезапустить телефон, чтобы новые настройки вступили в силу.
+ None|  Нет
+ Use LLDP-MED| 
+ LLDP neighbor| 
+ Cache LLDP-MED| 
+ Conf In Progress| 
+  Enter Voicemail Password| 
+ Call Server| 
+ Do Not Ring if on a Call|  Не звонить во время вызова
+ P| 
+ To Vm|  К голосовой почте
+ Pickup not permitted|  Захват вызова не разрешается
+ Pickup/unpark not permitted| 
+ Unpark not permitted| 
+ Silent Monitor not permitted on this call|  Безмолвный наблюдатель запрещён для данного вызова
+ Silent Coach not permitted on this call|  Безмолвный подсказчик запрещён для данного вызова
+ Barge In not permitted on this call|  Вторжение запрещено для данного вызова
+ Park not permitted|  Парковка вызова не разрешена
+ Park/Transfer is still in progress|  Парковка/Передача всё ещё выполняется
+ No calls to unpark|  Нет вызовов для удал
+ No calls to park|  Нет вызовов для парковки
+ No calls to pickup|  Нет вызовов для подхвата
+ No calls to take action|  Нет вызовов для принятия мер
+ My Status|  Мой статус
+ Favorite|  Избранное
+ Voicemail playback failed|  Воспроизведение голосовой почты не удалось
+ Voicemail skip failed|  Пропуск голосовой почты не удался
+ Voicemail bad address|  Неправильный адрес голосовой почты
+ Voicemail box is full for|  Ящик гол. почты заполнен для
+ Not supported| 
+ Service unavalilable at this time| 
+ Hold not permitted on this call| 
+ Action not permitted| 
+ Not Permitted on this call|  Не разрешено в этом вызове
+ Request denied or \r\nunacceptable at this time|  В запросе отказано или \r\nв данный момент он неприемлем
+ Phone number is invalid or not properly formatted|  Номер телефона недействителен или неправильно отформатирован
+ Move Message Failure| 
+ Contacts| 
+ Cloud Connect| 
+ Service Type| 
+ MiCloud Connect| 
+ MiVoice Border Gateway| 
+ User DID| 
+ Domain| 
+ Call Back| 
+ Play| 
+ Exit| 
+ Skip Back| 
+ Skip Forward| 
+ Inbox| 
+ MiCloud| 
+ Fetching Details| 
+ Additional Phone| 
+ Agent state| 
+ Availability| 
+ Standard| 
+ In a meeting| 
+ Out of office| 
+ Extended Absence| 
+ Do not disturb| 
+ On the Phone| 
+ Assign| 
+ Assign user| 
+ Assign user failed| 
+ Assign user to phone in progress. Please wait...| 
+ Extension or password invalid| 
+ Unassign| 
+ Unassign user| 
+ Unassign user failed| 
+ Unassign user?| 
+ Unassigning user...| 
+ Voicemail password| 
+ Ping| 
+ Host Name or IP Address| 
+ Please enter a valid HostName/IP Address| 
+ Pinging %s...| 
+ Tracerouting...| 
+ Tracerouting Complete| 
+ Traceroute| 
+ Page Up|  На страницу вверх
+ Page Down|  На страницу вниз
+ Traceroute Command| 
+ Never| 
+ Always destination| 
+ No answer destination| 
+ Busy destination| 
+ Simulring| 
+ VPN| 
+ Use VPN| 
+ VPN gateway| 
+ VPN gateway port| 
+ Tunnel IP| 
+ VPN protocol| 
+ VPN debug mode| 
+ System| 
+ Log upload| 
+ Timeout (1-1440 Minutes)| 
+ Please input a duration between 1 and 1440 minutes| 
+ User Settings| 
+ Diagnostic server| 
+ Diag Server| 
+ Wrap up| 
+ UnWrap| 
+  Open| 
+ Confirm| 
+ New voicemail password| 
+ Password entries do not match| 
+ Password change succeeded| 
+ New password same as old password| 
+  Reply| 
+  ReplyAll| 
+  Compose| 
+  Call VM| 
+ Cannot choose your own extension| 
+ Save Changes?| 
+ Validating number...| 
+ Invalid %s| 
+ Upgrade Required| 
+ Invalid DID or Password| 
+ Register| 
+ Voice Service| 
+ Start Over| 
+ Empty domain name| 
+ Registering| 
+ DID or password no update| 
+ Invalid domain name| 
+  Registration cancelled| 
+ Pager| 
+ Phone not registered| 
+ Enterprise| 
+  Parameter Type| 
+ Remote| 
+  Filter Page| 
+  Parameter Filter| 
+  Get Parameters| 
+ Assigned| 
+ Assigning| 
+ Invalid extension| 
+ Extension or password no update| 
+ Assignment cancelled| 
+ Extension already assigned| 
+  Select a call to park|   Выберите вызов для парковки
+  Select a call to unpark| 
+  Unpark|   Возобновить
+ Duration| 
+ Subject| 
+ Uploading Fail| 
+ Diagnostic server is empty| 
+ Logs uploaded successfully| 
+ Urgent| 
+ Return Receipt| 
+ Include Original| 
+ Re: Voice Message| 
+ Fw: Voice Message| 
+ Phone not assigned| 
+ Whisper Page| 
+ Intercom| 
+ Silent Monitor| 
+ Barge In| 
+ Silent Coach| 
+ To Inbox| 
+ Save Message?| 
+ By First| 
+ By Last| 
+ Dial Voicemail| 
+ Dial VM| 
+  Invalid Phone Number| 
+ Transfer not permitted on this call| 
+ Conference not permitted on this call| 
+ Remote log upload in progress| 
+ Remote capture upload in progress| 
+ Standard| 
+ Ring 2| 
+ Ring 3| 
+ Ring 4| 
+ Play Int| 
+ Play Ext| 
+ Press "Upload" to upload a debug log| 
+ Select a call to merge| 
+ Add Caller:| 
+ Assign user?| 
+ Participants|  Участники
+ Conferenced|  Вызовы, объединенные в конференцию
+ calls|  вызовы
+ held calls|  вызовы на удержании
+ Debug on|  Отладка вкл
+ Debug off|  Отладка выкл
+ Unknown Error|  Неизвестная ошибка
+ Connection Error|  Ошибка подключения
+ Application Error|  Ошибка приложения
+Number of Packets Sent:| Кол-во отпр. пакетов:
+Number of Packets Received:| Кол-во получ. пакетов:
+ RTT min/avg/max|  RTT мин/ср/макс
+ traceroute to|  трассировка к
+ hops max|  хопов  макс
+ byte packets|  байт в пакете
+ Help|  Помощь
+ Call Mitel Support ?|  Связаться с поддержкой Mitel?
+ Mitel Support|  Поддержка Mitel
+ Remote|  Удалённо
+ OnHold| 
+| 
+Call Disconnected| 
+Enter VM Password| 
+Intercom not permitted| 
+Enter Domain| 
+Service unavailable at this time| 
+Server address| 
+Enter address| 
+Unhold| 
+Join| 
+Start Capture| 
+Start Capture?| 
+Upload Capture| 
+Upload Capture?| 
+Duration (Minutes)| 
+No permission to perform record this call| 
+No permission to perform record| 
+Record start request| 
+Record stop request| 
+Recording start failed| 
+Recording operation failed| 
+Call Muted| 
+# to VM| 
+Press Turn on to enable Bluetooth| 
+Press Upload to upload a debug log| 
+Dialing out through Mobile Line not supported| 
+Service unavailable at this time| 
+Standard| 
+In a meeting| 
+Out of office| 
+Vacation| 
+Do not disturb| 
+On the Phone| 
+Assign| 
+Pickup failed| 
+Stop Capture?| 
+Stop Capture| 
+Enter Name/Number| 
+Host Name/IP Addre| 
+Pinging| 
+ Request denied| 
+ Net General Info|  Cведения о сети
+ Net Persist. Data|  Св-ва пост. Сети
+ Net DHCP Info|  Информация о DHCP
+ Net QoS|  Информация о QoS
+ Lease Remaining|  Время аренды
+  Enter Admin Password|  Пароль администратора
+ Current Server|  Текущий сервер
+ Net General Info|  Cведения о сети
+ Net Persist. Data|  Св-ва пост. Сети
+ Net DHCP Info|  Информация о DHCP
+ Net QoS|  Информация о QoS
+ Lease Remaining|  Время аренды
+  Enter Admin Password|  Пароль администратора
+ Current Server|  Текущий сервер
+ Net General Info|  Cведения о сети
+ Net Persist Data|  Cведения о сети
+ Net DHCP Info|  Cвед. о DHCP
+ Net QoS|  Информация о QoS
+ Lease Remaining (Seconds)|  Время аренды
+ Current Call Server|  Текущий сервер вызовов
+ Lease Remaining (Seconds)|  Время аренды
+ Current Call Server|  Текущий сервер вызовов
+ Lease Remaining (Seconds)|  Время аренды
+ Current Call Server|  Текущий сервер вызовов
+ PIN Changed|  PIN изменён
+ Erase Settings?|  Удалить настр-ки?
+ Log Issue?|  Записать в журн?
+Log Issue?| Записать в журн?
+ Contrast|  Ошибка
+  Error (Min:%d Max:%d)|   контраста (мин:%d макс:%d)
+ TCP DUMP?|  TCP DUMP?
+ Tracert Complete|  Выполнено
+ User Settings|  Настр-ки пользов.
+ PIN Confirm?|  Подтверд PIN?
+ Pin incorrect|  Неверный PIN
+ IP/Subnet/Gateway|  IP/подсеть/шлюз
+ DNS Servers|  Серверы DNS
+ Timeout 1-1440 Min|  Таймаут 1-1440 мин
+ Timeout 1-5 Minutes|  Таймаут 1-5 мин
+ Timeout 1-3 Minutes|  Таймаут 1-3 мин
+ Packet Capture|  Захват пакетов
+ Audio Capture|  Захват аудио
+ Start Capture|  Начать захват
+ Start Capture?|  Начать захват?
+ Stop Capture|  Заверш захват
+ Stop Capture?|  Заверш захват?
+ Duration(Minutes)|  Длительн (мин)
+ Packets Tx:|  Отпр. пакетов:
+ Packets Rx:|  Прин. пакетов:
+ RTT min/avg/max| 
+ traceroute to| 
+ byte packets|  байтов в пакетах
+ TFTP Server|  Сервер TFTP
+ IPA Server|  Сервер IPA
+ Hostname/IP addr.|  Имя узла/IP
+ Pinging...|  Пингование...
+ Deleting mobile contacts|  Удаление моб контактов
+ Forgetting Device...|  Отмена сопряжения
+ Press 'OK' to attempt MiCloud Connect auto-register. Or enter DID and Password if provided.|  Нажмите 'OK' для автоматической регистрации в MiCloud Connect. Или введите DID и пароль, если есть.
+ %s temporarily disconnected|  %s врем. Отключено
+  Unable to pair. Retry after this call.|  Сопряжение невозм. Повторить после этого вызова.
+ Unable to connect. Retry after this call.|  Невозм подкл. Повтор попытку после этого вызова.
+ Restoring factory default and restarting ...|  Восстановление заводских настроек и перезапуск ...
+ Music|  Музыка
+ Call Server 1|  Серв. вызовов 1
+ Call Server 2|  Серв. вызовов 2
+ Call Server 3|  Серв. вызовов 3
+ Call Server 4|  Серв. вызовов 4
+ Call Server 1|  Серв. вызовов 1
+ Call Server 2|  Серв. вызовов 2
+ Call Server 3|  Серв. вызовов 3
+ Call Server 4|  Серв. вызовов 4
+ T3 (Seconds)|  T3 (сек)
+ T3 Left (Seconds)|  T3 оставш. (сек)
+ Lease Remaining Left (Seconds)|  Время аренды (сек)
+Logging Issue...|  Запись в журнал...
+ External Contacts|  Внешние контакты
+ "Press ""%s"" key to search external contacts"|  Нажм "%s" для поиска вн. Контактов
+ "Press ""%s"" key to search corporate contacts"|  Нажм "%s" для поиска корп. Контактов
+ WaveStreaming|  WaveStreaming
+ MiV BorderGateway|  MiV BorderGateway
+ MiVoice Connect|  MiVoice Connect
+MiVoice Connect| MiVoice Connect
+ Domain (required)|  домен (обязательно)
+ Server Address|  Адрес сервера
+ Log capture in progress|  Захват журнала...
+ Stopping Log capture|  Остановка захвата журнала...
+ Audio capture in progress|  Выполняется захват аудио
+ Stopping audio capture|  Остановка захвата аудио
+ Not Available Yet|  Пока недоступно
+ Restart Network|  Перезап. Сеть
+ Restart Network?|  Перезап. сеть?
+ Restarting Network...|  Перезапуск...
+ Config Server|  Сервер настроек
+ Tracerouting...|  Трассировка...
+ traceroute| 
+ My Mobile| Мобильный
+My Mobile| Мобильный
+ Only one Mobile Line key can be programmed.| 
+ File Server| 
+ No Mobile Calls| 
+ Call History retrieval unavailable| Невозможно извлечь историю вызовов
+Call History retrieval unavailable| Невозможно извлечь историю вызовов
+ Failed to retrieve Call History| Сбой при извлечении вызовов
+Failed to retrieve Call History| Сбой при извлечении вызовов
+ Mobile Line| 
+ Register?|  Зарегистр?
+SRTP and RTP| 
+Clearing Log| 
+ConfigSrv Error| 
+Clear Log| 
+Clear Log?| 
+No permission to perform overhead page| 
+AddOn| 
+AddOff| 
+Disabling ringing of additional phones| 
+Enabling ringing of additional phones| 
+Ringing additional phones is disabled. Enable?| 
+Ringing additional phones is enabled. Disable?| 
+Failed to change setting for ringing of additional phones| 
+CAS Server| 
+CAS State| 
+CAS| CAS
+Active SIP Svr| 
+DHCP lease| 
+DHCP lease details currently not available| 
+DHCP Domain| 
+Override| 
+Cache (Press Details key)| 
+Call appearance| 
+Mobile Line| 
+Softkey(s) changed successfully| 
+Softkey change failed| 
+Config| 
+Override Server| 
+Config Servers| 
+SIP Failover| 
+SIP State| 
+Configuration Servers| 
+Wrap up failed| 
+Voice Services| 
+Program Keys| 
+Program Keys Edit| 
+Press skip to bypass provisioning| Нажмите "пропустить" для пропуска инициализации
+Bypassing provisioning| 
+Continuing| Продолжение
+Skip to bypass provisioning| 
+No conference ports\navailable to add another party| 
+Keep managing conference call?| 
+Config server %d| Сервер настроек %d
+CY-Nicosia| CY-Никосия
+GE-Tbilisi| GE-Тбилиси
+HK-Hong Kong| HK-Гонконг
+IN-Kolkata| IN-Колката
+JP-Tokyo| JP-Токио
+MU-Mauritius| MU-Маврикий
+OM-Muscat| OM-Маскат
+DECT Headset Rf Power| RF-мощность DECT гарнитуры
+Very Low| Очень низкий
+Downloading font,17,Wrapped over 2 lines| Скачивание шрифта, 17, перекрыто 2 строки
+Notes| Примечания
+Invalid length of new password| Новый пароль имеет неправильную длину
+Invalid length of new password.| Новый пароль имеет неправильную длину.
+Unsupported character| Символ не поддерживается
+Unsupported character.| Символ не поддерживается.
+Http Digest Settings| Настройки HTTP Digest
+DECT RF Power| Мощность радиоизлучения устройства DECT
+DECT RF Bandwidth| Ширина полосы пропускания устройства DECT
+DECT Headset RF Bandwidth| Мощность радиоизлучения гарнитуры DECT
+Wideband| Широкополосный
+Narrowband| Узкополосный
+Configuring DECT| Выполняется настройка DECT
+USB Wireless| Беспроводной интерфейс USB
+Request denied or unacceptable at this time| Запрос отклонён или неприемлем на данный момент
+ Request denied or unacceptable at this time| Запрос отклонён или неприемлем на данный момент
+Deselect| Отменить выбор
+Caller on hold| Абонент в ожидании
+Bluetooth device disconnected| Устройство Bluetooth отключено
+Saved Network| Сохранено
+Available Networks| Доступные сети
+Avail. Net.| Дост. Статич.
+WLAN adapter is not connected| Адаптер WLAN не подключен
+WLAN disconnected| Беспроводная связь WLAN разорвана
+No Saved Network| Нет сохраненной сети
+Refresh| Обновить
+Searching for networks| Поиск сетей
+Reboot WLAN adapter and phone to save settings?| Перезагрузить устройства WLAN и телефон для сохранения настроек?
+Bluetooth Advanced Settings| Расширенные настройки Bluetooth
+Hot desk Only| Только для Hot Desk
+Automatically reconnect mobile phone| Автоматически возобновлять соединение с мобильным телефоном
+Cannot forward a private message| Не удаётся переслать личное сообщение
+Manual Software Upgrade| Ручное обновление программного обеспечения
+Manual Configuration| Ручная настройка
+Connect Services| Подключить службы
+TFTP Port| Порт TFTP
+TFTP Path| Путь TFTP
+Firmware updated. Restarting...| Прошивка обновлена. Перезапуск...
+Rebooting to MiCloud Connect| Перезагрузка в MiCloud Connect
+Has Certificate| Есть сертификат
+6970 prompts| 
+Meetings| Мероприятия
+Last Commit| Последнее подтверждение
+External Mics| Внешние микрофоны
+DSP FW Version| Версия прошивки цифрового сигнального процессора
+DSP TE| DSP TE
+BLE Power| Мощность Bluetooth с низким энергопотреблением
+Calibration Data| Параметры калибровки
+HW Id| Идентификационный номер оборудования
+Keep me logged in| Не выходить из системы
+You are currently logged in to Hotdesk. Would you like to remain logged in?| Вы вошли вошли в систему в режиме Виртуального абонента. Остаться в системе залогированным?
+Rev:| Версия:
+Reflective Room| Светоотражающая комната
+Applying in %d seconds| Applying in %d seconds
+Manual Config| Manual Config
+Manual S/W Upgrade| Manual S/W Upgrade
+No Mobile Calls| Нет мобильных
+Port Mirror| Зеркалирование портов
+Press %d| Нажмите ##.
+Provisioning completed. Restarting...| Provisioning completed. Перезапуск
+Call Support?| Позвонить в службу поддержки?
+My Phone| Мой телефон
+IN-Kolkata| IN-Kolkata
+ Auto 100Mbps|  Авто 100 Мбит/с
+ %s temporarily disconnected. PC Audio is now on your PC.|  %s временно отключено. PC Audio теперь на вашем ПК.
+ \n\nPrivacy Policy\nhttps://www.mitel.com/legal/mitel-application-privacy-policy|  \n\nПолитика конфиденциальности\nhttps://www.mitel.com/legal/mitel-application-privacy-policy
+ Mobile/PC Line|  Линия мобильное устр-во/ПК
+ Only one Mobile/PC Line key can be programmed.|  Можно программировать только линию мобильное устр-во/ПК.
+ Manual Upgrade|  Ручное обновление
+ Teleworker| У даленный пользователь
+ DSP TE|  DSP TE
+ DSP TE|  DSP TE
+ HotDesk|  HotDesk
+ Hot Desk|  Hot Desk
+ Voicedial|  Голосовой набор
+ Speed Calls|  Быстрые звонки
+ Room Meetings|  Встречи в комнатах
+ Settings|  Настройки
+ Meetings|  Встречи
+ Release Version|  Поставляемая версия
+ Last Commit|  Последняя фиксация
+ External Mics|  Внешние микрофоны
+ DSP FW Version|  Версия DSP FW
+ DSP TE|  DSP TE
+ You are currently logged in to Hotdesk. Would you like to remain logged in?|  Вы вошли в систему Hotdesk. Хотели бы вы оставаться в системе?
+ Keep me logged in|  Разрешите мне оставаться в системе
+ BLE Power|  Мощность BLE 
+ Calibration Data|  Данные калибровки
+ HW Id:|  HW Id:
+ MREV|  MREV
+ AVER|  СРЕД
+ MUTE|  БЕЗ ЗВУКА
+ Personal Mode| 
+ Disable Hotdesk Logout Pop-up| 
+ Enable G729 codec support|  Активировать поддержку кодека G729
+ Restart needed|  Требуется перезагрузка
+ Will reconnect to the server for the settings to take effect.|  Повторно подключитесь к серверу, чтобы настройки вступили в силу.
+ Reconnect|  Подключиться повторно
+ Reconnect later|  Подключиться повторно позже
+ Reflective Room| 
+ Press # on the dialpad to enter a Dot "."|  Нажмите # на панели набора номера, чтобы ввести точку "."
+ TFTP Server| Недопустимый порт TFTP
+ TFTP Port|  TFTP путь
+ TFTP Path|  Ручное обновление
+ Manual Upgrade|  Расширенный
+ Advanced| 
+ Bluetooth Advanced Settings|  Расширенные настройки Bluetooth
+ Never| 
+ Hot desk Only|  Только для Hot Desk
+ Always| 
+ Automatically reconnect mobile phone|  Автоматически возобновлять соединение с мобильным телефоном
+ PC Audio|  PC Audio
+ PC|  ПК
+ PC Connected|  ПК подключен
+ Bluetooth Handset is not supported for PC Audio|  Мобильный телефон с Bluetooth не поддерживается для PC Audio
+ Bluetooth Headset is not supported for PC Audio|  Мобильный телефон с Bluetooth не поддерживается для PC Audio
+ S720 Bluetooth Speakerphone is not supported for PC Audio|  Телефон с громкоговорителем с Bluetooth S720 не поддерживается для PC Audio
+ BT Handset is not supported for PC Audio|  Мобильный телефон с BT не поддерживается для PC Audio
+ BT Headset is not supported for PC Audio|  Мобильный телефон с BT не поддерживается для PC Audio
+ S720 Speakerphone is not supported for PC Audio|  Телефон с громкоговорителем S720 Громкая связь не поддерживается для PC Audio
+ Unsupported Device. Pairing denied|  Неподдерживаемое устройство. В сопряжении отказано
+ Connecting this device will disconnect your PC|  Подключение этого устройства отключит ваш ПК
+ Connecting this device will disconnect your Mobile|  Подключение этого устройства отключит ваш мобильный
+ Pair with %s|  Связать с %s
+ Please initiate pairing from the PC/MAC|  Пожалуйста, инициируйте сопряжение с ПК/MAC
+ Delete failure. Mailbox uninitialized. See your system administrator.|  Удалить ошибку. Почтовый ящик не инициализирован. Обратитесь к системному администратору.
+ Connecting devices. This may take several seconds...|  Подключение устройств. Это может занять несколько секунд...
+ Bluetooth Handset|   Мобильный телефон с Bluetooth
+%s - %d% battery remaining| %s - оставшийся заряд %d%
+.\nAll rights reserved.| .\nВсе права защищены.
+Connecting PC Audio...| Подключение аудиосистемы ПК...
+Copyright Mitel Networks Corporation | Copyright Mitel Networks Corporation 
+DECT Power/Bandwidth| Мощность/Ширина полосы пропускания устройства DECT
+Device Move Detected| Обнаружено перемещение устройства
+DHCP Server| DHCP-сервер
+Disabling USB Wireless...| Отключение беспроводного USB...
+Dump DECT Logs| Вывод DECT-журналов
+Enabling USB Wireless...| Включение беспроводного USB...
+High Power| Высокая мощность
+key opens Voicemail App| открывает голос. почту
+LAN Port T1| Порт LAN T1
+LAN Port T4| Порт LAN T4
+Low Power| Низкая мощность
+Max allowed Name length is 20| Макс. длина имени: 20
+NB Level Comp| Уровень сжатия NB
+Not available\nPlease contact your administrator| Недоступно\nОбратитесь к администратору
+Only one Handset can be paired to this phone| К этому телефону можно подключить только одну трубку.
+Only one Mitel S720 Bluetooth Speakerphone can be paired to this phone| С этим телефоном можно связать только одну Bluetooth-гарнитуру Mitel S720
+Only one Mitel S720 BT Speakerphone can be paired to this phone| С этим телефоном можно связать только одну гарнитуру Mitel S720
+PC Port T1| Порт ПК T1
+PC Port T4| Порт ПК T4
+Phone Uptime| Время работы
+Press "%s" key to search external contacts| Нажмите кнопку "%s" для поиска внешних контактов
+Remember my passcode| Запомнить секр. код
+Request Cancelled| Запрос отменен
+Test Modes| Режимы тестирования
+Unable to connect. Device will reconnect after this call.| Невозможно подключиться. Устройство подключится повторно после этого звонка.
+Very Low Power| Очень низкая мощность
+Voicedial| Голосовой набор
+Yes-update 9-1-1 info| Да-обновить инфо для 9-1-1
+Did you move to a new address?\n\nYes - Update your emergency location information| Вы переехали на новый адрес?\n\nYes - Обновите информацию о местонахождении в  случае экстренной ситуации
+Did you move to a new address?\n\nYes - Update your emergency location information| Вы переехали на новый адрес?
+Yes - Update your emergency location information| Yes - Обновите информацию о местонахождении в  случае экстренной ситуации
+Did you move?| Вы переехали?
+not found| не найдено
+exist| существуют
+retest| протестировать повторно
+Clear Log| 
+Debug on| 
+Press "Upload" to upload a debug log| 
+Ping| 
+Traceroute| 
+WLAN adapter is not connected| 
+Log Upload| 
+For| For
+Enter VM Password:| Ввод пароля ВМ:
+On another call| Разговариваю по телефону
+Server address:| Адрес сервера:
+Empty domain name| Доменное имя не указано
+Enter Name/Number:| Ввод имени/номера:
+Dial number| Набрать номер
+Config Server 1| Сервер настройки 1
+Bypassing provisioning...| Обеспечение работы параллельных ветвей...
+Unused| Неиспользованный
+Remote rebooting...| Удаленная перезагрузка...
+Factory reset...| Сброс до заводских настроек...
+Remote pairing request| Удаленный запрос на на сопряжение
+Device has moved| Устройство перемещено

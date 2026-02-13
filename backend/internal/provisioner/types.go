@@ -1,16 +1,19 @@
 package provisioner
 
 type VendorConfig struct {
-	ID                  string `yaml:"id"`
-	Name                string `yaml:"name"`
-	StaticDir           string `yaml:"static_dir"`            // Директория со статикой (относительно vendor.yaml)
-	PhoneConfigFile     string `yaml:"phone_config_file"`     // Шаблон имени файла конфига телефона (например: "{{account.mac_address}}.cfg")
-	PhoneConfigTemplate string `yaml:"phone_config_template"` // Путь к шаблону конфига телефона (относительно vendor.yaml)
-	FeaturesFile        string `yaml:"features_file"`         // Путь к файлу с описанием функций (относительно vendor.yaml)
+	ID                  string   `yaml:"id"`
+	Name                string   `yaml:"name"`
+	StaticDir           string   `yaml:"static_dir"`            // Директория со статикой (относительно vendor.yaml)
+	PhoneConfigFile     string   `yaml:"phone_config_file"`     // Шаблон имени файла конфига телефона (например: "{{account.mac_address}}.cfg")
+	PhoneConfigTemplate string   `yaml:"phone_config_template"` // Путь к шаблону конфига телефона (относительно vendor.yaml)
+	FeaturesFile        string   `yaml:"features_file"`         // Путь к файлу с описанием функций (относительно vendor.yaml)
+	AccountsFile        string   `yaml:"accounts_file"`         // Путь к файлу с описанием аккаунтов (относительно vendor.yaml)
+	KeyTypes            []string `yaml:"key_types"`             // Список типов кнопок
 
-	// Внутреннее поле для хранения полного пути к директории вендора
+	// Внутренние поля
 	Dir      string    `yaml:"-"`
 	Features []Feature `yaml:"-" json:"features"`
+	Accounts []Feature `yaml:"-" json:"accounts"`
 }
 
 type Feature struct {
@@ -20,12 +23,13 @@ type Feature struct {
 }
 
 type FeatureParam struct {
-	ID             string `yaml:"id" json:"id"`
-	Label          string `yaml:"label" json:"label"`
-	Type           string `yaml:"type" json:"type"`                         // string, select, etc.
-	Value          string `yaml:"value,omitempty" json:"value,omitempty"`   // Fixed value if any
-	ConfigTemplate string `yaml:"config_template" json:"config_template"`   // Template line
-	Source         string `yaml:"source,omitempty" json:"source,omitempty"` // e.g. "lines" for select source
+	ID             string                 `yaml:"id" json:"id"`
+	Label          string                 `yaml:"label" json:"label"`
+	Type           string                 `yaml:"type" json:"type"`                         // string, select, etc.
+	Value          string                 `yaml:"value,omitempty" json:"value,omitempty"`   // Fixed value if any
+	ConfigTemplate string                 `yaml:"config_template" json:"config_template"`   // Template line
+	Source         string                 `yaml:"source,omitempty" json:"source,omitempty"` // e.g. "lines" for select source
+	Extra          map[string]interface{} `yaml:",inline" json:"extra"`                     // Capture any other fields
 }
 
 type DeviceModel struct {
@@ -48,9 +52,11 @@ type DeviceModel struct {
 type ModelKey struct {
 	Index    int               `yaml:"index" json:"index"`
 	Type     string            `yaml:"type" json:"type"`
+	Account  int               `yaml:"account" json:"account"` // Default account index
 	Label    string            `yaml:"label" json:"label"`
 	X        int               `yaml:"x" json:"x"`
 	Y        int               `yaml:"y" json:"y"`
+	MyImage  string            `yaml:"my_image" json:"my_image"`
 	Settings map[string]string `yaml:"settings" json:"settings"`
 }
 

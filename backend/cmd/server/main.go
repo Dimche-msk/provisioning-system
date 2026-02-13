@@ -19,6 +19,7 @@ import (
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
 	"provisioning-system/internal/provisioner"
+	"provisioning-system/internal/version"
 )
 
 //go:embed static/*
@@ -36,7 +37,7 @@ func main() {
 	}
 
 	port := ":" + cfg.Server.Port
-	fmt.Printf("Starting Provisioning Server on port %s...\n", port)
+	fmt.Printf("Starting Provisioning Server version %s on port %s...\n", version.Version, port)
 	fmt.Printf("Using config dir: %s\n", *configDir)
 
 	// 3. Инициализация компонентов

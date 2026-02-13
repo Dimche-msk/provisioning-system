@@ -217,10 +217,10 @@
         ) {
             phone.lines = [
                 {
-                    type: "line",
-                    number: 1,
-                    expansion_module_number: 0,
-                    key_number: 0,
+                    type: "Line",
+                    account_number: 1,
+                    panel_number: 0,
+                    key_number: 1, // Default to 1 for first account key?
                     additional_info: JSON.stringify({
                         line_number: "1",
                         display_name: phone.phone_number,
@@ -413,6 +413,7 @@
     {maxSoftKeys}
     {maxHardKeys}
     image={selectedModel?.image}
+    model={selectedModel}
     {phone}
     on:save={handleLinesSave}
     on:close={() => (showLineEditor = false)}

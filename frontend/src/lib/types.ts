@@ -2,8 +2,8 @@ export interface PhoneLine {
     id?: number;
     phone_id?: number;
     type: string;
-    number: number;
-    expansion_module_number?: number;
+    account_number: number;
+    panel_number?: number;
     key_number?: number;
     additional_info: string;
 }
@@ -25,17 +25,29 @@ export interface Phone {
     updated_at?: string;
 }
 
+export interface ModelKey {
+    index: number;
+    type: string;
+    account?: number;
+    label: string;
+    x: number;
+    y: number;
+    my_image?: string;
+    settings?: Record<string, string>;
+}
+
 export interface DeviceModel {
     id: string;
     name: string;
     vendor: string;
     type: string;
     max_account_lines: number;
-    OwnSoftKeys: number;
-    OwnHardKeys: number;
+    own_soft_keys: number;
+    own_hard_keys: number;
     supported_expansion_modules: string[];
     maximum_expansion_modules: number;
     image: string;
+    keys: ModelKey[];
 }
 
 export interface Vendor {
