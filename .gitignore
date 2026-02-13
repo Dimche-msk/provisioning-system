@@ -34,3 +34,4 @@ logs/
 backups/
 brain/
 .gemini/
+/sample_config

@@ -46,7 +46,15 @@ type DeviceModel struct {
 	MaxAccountLines           int                 `yaml:"max_account_lines" json:"max_account_lines"`
 	LineNameFormat            string              `yaml:"line_name_format" json:"line_name_format"` // Regex or format string
 	Keys                      []ModelKey          `yaml:"keys" json:"keys"`
+	KeyTypes                  []KeyType           `yaml:"key_types" json:"key_types"`
 	Settings                  []ModelSettingGroup `yaml:"settings" json:"settings"`
+}
+
+type KeyType struct {
+	ID      string `yaml:"id" json:"id"`
+	Verbose string `yaml:"verbose" json:"verbose"`
+	Polygon string `yaml:"polygon" json:"polygon"`
+	Image   string `yaml:"image" json:"image"`
 }
 
 type ModelKey struct {

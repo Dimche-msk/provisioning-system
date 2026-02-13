@@ -5,9 +5,3 @@ phone_config_template: templates/phone.tpl
 phone_config_file: "{{account.mac_address}}.cfg"
 features_file: templates/features.yaml
 accounts_file: accounts.yaml
-key_types:
-  - Line
-  - Free
-  - topsoftkey
-  - softkey
-  - bottomkey

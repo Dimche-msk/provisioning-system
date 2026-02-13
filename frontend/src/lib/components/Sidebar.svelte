@@ -34,6 +34,6 @@
         {/each}
     </nav>
     <div class="p-4 border-t border-gray-200 dark:border-gray-800">
-        <p class="text-xs text-center text-gray-500">v0.1.10</p>
+        <p class="text-xs text-center text-gray-500">v0.1.2</p>
     </div>
 </aside>

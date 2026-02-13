@@ -42,6 +42,14 @@
     $: maxSoftKeys = selectedModel?.own_soft_keys || 0;
     $: maxHardKeys = selectedModel?.own_hard_keys || 0;
 
+    // Auto-format MAC address reactively
+    $: if (phone.mac_address) {
+        const formatted = formatMacInput(phone.mac_address);
+        if (formatted !== phone.mac_address) {
+            phone.mac_address = formatted;
+        }
+    }
+
     onMount(async () => {
         await Promise.all([loadDomains(), loadVendors()]);
         if (phone.vendor) {
@@ -152,6 +160,16 @@
     }
 
     async function save() {
+        // Validation for expansion modules count
+        if (phone.expansion_module_model && selectedModel) {
+            const count = parseInt(String(phone.expansion_modules_count), 10);
+            const maxAllowed = selectedModel.maximum_expansion_modules || 0;
+            if (count > maxAllowed) {
+                toast.error($t("phone.error_max_exp_modules", { values: { max: maxAllowed } }) || `Maximum expansion modules allowed: ${maxAllowed}`);
+                return;
+            }
+        }
+
         // Ensure numeric types
         if (phone.expansion_modules_count) {
             phone.expansion_modules_count = parseInt(
@@ -241,7 +259,7 @@
         <Card.Title>
             {mode === "create"
                 ? $t("phone.add_title") || "Add Phone Configuration"
-                : $t("phone.edit_title") || "Edit Phone Configuration"}
+                : ($t("phone.edit_title") || "Edit Phone Configuration") + (phone.phone_number ? ` : ${phone.phone_number}` : "")}
         </Card.Title>
         <Card.Description>
             {mode === "create"
@@ -283,59 +301,61 @@
             </div>
         </div>
 
-        <div class="space-y-2">
-            <Label for="model-{formId}">{$t("phone.model") || "Model"}</Label>
-            <select
-                id="model-{formId}"
-                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                value={phone.model_id}
-                on:change={onModelChange}
-                disabled={models.length === 0}
-            >
-                {#if models.length === 0}
-                    <option value="">No models available</option>
-                {/if}
-                {#each models as m}
-                    <option value={m.id}>{m.name}</option>
-                {/each}
-            </select>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-2">
+                <Label for="model-{formId}"
+                    >{$t("phone.model") || "Model"}</Label
+                >
+                <select
+                    id="model-{formId}"
+                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={phone.model_id}
+                    on:change={onModelChange}
+                    disabled={models.length === 0}
+                >
+                    {#if models.length === 0}
+                        <option value="">No models available</option>
+                    {/if}
+                    {#each models as m}
+                        <option value={m.id}>{m.name}</option>
+                    {/each}
+                </select>
+            </div>
+
+            <div class="space-y-2">
+                <Label for="exp_module-{formId}"
+                    >{$t("phone.expansion_module") || "Expansion Module"}</Label
+                >
+                <select
+                    id="exp_module-{formId}"
+                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    bind:value={phone.expansion_module_model}
+                    disabled={(selectedModel?.supported_expansion_modules?.length ||
+                        0) === 0}
+                >
+                    <option value="">None</option>
+                    {#each selectedModel?.supported_expansion_modules || [] as m}
+                        <option value={m}>{m}</option>
+                    {/each}
+                </select>
+            </div>
+
+            <div class="space-y-2">
+                <Label for="exp_count-{formId}"
+                    >{$t("phone.exp_count") || "Count"}</Label
+                >
+                <Input
+                    id="exp_count-{formId}"
+                    type="number"
+                    min="0"
+                    max={selectedModel?.maximum_expansion_modules || 1}
+                    bind:value={phone.expansion_modules_count}
+                    disabled={!phone.expansion_module_model}
+                />
+            </div>
         </div>
 
-        <!-- Expansion Module Selection (if supported) -->
-        {#if (selectedModel?.supported_expansion_modules?.length || 0) > 0}
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <Label for="exp_module-{formId}"
-                        >{$t("phone.expansion_module") ||
-                            "Expansion Module"}</Label
-                    >
-                    <select
-                        id="exp_module-{formId}"
-                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        bind:value={phone.expansion_module_model}
-                    >
-                        <option value="">None</option>
-                        {#each selectedModel?.supported_expansion_modules || [] as m}
-                            <option value={m}>{m}</option>
-                        {/each}
-                    </select>
-                </div>
-                {#if phone.expansion_module_model}
-                    <div class="space-y-2">
-                        <Label for="exp_count-{formId}">Count</Label>
-                        <Input
-                            id="exp_count-{formId}"
-                            type="number"
-                            min="1"
-                            max="6"
-                            bind:value={phone.expansion_modules_count}
-                        />
-                    </div>
-                {/if}
-            </div>
-        {/if}
-
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-3 gap-4">
             <div class="space-y-2">
                 <Label for="mac-{formId}">
                     {$t("phone.mac") || "MAC Address"}
@@ -347,6 +367,7 @@
                     id="mac-{formId}"
                     bind:value={phone.mac_address}
                     placeholder="00:11:22:33:44:55"
+                    class="font-mono uppercase"
                 />
             </div>
             <div class="space-y-2">
@@ -363,17 +384,16 @@
                     on:blur={onPhoneNumberChange}
                 />
             </div>
-        </div>
-
-        <div class="space-y-2">
-            <Label for="ip_address-{formId}"
-                >{$t("phone.ip_address") || "IP Address"}</Label
-            >
-            <Input
-                id="ip_address-{formId}"
-                bind:value={phone.ip_address}
-                placeholder="192.168.1.100"
-            />
+            <div class="space-y-2">
+                <Label for="ip_address-{formId}"
+                    >{$t("phone.ip_address") || "IP Address"}</Label
+                >
+                <Input
+                    id="ip_address-{formId}"
+                    bind:value={phone.ip_address}
+                    placeholder="192.168.1.100"
+                />
+            </div>
         </div>
 
         <div class="space-y-2">

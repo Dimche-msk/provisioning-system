@@ -106,6 +106,17 @@
         }
     }
 
+    function clearFilters() {
+        filters = {
+            domain: "",
+            vendor: "",
+            mac: "",
+            number: "",
+            caller_id: "",
+        };
+        search(1);
+    }
+
     function nextPage() {
         if (page * limit < total) {
             search(page + 1);
@@ -294,7 +305,11 @@ async function deletePhone(phone: Phone) {
                     />
                 </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-2">
+                <Button variant="outline" on:click={clearFilters} disabled={loading}>
+                    <X class="mr-2 h-4 w-4" />
+                    {$t("common.cancel") || "Cancel"}
+                </Button>
                 <Button on:click={() => search(1)} disabled={loading}>
                     <Search class="mr-2 h-4 w-4" />
                     {$t("common.search") || "Search"}

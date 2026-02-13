@@ -48,6 +48,14 @@ export interface DeviceModel {
     maximum_expansion_modules: number;
     image: string;
     keys: ModelKey[];
+    key_types: KeyType[];
+}
+
+export interface KeyType {
+    id: string;
+    verbose: string;
+    polygon: string;
+    image: string;
 }
 
 export interface Vendor {

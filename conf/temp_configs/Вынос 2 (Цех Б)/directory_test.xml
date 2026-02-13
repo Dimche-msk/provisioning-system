@@ -1,16 +1,31 @@
 
   <!-- Domain: main_PBX -->
-    <!-- Phone: 80000FD9A7BA -->
+    <!-- Phone: 99:88:77:66:55:44 -->
     <Description></Description>
-    <Number>5555</Number>
+    <Number>1414</Number>
        <Entry>
-         <Name>5555</Name>
-         <UserName>5555</UserName>
+         <Name>1414</Name>
+         <UserName>1414</UserName>
          <Registrar></Registrar>
        </Entry>
        <Entry>
-         <Name>_5556</Name>
-         <UserName>user 5556</UserName>
+         <Name>1313-name</Name>
+         <UserName>user1313</UserName>
+         <Registrar>10.0.0.1</Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
          <Registrar></Registrar>
        </Entry>
        <Entry>

@@ -8,14 +8,19 @@ export default defineConfig({
         port:   5173,
         proxy:  {
             '/api' :{
-                target: 'http://localhost:8090',
+                target: 'http://localhost:8080',
                 changeOrigin: true,
                 ws: true,
             },
             '/config' :{
-                target: 'http://localhost:8090',
+                target: 'http://localhost:8080',
+                changeOrigin: true,
+            },
+            '/login' :{
+                target: 'http://localhost:8080',
                 changeOrigin: true,
             }
+
         }
     }
 });

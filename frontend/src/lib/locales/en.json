@@ -50,6 +50,8 @@
     "phone.ip_address": "Phone IP Address",
     "phone.model": "Phone Model",
     "phone.expansion_module": "Expansion Module",
+    "phone.exp_count": "Module Count",
+    "phone.error_max_exp_modules": "Maximum expansion modules: {max}",
     "common.save": "Save",
     "common.saving": "Saving...",
     "common.search": "Search",

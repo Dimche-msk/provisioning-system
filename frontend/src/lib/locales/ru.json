@@ -48,6 +48,8 @@
     "phone.ip_address": "IP адрес телефона",
     "phone.model": "Модель телефона",
     "phone.expansion_module": "Панель расширения",
+    "phone.exp_count": "Кол-во панелей",
+    "phone.error_max_exp_modules": "Максимальное количество панелей: {max}",
     "common.save": "Сохранить",
     "common.saving": "Сохранение...",
     "common.search": "Поиск",

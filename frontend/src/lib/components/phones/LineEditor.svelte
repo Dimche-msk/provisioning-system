@@ -88,9 +88,16 @@
     let originalLine: PhoneLine | null = null;
 
     // Background Image logic
+    $: selectedKeyType = model?.key_types?.find(kt => kt.id === (editForm?.type || selectedLine?.type));
+    
     $: baseImageUrl =
         image && phone.vendor
             ? `/api/vendors-static/${phone.vendor}/static/${image}`
+            : "";
+
+    $: typeImageUrl = 
+        selectedKeyType?.image && phone.vendor
+            ? `/api/vendors-static/${phone.vendor}/static/${selectedKeyType.image}`
             : "";
 
     // Find custom image for selected line
@@ -108,7 +115,7 @@
             ? `/api/vendors-static/${phone.vendor}/static/${currentModelKey.my_image}`
             : "";
 
-    $: activeImageUrl = myImageUrl || baseImageUrl;
+    $: activeImageUrl = myImageUrl || typeImageUrl || baseImageUrl;
 
     let imageLoadError = false;
     $: if (activeImageUrl) imageLoadError = false;
@@ -166,16 +173,19 @@
         editForm.panel_number = parseInt(String(editForm.panel_number), 10);
         editForm.key_number = parseInt(String(editForm.key_number), 10);
 
-        // Validation: Check for duplicates
+        // Validation: Check for duplicates (Type + Panel + Key must be unique)
         for (const line of workingLines) {
             if (originalLine && line === originalLine) continue;
 
             if (
+                line.type === editForm.type &&
                 line.panel_number === editForm.panel_number &&
                 line.key_number === editForm.key_number
             ) {
+                const typeName = model?.key_types?.find(kt => kt.id === editForm.type)?.verbose || editForm.type;
+                const panelText = editForm.panel_number === 0 ? "Основная" : `Панель ${editForm.panel_number}`;
                 toast.error(
-                    `Panel ${editForm.panel_number} / Key ${editForm.key_number} is already assigned.`,
+                    `Дубликат: ${typeName}, ${panelText}, Кнопка ${editForm.key_number} уже назначена.`,
                 );
                 return;
             }
@@ -353,60 +363,62 @@
                                     ? $t("lines.edit_item") || "Edit Item"
                                     : $t("lines.new_item") || "New Item"}
                             </h3>
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid {phone.expansion_modules_count > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-4">
                                 <div class="space-y-2">
-                                    <Label>Type</Label>
+                                    <Label>Тип</Label>
                                     <select
                                         class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         bind:value={editForm.type}
                                     >
-                                        <option value="Line">Line</option>
-                                        <option value="Free">Free</option>
-                                        <option value="topsoftkey"
-                                            >Top Softkey</option
-                                        >
-                                        <option value="softkey">Softkey</option>
-                                        <option value="bottomkey"
-                                            >Bottom Key</option
-                                        >
-                                        {#if maxHardKeys > 0}
-                                            <option value="hard_key"
-                                                >Hard Key</option
-                                            >
+                                        {#if model?.key_types && model.key_types.length > 0}
+                                            {#each model.key_types as kt}
+                                                <option value={kt.id}>{kt.verbose || kt.id}</option>
+                                            {/each}
+                                        {:else}
+                                            <option value="Line">Линия</option>
+                                            <option value="Free">Свободно</option>
+                                            <option value="topsoftkey">Верхняя клавиша</option>
+                                            <option value="softkey">Программная клавиша</option>
+                                            <option value="bottomkey">Нижняя клавиша</option>
+                                            {#if maxHardKeys > 0}
+                                                <option value="hard_key">Клавиша корпуса</option>
+                                            {/if}
                                         {/if}
                                     </select>
                                 </div>
                                 <div class="space-y-2">
-                                    <Label>Account #</Label>
+                                    <Label>Аккаунт #</Label>
                                     <Input
                                         type="number"
                                         bind:value={editForm.account_number}
                                     />
                                 </div>
                                 <div class="space-y-2">
-                                    <Label>Panel #</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        max={phone.expansion_modules_count || 0}
-                                        bind:value={editForm.panel_number}
-                                    />
-                                </div>
-                                <div class="space-y-2">
-                                    <Label>Key #</Label>
+                                    <Label>Кнопка #</Label>
                                     <Input
                                         type="number"
                                         min="1"
                                         bind:value={editForm.key_number}
                                     />
                                 </div>
+                                {#if phone.expansion_modules_count > 0}
+                                    <div class="space-y-2">
+                                        <Label>Панель #</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            max={phone.expansion_modules_count || 0}
+                                            bind:value={editForm.panel_number}
+                                        />
+                                    </div>
+                                {/if}
                             </div>
 
                             <!-- Dynamic Fields based on Type -->
                             {#if editForm.type === "Line"}
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-3 gap-4">
                                     <div class="space-y-2">
-                                        <Label>Line Number</Label>
+                                        <Label>Номер линии</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.line_number
@@ -414,7 +426,7 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Display Name</Label>
+                                        <Label>Отображаемое имя</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.display_name
@@ -422,7 +434,7 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>User Name</Label>
+                                        <Label>Имя пользователя</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.user_name
@@ -430,7 +442,7 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Auth Name</Label>
+                                        <Label>Имя авторизации</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.auth_name
@@ -438,14 +450,14 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Password</Label>
+                                        <Label>Пароль</Label>
                                         <Input
                                             type="password"
                                             bind:value={additionalInfo.password}
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Screen Name</Label>
+                                        <Label>Имя на экране</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.screen_name
@@ -453,7 +465,7 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Registrar 1 IP</Label>
+                                        <Label>IP Регистратора 1</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.registrar1_ip
@@ -461,7 +473,7 @@
                                         />
                                     </div>
                                     <div class="space-y-2">
-                                        <Label>Registrar 1 Port</Label>
+                                        <Label>Порт Регистратора 1</Label>
                                         <Input
                                             bind:value={
                                                 additionalInfo.registrar1_port
@@ -473,7 +485,7 @@
                                 <!-- Keys -->
                                 <div class="col-span-3 space-y-4">
                                     <div class="space-y-2">
-                                        <Label>Function</Label>
+                                        <Label>Функция</Label>
                                         <select
                                             class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                             bind:value={additionalInfo.type}
@@ -484,51 +496,53 @@
                                                 >
                                             {/each}
                                             <option value="custom"
-                                                >Custom</option
+                                                >Другое</option
                                             >
                                         </select>
                                     </div>
 
                                     {#if additionalInfo.type && additionalInfo.type !== "custom"}
-                                        {#each currentVendorFeatures.find((f) => f.id === additionalInfo.type)?.params || [] as param}
-                                            {#if param.type !== "hidden"}
-                                                <div class="space-y-2">
-                                                    <Label>{param.label}</Label>
-                                                    {#if param.type === "select" && param.source === "lines"}
-                                                        <select
-                                                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                            bind:value={
-                                                                additionalInfo[
-                                                                    param.id
-                                                                ]
-                                                            }
-                                                        >
-                                                            <option value=""
-                                                                >Select Line</option
+                                        <div class="grid grid-cols-3 gap-4">
+                                            {#each currentVendorFeatures.find((f) => f.id === additionalInfo.type)?.params || [] as param}
+                                                {#if param.type !== "hidden"}
+                                                    <div class="space-y-2">
+                                                        <Label>{param.label}</Label>
+                                                        {#if param.type === "select" && param.source === "lines"}
+                                                            <select
+                                                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                                bind:value={
+                                                                    additionalInfo[
+                                                                        param.id
+                                                                    ]
+                                                                }
                                                             >
-                                                            {#each workingLines.filter((l) => l.type === "Line") as line}
-                                                                <option
-                                                                    value={line.account_number}
-                                                                    >Line {line.account_number}</option
+                                                                <option value=""
+                                                                    >Выберите линию</option
                                                                 >
-                                                            {/each}
-                                                        </select>
-                                                    {:else}
-                                                        <Input
-                                                            bind:value={
-                                                                additionalInfo[
-                                                                    param.id
-                                                                ]
-                                                            }
-                                                        />
-                                                    {/if}
-                                                </div>
-                                            {/if}
-                                        {/each}
+                                                                {#each workingLines.filter((l) => l.type === "Line") as line}
+                                                                    <option
+                                                                        value={line.account_number}
+                                                                        >Линия {line.account_number}</option
+                                                                    >
+                                                                {/each}
+                                                            </select>
+                                                        {:else}
+                                                            <Input
+                                                                bind:value={
+                                                                    additionalInfo[
+                                                                        param.id
+                                                                    ]
+                                                                }
+                                                            />
+                                                        {/if}
+                                                    </div>
+                                                {/if}
+                                            {/each}
+                                        </div>
                                     {:else if additionalInfo.type === "custom"}
                                         <div class="grid grid-cols-2 gap-4">
                                             <div class="space-y-2">
-                                                <Label>Label</Label>
+                                                <Label>Метка</Label>
                                                 <Input
                                                     bind:value={
                                                         additionalInfo.label
@@ -536,7 +550,7 @@
                                                 />
                                             </div>
                                             <div class="space-y-2">
-                                                <Label>Value</Label>
+                                                <Label>Значение</Label>
                                                 <Input
                                                     bind:value={
                                                         additionalInfo.value
@@ -544,12 +558,12 @@
                                                 />
                                             </div>
                                             <div class="space-y-2">
-                                                <Label>Type</Label>
+                                                <Label>Тип</Label>
                                                 <Input
                                                     bind:value={
                                                         additionalInfo.custom_type
                                                     }
-                                                    placeholder="e.g. blf"
+                                                    placeholder="например: blf"
                                                 />
                                             </div>
                                         </div>
@@ -558,7 +572,7 @@
                             {/if}
 
                             <div class="space-y-2">
-                                <Label>Description</Label>
+                                <Label>Описание</Label>
                                 <Input
                                     bind:value={additionalInfo.description}
                                 />
@@ -587,17 +601,17 @@
                             <Table.Header>
                                 <Table.Row>
                                     <Table.Head class="w-[80px]"
-                                        >Acc #</Table.Head
+                                        >Акк #</Table.Head
                                     >
                                     <Table.Head class="w-[120px]"
-                                        >Panel / Key</Table.Head
+                                        >Панель / Кнопка</Table.Head
                                     >
                                     <Table.Head class="w-[100px]"
-                                        >Type</Table.Head
+                                        >Тип</Table.Head
                                     >
-                                    <Table.Head>Description</Table.Head>
+                                    <Table.Head>Описание</Table.Head>
                                     <Table.Head class="text-right"
-                                        >Actions</Table.Head
+                                        >Действия</Table.Head
                                     >
                                 </Table.Row>
                             </Table.Header>
@@ -615,14 +629,14 @@
                                         </Table.Cell>
                                         <Table.Cell>
                                             {line.panel_number === 0
-                                                ? "Main"
-                                                : `Exp ${line.panel_number}`} / {line.key_number}
+                                                ? "Осн."
+                                                : `Расш ${line.panel_number}`} / {line.key_number}
                                         </Table.Cell>
                                         <Table.Cell>
                                             <span
                                                 class="capitalize text-xs font-semibold px-2 py-1 rounded bg-muted"
                                             >
-                                                {line.type.replace("_", " ")}
+                                                {model?.key_types?.find(kt => kt.id === line.type)?.verbose || line.type.replace("_", " ")}
                                             </span>
                                         </Table.Cell>
                                         <Table.Cell
@@ -683,10 +697,10 @@
                                 disabled={currentPage === 1}
                                 on:click={() => currentPage--}
                             >
-                                Previous
+                                Назад
                             </Button>
                             <span class="py-2 text-sm"
-                                >Page {currentPage} of {totalPages}</span
+                                >Страница {currentPage} из {totalPages}</span
                             >
                             <Button
                                 variant="outline"
@@ -694,7 +708,7 @@
                                 disabled={currentPage === totalPages}
                                 on:click={() => currentPage++}
                             >
-                                Next
+                                Вперед
                             </Button>
                         </div>
                     {/if}

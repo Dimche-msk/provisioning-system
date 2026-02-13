@@ -9,6 +9,27 @@ supported_expansion_modules:
   - M680
   - M685
 maximum_expansion_modules: 3
+key_types:
+  - id: Line
+    verbose: "Линия"
+    polygon: "10,10,50,10,50,50,10,50"
+    image: "mitel6873i_lines.png"
+  - id: Free
+    verbose: "Свободно"
+    polygon: "60,10,100,10,100,50,60,50"
+    image: "mitel6873i_free.png"
+  - id: topsoftkey
+    verbose: "Программные кнопки наверху экрана"
+    polygon: ""
+    image: ""
+  - id: softkey
+    verbose: "Программная клавиша"
+    polygon: ""
+    image: ""
+  - id: bottomkey
+    verbose: "Программные кнопки. Нижняя строка"
+    polygon: ""
+    image: ""
 keys:
   - index: 1
     type: Line
