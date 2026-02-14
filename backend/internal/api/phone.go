@@ -233,6 +233,9 @@ func (h *PhoneHandler) GetPhones(w http.ResponseWriter, r *http.Request) {
 	if vendor := r.URL.Query().Get("vendor"); vendor != "" {
 		query = query.Where("vendor = ?", vendor)
 	}
+	if modelID := r.URL.Query().Get("model_id"); modelID != "" {
+		query = query.Where("model_id = ?", modelID)
+	}
 	if mac := r.URL.Query().Get("mac"); mac != "" {
 		mac = strings.ReplaceAll(mac, "*", "%")
 		query = query.Where("mac_address LIKE ?", mac)
@@ -240,6 +243,14 @@ func (h *PhoneHandler) GetPhones(w http.ResponseWriter, r *http.Request) {
 	if number := r.URL.Query().Get("number"); number != "" {
 		number = strings.ReplaceAll(number, "*", "%")
 		query = query.Where("phone_number LIKE ?", number)
+	}
+	if q := r.URL.Query().Get("q"); q != "" {
+		q = "%" + strings.ReplaceAll(q, "*", "%") + "%"
+		query = query.Where(
+			h.DB.Where("phone_number LIKE ?", q).
+				Or("description LIKE ?", q).
+				Or("id IN (SELECT phone_id FROM phone_lines WHERE additional_info LIKE ?)", q),
+		)
 	}
 
 	// Count total
@@ -261,6 +272,24 @@ func (h *PhoneHandler) GetPhones(w http.ResponseWriter, r *http.Request) {
 	if result := query.Limit(limit).Offset(offset).Order("id desc").Preload("Lines").Find(&phones); result.Error != nil {
 		http.Error(w, fmt.Sprintf("Failed to fetch phones: %v", result.Error), http.StatusInternalServerError)
 		return
+	}
+
+	// Enrich phones with display names
+	for i := range phones {
+		// Model Name
+		for _, m := range h.ProvManager.Models {
+			if m.ID == phones[i].ModelID {
+				phones[i].ModelName = m.Name
+				break
+			}
+		}
+		// Vendor Name
+		for _, v := range h.ProvManager.Vendors {
+			if v.ID == phones[i].Vendor {
+				phones[i].VendorName = v.Name
+				break
+			}
+		}
 	}
 
 	response := map[string]interface{}{
@@ -484,7 +513,10 @@ func (h *PhoneHandler) GetModels(w http.ResponseWriter, r *http.Request) {
 	var models []provisioner.DeviceModel
 
 	for _, m := range h.ProvManager.Models {
-		if vendor == "" || m.Vendor == vendor {
+		if m.Type == "expansion-module" {
+			continue
+		}
+		if vendor == "" || strings.EqualFold(m.Vendor, vendor) {
 			models = append(models, m)
 		}
 	}

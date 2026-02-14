@@ -21,6 +21,8 @@ export interface Phone {
     expansion_module_model: string;
     expansion_modules_count?: number;
     type: string;
+    model_name?: string;
+    vendor_name?: string;
     created_at?: string;
     updated_at?: string;
 }

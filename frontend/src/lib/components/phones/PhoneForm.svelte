@@ -165,7 +165,11 @@
             const count = parseInt(String(phone.expansion_modules_count), 10);
             const maxAllowed = selectedModel.maximum_expansion_modules || 0;
             if (count > maxAllowed) {
-                toast.error($t("phone.error_max_exp_modules", { values: { max: maxAllowed } }) || `Maximum expansion modules allowed: ${maxAllowed}`);
+                toast.error(
+                    $t("phone.error_max_exp_modules", {
+                        values: { max: maxAllowed },
+                    }) || `Maximum expansion modules allowed: ${maxAllowed}`,
+                );
                 return;
             }
         }
@@ -259,7 +263,8 @@
         <Card.Title>
             {mode === "create"
                 ? $t("phone.add_title") || "Add Phone Configuration"
-                : ($t("phone.edit_title") || "Edit Phone Configuration") + (phone.phone_number ? ` : ${phone.phone_number}` : "")}
+                : ($t("phone.edit_title") || "Edit Phone Configuration") +
+                  (phone.phone_number ? ` : ${phone.phone_number}` : "")}
         </Card.Title>
         <Card.Description>
             {mode === "create"
@@ -330,8 +335,8 @@
                     id="exp_module-{formId}"
                     class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     bind:value={phone.expansion_module_model}
-                    disabled={(selectedModel?.supported_expansion_modules?.length ||
-                        0) === 0}
+                    disabled={(selectedModel?.supported_expansion_modules
+                        ?.length || 0) === 0}
                 >
                     <option value="">None</option>
                     {#each selectedModel?.supported_expansion_modules || [] as m}
@@ -404,6 +409,14 @@
         </div>
 
         <div class="flex gap-4">
+            <Button
+                variant="outline"
+                class="flex-1"
+                on:click={() => dispatch("cancel")}
+                disabled={loading}
+            >
+                {$t("common.cancel") || "Cancel"}
+            </Button>
             <Button class="flex-1" on:click={save} disabled={loading}>
                 {loading
                     ? $t("common.saving") || "Saving..."

@@ -22,5 +22,7 @@ type Phone struct {
 	PhoneNumber           *string     `gorm:"uniqueIndex" json:"phone_number"` // Used for search
 	IPAddress             string      `json:"ip_address"`
 	Description           string      `json:"description"`
+	ModelName             string      `gorm:"-" json:"model_name"`
+	VendorName            string      `gorm:"-" json:"vendor_name"`
 	Lines                 []PhoneLine `gorm:"foreignKey:PhoneID" json:"lines"`
 }

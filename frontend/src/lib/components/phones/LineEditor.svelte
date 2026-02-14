@@ -50,6 +50,8 @@
     let currentPage = 1;
     let itemsPerPage = 16;
 
+    $: isLineEditorFiltered = searchQuery.length > 0;
+
     // Editing state
     let editForm: PhoneLine | null = null;
     let additionalInfo: Record<string, any> = {}; // Parsed JSON
@@ -88,14 +90,16 @@
     let originalLine: PhoneLine | null = null;
 
     // Background Image logic
-    $: selectedKeyType = model?.key_types?.find(kt => kt.id === (editForm?.type || selectedLine?.type));
-    
+    $: selectedKeyType = model?.key_types?.find(
+        (kt) => kt.id === (editForm?.type || selectedLine?.type),
+    );
+
     $: baseImageUrl =
         image && phone.vendor
             ? `/api/vendors-static/${phone.vendor}/static/${image}`
             : "";
 
-    $: typeImageUrl = 
+    $: typeImageUrl =
         selectedKeyType?.image && phone.vendor
             ? `/api/vendors-static/${phone.vendor}/static/${selectedKeyType.image}`
             : "";
@@ -120,16 +124,24 @@
     let imageLoadError = false;
     $: if (activeImageUrl) imageLoadError = false;
 
+    let naturalWidth = 0;
+    let naturalHeight = 0;
+
     // Get coordinates for highlighting
-    $: highlightCoords = (() => {
-        if (!selectedLine || !model) return null;
+    $: highlightPos = (() => {
+        if (!selectedLine || !model || !naturalWidth || !naturalHeight)
+            return null;
         const mk = model.keys.find(
             (k) =>
                 k.index === selectedLine?.key_number &&
+                k.type?.toLowerCase() === selectedLine?.type?.toLowerCase() &&
                 (selectedLine?.panel_number || 0) === 0,
         );
         if (mk && mk.x > 0 && mk.y > 0) {
-            return { x: mk.x, y: mk.y };
+            return {
+                left: (mk.x / naturalWidth) * 100,
+                top: (mk.y / naturalHeight) * 100,
+            };
         }
         return null;
     })();
@@ -182,8 +194,13 @@
                 line.panel_number === editForm.panel_number &&
                 line.key_number === editForm.key_number
             ) {
-                const typeName = model?.key_types?.find(kt => kt.id === editForm.type)?.verbose || editForm.type;
-                const panelText = editForm.panel_number === 0 ? "Основная" : `Панель ${editForm.panel_number}`;
+                const typeName =
+                    model?.key_types?.find((kt) => kt.id === editForm.type)
+                        ?.verbose || editForm.type;
+                const panelText =
+                    editForm.panel_number === 0
+                        ? "Основная"
+                        : `Панель ${editForm.panel_number}`;
                 toast.error(
                     `Дубликат: ${typeName}, ${panelText}, Кнопка ${editForm.key_number} уже назначена.`,
                 );
@@ -294,19 +311,19 @@
                     <div
                         class="w-1/3 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border dark:border-slate-700 relative overflow-hidden"
                     >
-                        <div
-                            class="relative w-full h-full flex items-center justify-center"
-                        >
+                        <div class="relative inline-block">
                             <img
                                 src={activeImageUrl}
                                 alt="Phone"
                                 class="max-w-full max-h-full object-contain"
+                                bind:naturalWidth
+                                bind:naturalHeight
                                 on:error={() => (imageLoadError = true)}
                             />
-                            {#if highlightCoords}
+                            {#if highlightPos}
                                 <div
                                     class="absolute pointer-events-none flex items-center justify-center"
-                                    style="left: {highlightCoords.x}px; top: {highlightCoords.y}px; transform: translate(-50%, -50%);"
+                                    style="left: {highlightPos.left}%; top: {highlightPos.top}%; transform: translate(-50%, -50%);"
                                 >
                                     <div class="relative">
                                         <!-- Ring animation -->
@@ -335,15 +352,27 @@
                 <div class="flex-1 overflow-y-auto pr-2 space-y-4">
                     <!-- Search and Add -->
                     <div class="flex justify-between items-center gap-4">
-                        <div class="relative flex-1">
+                        <div
+                            class="relative flex-1 group transition-all duration-300 {isLineEditorFiltered
+                                ? 'ring-2 ring-blue-500/50 rounded-md'
+                                : ''}"
+                        >
                             <Search
                                 class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground"
                             />
                             <Input
                                 placeholder={$t("common.search") || "Search..."}
-                                class="pl-8"
+                                class="pl-8 pr-8"
                                 bind:value={searchQuery}
                             />
+                            {#if isLineEditorFiltered}
+                                <button
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    on:click={() => (searchQuery = "")}
+                                >
+                                    <X class="h-4 w-4" />
+                                </button>
+                            {/if}
                         </div>
                         <Button on:click={add} disabled={!!editForm}>
                             <Plus class="mr-2 h-4 w-4" />
@@ -363,7 +392,11 @@
                                     ? $t("lines.edit_item") || "Edit Item"
                                     : $t("lines.new_item") || "New Item"}
                             </h3>
-                            <div class="grid {phone.expansion_modules_count > 0 ? 'grid-cols-4' : 'grid-cols-3'} gap-4">
+                            <div
+                                class="grid {phone.expansion_modules_count > 0
+                                    ? 'grid-cols-4'
+                                    : 'grid-cols-3'} gap-4"
+                            >
                                 <div class="space-y-2">
                                     <Label>Тип</Label>
                                     <select
@@ -372,16 +405,29 @@
                                     >
                                         {#if model?.key_types && model.key_types.length > 0}
                                             {#each model.key_types as kt}
-                                                <option value={kt.id}>{kt.verbose || kt.id}</option>
+                                                <option value={kt.id}
+                                                    >{kt.verbose ||
+                                                        kt.id}</option
+                                                >
                                             {/each}
                                         {:else}
                                             <option value="Line">Линия</option>
-                                            <option value="Free">Свободно</option>
-                                            <option value="topsoftkey">Верхняя клавиша</option>
-                                            <option value="softkey">Программная клавиша</option>
-                                            <option value="bottomkey">Нижняя клавиша</option>
+                                            <option value="Free"
+                                                >Свободно</option
+                                            >
+                                            <option value="topsoftkey"
+                                                >Верхняя клавиша</option
+                                            >
+                                            <option value="softkey"
+                                                >Программная клавиша</option
+                                            >
+                                            <option value="bottomkey"
+                                                >Нижняя клавиша</option
+                                            >
                                             {#if maxHardKeys > 0}
-                                                <option value="hard_key">Клавиша корпуса</option>
+                                                <option value="hard_key"
+                                                    >Клавиша корпуса</option
+                                                >
                                             {/if}
                                         {/if}
                                     </select>
@@ -407,7 +453,8 @@
                                         <Input
                                             type="number"
                                             min="0"
-                                            max={phone.expansion_modules_count || 0}
+                                            max={phone.expansion_modules_count ||
+                                                0}
                                             bind:value={editForm.panel_number}
                                         />
                                     </div>
@@ -506,7 +553,9 @@
                                             {#each currentVendorFeatures.find((f) => f.id === additionalInfo.type)?.params || [] as param}
                                                 {#if param.type !== "hidden"}
                                                     <div class="space-y-2">
-                                                        <Label>{param.label}</Label>
+                                                        <Label
+                                                            >{param.label}</Label
+                                                        >
                                                         {#if param.type === "select" && param.source === "lines"}
                                                             <select
                                                                 class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -517,7 +566,8 @@
                                                                 }
                                                             >
                                                                 <option value=""
-                                                                    >Выберите линию</option
+                                                                    >Выберите
+                                                                    линию</option
                                                                 >
                                                                 {#each workingLines.filter((l) => l.type === "Line") as line}
                                                                     <option
@@ -630,13 +680,17 @@
                                         <Table.Cell>
                                             {line.panel_number === 0
                                                 ? "Осн."
-                                                : `Расш ${line.panel_number}`} / {line.key_number}
+                                                : `Расш ${line.panel_number}`} /
+                                            {line.key_number}
                                         </Table.Cell>
                                         <Table.Cell>
                                             <span
                                                 class="capitalize text-xs font-semibold px-2 py-1 rounded bg-muted"
                                             >
-                                                {model?.key_types?.find(kt => kt.id === line.type)?.verbose || line.type.replace("_", " ")}
+                                                {model?.key_types?.find(
+                                                    (kt) => kt.id === line.type,
+                                                )?.verbose ||
+                                                    line.type.replace("_", " ")}
                                             </span>
                                         </Table.Cell>
                                         <Table.Cell
@@ -677,10 +731,35 @@
                                     <Table.Row>
                                         <Table.Cell
                                             colspan={5}
-                                            class="text-center py-8 text-muted-foreground"
+                                            class="text-center py-12"
                                         >
-                                            {$t("common.no_results") ||
-                                                "No lines configured."}
+                                            <div
+                                                class="flex flex-col items-center justify-center space-y-2"
+                                            >
+                                                <div
+                                                    class="p-3 bg-muted rounded-full text-muted-foreground"
+                                                >
+                                                    <Search class="h-6 w-6" />
+                                                </div>
+                                                <p
+                                                    class="text-sm font-medium text-muted-foreground"
+                                                >
+                                                    {$t("common.no_results") ||
+                                                        "No lines found."}
+                                                </p>
+                                                {#if isLineEditorFiltered}
+                                                    <Button
+                                                        variant="link"
+                                                        size="sm"
+                                                        class="h-auto p-0"
+                                                        on:click={() =>
+                                                            (searchQuery = "")}
+                                                    >
+                                                        {$t("common.clear") ||
+                                                            "Clear Search"}
+                                                    </Button>
+                                                {/if}
+                                            </div>
                                         </Table.Cell>
                                     </Table.Row>
                                 {/if}

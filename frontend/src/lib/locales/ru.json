@@ -54,6 +54,9 @@
     "common.saving": "Сохранение...",
     "common.search": "Поиск",
     "common.all": "Все",
+    "common.all_domains": "Все домены",
+    "common.all_vendors": "Все",
+    "common.all_models": "Все модели",
     "common.no_results": "Ничего не найдено",
     "common.total": "Всего",
     "common.prev": "Назад",
@@ -81,5 +84,4 @@
     "backup.description": "Управление сохранением базы данных и восстановлением конфигурации",
     "backup.create": "Создать Бекап",
     "debug.no_log_received_yet": "Пока не было обращений к серверу"
-
 }

@@ -25,16 +25,20 @@
     let filters: {
         domain: string;
         vendor: string;
+        model_id: string;
         mac: string;
         number: string;
-        caller_id: string;
+        q: string;
     } = {
         domain: "",
         vendor: "",
+        model_id: "",
         mac: "",
         number: "",
-        caller_id: "",
+        q: "",
     };
+
+    let models: any[] = [];
 
     let phones: Phone[] = [];
     let total = 0;
@@ -42,14 +46,21 @@
     let limit = 20;
     let loading = false;
 
-    // Edit state
     let editingPhone: Phone | null = null;
     let showEditDialog = false;
+
+    $: isFiltered = Object.values(filters).some((v) => v !== "");
 
     onMount(async () => {
         await Promise.all([loadDomains(), loadVendors()]);
         await search();
     });
+    $: if (filters.vendor) {
+        loadModels(filters.vendor);
+    } else {
+        models = [];
+        filters.model_id = "";
+    }
 
     async function loadDomains() {
         try {
@@ -58,7 +69,7 @@
                 const data = await res.json();
                 domains = data.domains || [];
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Failed to load domains", e);
         }
     }
@@ -70,11 +81,22 @@
                 const data = await res.json();
                 vendors = data.vendors || [];
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Failed to load vendors", e);
         }
     }
 
+    async function loadModels(vendor: string) {
+        try {
+            const res = await fetch(`/api/models?vendor=${vendor}`);
+            if (res.ok) {
+                const data = await res.json();
+                models = data.models || [];
+            }
+        } catch (e: any) {
+            console.error("Failed to load models", e);
+        }
+    }
     async function search(newPage = 1) {
         loading = true;
         page = newPage;
@@ -99,7 +121,7 @@
             } else {
                 toast.error("Failed to load phones");
             }
-        } catch (e) {
+        } catch (e: any) {
             toast.error("Error loading phones: " + e.message);
         } finally {
             loading = false;
@@ -110,9 +132,10 @@
         filters = {
             domain: "",
             vendor: "",
+            model_id: "",
             mac: "",
             number: "",
-            caller_id: "",
+            q: "",
         };
         search(1);
     }
@@ -179,19 +202,18 @@
                 if (typeof line.additional_info === "string") {
                     try {
                         info = JSON.parse(line.additional_info);
-                    } catch (e) {
+                    } catch (e: any) {
                         /* ignore */
                     }
                 } else if (typeof line.additional_info === "object") {
                     info = line.additional_info || {};
                 }
-
                 let text =
                     info.display_name ||
                     info.screen_name ||
                     info.user_name ||
                     info.auth_name ||
-                    (line.number ? line.number.toString() : "");
+                    "";
 
                 if (text) {
                     if (text.length > 20) {
@@ -208,7 +230,7 @@
         return parts.join(": ");
     }
 
-async function deletePhone(phone: Phone) {
+    async function deletePhone(phone: Phone) {
         if (
             !confirm(
                 $t("phone.confirm_delete") ||
@@ -229,7 +251,7 @@ async function deletePhone(phone: Phone) {
                     $t("phone.delete_failed") || "Failed to delete phone",
                 );
             }
-        } catch (e) {
+        } catch (e: any) {
             toast.error("Error deleting phone: " + e.message);
         }
     }
@@ -254,39 +276,83 @@ async function deletePhone(phone: Phone) {
                     <Label for="s_domain">{$t("phone.domain")}</Label>
                     <select
                         id="s_domain"
-                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         bind:value={filters.domain}
+                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        <option value="">{$t("common.all") || "All"}</option>
+                        <option value=""
+                            >{$t("common.all_domains") || "Все"}</option
+                        >
                         {#each domains as d}
                             <option value={d}>{d}</option>
                         {/each}
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <Label for="s_vendor">{$t("phone.vendor")}</Label>
-                    <select
-                        id="s_vendor"
-                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        bind:value={filters.vendor}
-                    >
-                        <option value="">{$t("common.all") || "All"}</option>
-                        {#each vendors as v}
-                            <option value={v.id}>{v.name}</option>
-                        {/each}
-                    </select>
+                <div class="space-y-2 md:col-span-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div class="space-y-2">
+                            <Label for="s_vendor">{$t("phone.vendor")}</Label>
+                            <select
+                                id="s_vendor"
+                                bind:value={filters.vendor}
+                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <option value=""
+                                    >{$t("common.all_vendors") || "Все"}</option
+                                >
+                                {#each vendors as v}
+                                    <option value={v.id}>{v.name}</option>
+                                {/each}
+                            </select>
+                        </div>
+                        {#if filters.vendor}
+                            <div class="space-y-2">
+                                <Label for="s_model"
+                                    >{$t("phone.model") || "Модель"}</Label
+                                >
+                                <select
+                                    id="s_model"
+                                    bind:value={filters.model_id}
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value=""
+                                        >{$t("common.all_models") ||
+                                            "Все"}</option
+                                    >
+                                    {#each models as m}
+                                        <option value={m.id}>{m.name}</option>
+                                    {/each}
+                                </select>
+                            </div>
+                        {/if}
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <Label for="s_mac">{$t("phone.mac")}</Label>
-                    <Input
-                        id="s_mac"
-                        value={filters.mac}
-                        on:input={(e) => {
-                            filters.mac = formatMacInput(e.currentTarget.value);
-                            e.currentTarget.value = filters.mac;
-                        }}
-                        placeholder="00:11:..."
-                    />
+                    <div class="relative group">
+                        <Input
+                            id="s_mac"
+                            class="pr-8"
+                            value={filters.mac}
+                            on:input={(e) => {
+                                filters.mac = formatMacInput(
+                                    e.currentTarget.value,
+                                );
+                                e.currentTarget.value = filters.mac;
+                            }}
+                            placeholder="00:11:..."
+                        />
+                        {#if filters.mac}
+                            <button
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                on:click={() => {
+                                    filters.mac = "";
+                                    search(1);
+                                }}
+                            >
+                                <X class="h-4 w-4" />
+                            </button>
+                        {/if}
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <Label for="s_number">{$t("phone.number")}</Label>
@@ -297,19 +363,39 @@ async function deletePhone(phone: Phone) {
                     />
                 </div>
                 <div class="space-y-2">
-                    <Label for="s_callerid">{$t("phone.caller_id")}</Label>
-                    <Input
-                        id="s_callerid"
-                        bind:value={filters.caller_id}
-                        placeholder="John..."
-                    />
+                    <Label for="s_q">Сквозной поиск</Label>
+                    <div class="relative group">
+                        <Input
+                            id="s_q"
+                            class="pr-8"
+                            bind:value={filters.q}
+                            placeholder="Поиск по номеру, описанию..."
+                        />
+                        {#if filters.q}
+                            <button
+                                class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                on:click={() => {
+                                    filters.q = "";
+                                    search(1);
+                                }}
+                            >
+                                <X class="h-4 w-4" />
+                            </button>
+                        {/if}
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <Button variant="outline" on:click={clearFilters} disabled={loading}>
-                    <X class="mr-2 h-4 w-4" />
-                    {$t("common.cancel") || "Cancel"}
-                </Button>
+                {#if isFiltered}
+                    <Button
+                        variant="outline"
+                        on:click={clearFilters}
+                        disabled={loading}
+                    >
+                        <X class="mr-2 h-4 w-4" />
+                        Сбросить фильтр
+                    </Button>
+                {/if}
                 <Button on:click={() => search(1)} disabled={loading}>
                     <Search class="mr-2 h-4 w-4" />
                     {$t("common.search") || "Search"}
@@ -404,10 +490,11 @@ async function deletePhone(phone: Phone) {
                                         >{formatMac(phone.mac_address)}</td
                                     >
                                     <td class="p-4 align-middle"
-                                        >{phone.model_id}</td
+                                        >{phone.model_name ||
+                                            phone.model_id}</td
                                     >
                                     <td class="p-4 align-middle"
-                                        >{phone.vendor}</td
+                                        >{phone.vendor_name || phone.vendor}</td
                                     >
                                     <td class="p-4 align-middle"
                                         >{phone.domain}</td
@@ -480,6 +567,7 @@ async function deletePhone(phone: Phone) {
                         mode={editingPhone.id ? "edit" : "create"}
                         phone={editingPhone}
                         on:save={onSave}
+                        on:cancel={() => (showEditDialog = false)}
                     />
                 {/if}
             </div>
