@@ -2,12 +2,13 @@
 
 ## Verification Procedures
 If it is necessary to check the operation of a feature or fix:
-1. **Ask the user** for assistance.
-2. **Explain clearly** what test needs to be performed.
-3. **Specify** what logs or screenshots should be provided for verification.
+1. **Ask the user** for assistance for ANY UI or visual verification.
+2. **Do NOT use autonomous browser subagents** to verify visual changes.
+3. **Explain clearly** what test needs to be performed.
+4. **Specify** what logs or screenshots should be provided for verification.
 
 > [!IMPORTANT]
-> Do not attempt autonomous verification if it requires complex setup or credentials unless explicitly directed. When in doubt, request user verification.
+> Never use the browser_subagent for visual UI verification. Always ask the user to verify UI changes manually on the development server (port 5454) or the production static build (port 8080).
 
 ## Task Focus and UI Consistency
 1. **Stick to the task**: Do not modify parts of the code that are not directly related to the current objective.

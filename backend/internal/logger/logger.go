@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"io"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -29,6 +31,21 @@ func SetLevel(levelStr string) {
 	default:
 		currentLevel = LevelError
 	}
+}
+
+func Init(levelStr string, logPath string) error {
+	SetLevel(levelStr)
+
+	if logPath != "" {
+		f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return err
+		}
+		log.SetOutput(io.MultiWriter(os.Stdout, f))
+	} else {
+		log.SetOutput(os.Stdout)
+	}
+	return nil
 }
 
 func GetLevel() Level {

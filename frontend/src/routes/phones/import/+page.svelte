@@ -131,56 +131,65 @@
                 });
 
                 // Assume header is row 0
-                const headers = (jsonData[0] as string[]).map((h) =>
-                    h.toLowerCase().trim(),
+                const rawHeaders = jsonData[0] as string[];
+                const headers = rawHeaders.map((h) =>
+                    String(h).toLowerCase().trim(),
                 );
                 const rows = jsonData.slice(1);
 
-                // Map columns
-                const colMap = {
-                    number: headers.findIndex(
-                        (h) => h.includes("number") || h.includes("номер"),
-                    ),
-                    mac: headers.findIndex(
-                        (h) => h.includes("mac") || h.includes("мак"),
-                    ),
-                    description: headers.findIndex(
-                        (h) =>
-                            h.includes("description") || h.includes("описание"),
-                    ),
-                    vendor: headers.findIndex(
-                        (h) =>
-                            h.includes("vendor") || h.includes("производитель"),
-                    ),
-                    model: headers.findIndex(
-                        (h) => h.includes("model") || h.includes("модель"),
-                    ),
-                    domain: headers.findIndex(
-                        (h) => h.includes("domain") || h.includes("домен"),
-                    ),
-                    login: headers.findIndex(
-                        (h) => h.includes("login") || h.includes("логин"),
-                    ),
-                    password: headers.findIndex(
-                        (h) => h.includes("password") || h.includes("пароль"),
-                    ),
-                };
+                // Identify standard columns
+                const macIdx = headers.findIndex(
+                    (h) => h.includes("mac") || h.includes("мак"),
+                );
+                const numberIdx = headers.findIndex(
+                    (h) => h.includes("number") || h.includes("номер"),
+                );
+                const descIdx = headers.findIndex(
+                    (h) => h.includes("description") || h.includes("описание"),
+                );
+                const vendorIdx = headers.findIndex(
+                    (h) => h.includes("vendor") || h.includes("производитель"),
+                );
+                const modelIdx = headers.findIndex(
+                    (h) => h.includes("model") || h.includes("модель"),
+                );
+                const domainIdx = headers.findIndex(
+                    (h) => h.includes("domain") || h.includes("домен"),
+                );
 
                 parsedRows = rows.map((row: any, index) => {
-                    return {
+                    const rowData: any = {
                         id: index,
-                        number: row[colMap.number],
-                        mac: row[colMap.mac],
-                        description: row[colMap.description],
-                        vendor: row[colMap.vendor],
-                        model: row[colMap.model],
-                        domain: row[colMap.domain],
-                        login: row[colMap.login],
-                        password: row[colMap.password],
-                        status: "pending", // pending, valid, error, conflict
+                        mac: macIdx !== -1 ? row[macIdx] : "",
+                        number: numberIdx !== -1 ? row[numberIdx] : "",
+                        description: descIdx !== -1 ? row[descIdx] : "",
+                        vendor: vendorIdx !== -1 ? row[vendorIdx] : "",
+                        model: modelIdx !== -1 ? row[modelIdx] : "",
+                        domain: domainIdx !== -1 ? row[domainIdx] : "",
+                        dynamicFields: {},
+                        status: "pending",
                         message: "",
-                        phoneData: null,
                     };
+
+                    // Collect all other columns as dynamic fields
+                    rawHeaders.forEach((header, hIdx) => {
+                        if (
+                            hIdx === macIdx ||
+                            hIdx === numberIdx ||
+                            hIdx === descIdx ||
+                            hIdx === vendorIdx ||
+                            hIdx === modelIdx ||
+                            hIdx === domainIdx
+                        )
+                            return;
+
+                        const val = row[hIdx];
+                        if (val !== undefined && val !== null && val !== "") {
+                            rowData.dynamicFields[header] = String(val);
+                        }
+                    });
+
+                    return rowData;
                 });
 
                 validateRows();
@@ -293,7 +302,7 @@
                 id: conflictPhone?.id, // Undefined if not updating, so omitted in JSON
                 mac_address: String(row.mac),
                 phone_number: String(row.number),
-                description: row.description || "",
+                description: String(row.description || ""), // Set phone description
                 vendor: vendorId,
                 model_id: modelId,
                 domain: domain,
@@ -303,22 +312,18 @@
                 expansion_module_model: "", // Initialize required field
             };
 
+            // Construct Line Additional Info
+            const additionalInfo: Record<string, string> = {
+                ...row.dynamicFields,
+            };
+
             // Construct Line
             const line = {
-                type: "line",
-                number: 1,
+                type: "Line",
                 account_number: 1,
-                expansion_module_number: 0,
-                key_number: 0,
-                additional_info: JSON.stringify({
-                    display_name: row.description || "",
-                    user_name: row.login || row.number, // Fallback to number if login missing
-                    auth_name: row.login || row.number,
-                    password: row.password || domainVars.sip_password || "",
-                    line_number: String(row.number), // Use phone number
-                    screen_name: row.description || "", // Use user name
-                    registrar1_ip: domainVars.sip_server_ip || "",
-                }),
+                panel_number: 0,
+                key_number: 1,
+                additional_info: JSON.stringify(additionalInfo),
             };
             phoneData.lines = [line];
 

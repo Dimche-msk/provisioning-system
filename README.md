@@ -153,6 +153,10 @@ The main configuration file `conf/provisioning-system.yaml` controls server para
     *   `path`: Path to the SQLite database file (e.g., `provisioning.db`).
     *   `backup_dir`: Folder for storing automatic database backups.
 
+*   **licensing**: (Internal) License management.
+    *   The system looks for `license.key` in the configuration directory.
+    *   See [technical_design.md](technical_design.md) for data format and fields.
+
 *   **domains**: List of domains (branches/clients). Each domain has its own unique settings and variables.
     *   `name`: Unique domain name (used in URLs and file paths).
     *   `deploy_commands`: List of commands executed after configuration generation (e.g., copying files to TFTP server, reloading PBX). Supports templating.
@@ -214,7 +218,29 @@ static_dir: static            # Folder with static files (firmware, images) to b
 phone_config_file: "spa{{account.mac_address}}.xml" # Configuration file name template
 phone_config_template: templates/phone.tpl          # Path to the main configuration template
 features_file: templates/features.yaml              # [Optional] Path to advanced features definition
-accounts_file: accounts.yaml                        # [Optional] Path to account definitions (fields for the account creation dialog)
+accounts_file: accounts.yaml                        # [Optional] Path to account definitions (dynamic UI fields for SIP lines)
+```
+
+### SIP Account Configuration (accounts.yaml)
+
+The `accounts_file` (usually `accounts.yaml`) allows you to define which fields will be displayed in the web interface when editing a phone line (SIP account). This makes the UI dynamic and adaptable to different vendors.
+
+For example, if a vendor requires a **Proxy IP** and **Proxy Port**, you can define them in `accounts.yaml`, and they will automatically appear in the "Line" editing dialog.
+
+Example `accounts.yaml`:
+```yaml
+- id: account
+  name: SIP Account
+  params:
+    - id: user_name
+      label: Username
+      type: string
+    - id: password
+      label: Password
+      type: password
+    - id: proxy_ip
+      label: Proxy IP
+      type: string
 ```
 
 ### Advanced Feature Configuration (features.yaml)
@@ -381,6 +407,9 @@ The system supports bulk importing of phones from Excel files (`.xlsx` or `.xls`
 - Vendors and Models must already exist in the system configuration.
 - The importer creates **one SIP line** (Line 1) for each phone.
 - If a phone with the same MAC address already exists, you can choose to skip or overwrite.
+
+#### Dynamic Column Mapping
+Any column in the Excel file that is not recognized as a standard field (MAC, Number, Vendor, Model, Domain, Description) will be automatically imported into the phone's **Line 1** custom parameters (`additional_info`). This allows you to bulk-import vendor-specific settings like `proxy_ip`, `vlan_id`, or `display_name` directly from your spreadsheet.
 
 ### Editing a Phone
 In the phone card, you can configure:

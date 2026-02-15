@@ -258,6 +258,7 @@
 
     let vendors: any[] = [];
     let currentVendorFeatures: any[] = [];
+    let currentVendorAccounts: any[] = [];
 
     onMount(async () => {
         await loadVendors();
@@ -278,6 +279,7 @@
     $: if (phone && vendors.length > 0) {
         const v = vendors.find((v) => v.id === phone.vendor);
         currentVendorFeatures = v ? v.features || [] : [];
+        currentVendorAccounts = v ? v.accounts || [] : [];
     }
 </script>
 
@@ -383,7 +385,7 @@
                     <!-- Editor Form -->
                     {#if editForm}
                         <div
-                            class="border-2 rounded-lg p-6 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 shadow-md space-y-4"
+                            class="border-2 rounded-lg p-6 bg-slate-50 dark:bg-slate-800/50 border-primary shadow-2xl ring-4 ring-primary/10 space-y-4"
                         >
                             <h3
                                 class="font-semibold text-lg border-b pb-2 mb-4"
@@ -464,69 +466,93 @@
                             <!-- Dynamic Fields based on Type -->
                             {#if editForm.type === "Line"}
                                 <div class="grid grid-cols-3 gap-4">
-                                    <div class="space-y-2">
-                                        <Label>Номер линии</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.line_number
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Отображаемое имя</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.display_name
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Имя пользователя</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.user_name
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Имя авторизации</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.auth_name
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Пароль</Label>
-                                        <Input
-                                            type="password"
-                                            bind:value={additionalInfo.password}
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Имя на экране</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.screen_name
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>IP Регистратора 1</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.registrar1_ip
-                                            }
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Порт Регистратора 1</Label>
-                                        <Input
-                                            bind:value={
-                                                additionalInfo.registrar1_port
-                                            }
-                                        />
-                                    </div>
+                                    {#if currentVendorAccounts && currentVendorAccounts.length > 0}
+                                        {#each currentVendorAccounts.find((a) => a.id === "account")?.params || [] as param}
+                                            {#if param.type !== "hidden"}
+                                                <div class="space-y-2">
+                                                    <Label>{param.label}</Label>
+                                                    <Input
+                                                        type={param.type ===
+                                                        "password"
+                                                            ? "password"
+                                                            : "text"}
+                                                        bind:value={
+                                                            additionalInfo[
+                                                                param.id
+                                                            ]
+                                                        }
+                                                    />
+                                                </div>
+                                            {/if}
+                                        {/each}
+                                    {:else}
+                                        <!-- Fallback for legacy or missing config -->
+                                        <div class="space-y-2">
+                                            <Label>Номер линии</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.line_number
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Отображаемое имя</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.display_name
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Имя пользователя</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.user_name
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Имя авторизации</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.auth_name
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Пароль</Label>
+                                            <Input
+                                                type="password"
+                                                bind:value={
+                                                    additionalInfo.password
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Имя на экране</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.screen_name
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>IP Регистратора 1</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.registrar1_ip
+                                                }
+                                            />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label>Порт Регистратора 1</Label>
+                                            <Input
+                                                bind:value={
+                                                    additionalInfo.registrar1_port
+                                                }
+                                            />
+                                        </div>
+                                    {/if}
                                 </div>
                             {:else}
                                 <!-- Keys -->
@@ -795,10 +821,14 @@
             </div>
 
             <div class="flex justify-end gap-2 mt-4 shrink-0">
-                <Button variant="outline" on:click={close}
-                    >{$t("common.cancel") || "Cancel"}</Button
+                <Button
+                    variant="outline"
+                    on:click={close}
+                    disabled={!!editForm}
                 >
-                <Button on:click={saveAll}>OK</Button>
+                    {$t("common.cancel") || "Cancel"}
+                </Button>
+                <Button on:click={saveAll} disabled={!!editForm}>OK</Button>
             </div>
         </div>
     </div>

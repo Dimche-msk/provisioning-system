@@ -18,6 +18,7 @@ import (
 	"provisioning-system/internal/broadcaster"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
+	"provisioning-system/internal/license"
 	"provisioning-system/internal/logger" // This is the custom logger package
 	"provisioning-system/internal/provisioner"
 	"provisioning-system/internal/version"
@@ -30,10 +31,13 @@ func main() {
 	// 1. Парсинг аргументов CLI
 	configDir := flag.String("config-dir", ".", "Directory containing provisioning-system.yaml and vendors/")
 	logLevel := flag.String("log-level", "ERROR", "Log level (DEBUG, INFO, WARN, ERROR)")
+	logFile := flag.String("log-file", "", "Path to log file (if empty, logs to stdout)")
 	flag.Parse()
 
 	// 2. Инициализация логгера
-	logger.SetLevel(*logLevel)
+	if err := logger.Init(*logLevel, *logFile); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
 
 	// 2. Загрузка конфигурации
 	cfg, err := config.LoadConfig(*configDir)
@@ -80,11 +84,14 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	// 7. Инициализация Backup Manager
+	// 7. Инициализация License Manager
+	licenseManager := license.NewManager(*configDir)
+
+	// 8. Инициализация Backup Manager
 	backupManager := backup.NewManager(cfg, database, *configDir)
 
-	// 8. Инициализация API Handlers
-	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager)
+	// 9. Инициализация API Handlers
+	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager, licenseManager, *logFile)
 	phoneHandler := api.NewPhoneHandler(*configDir, database, provManager)
 	debugHandler := api.NewDebugHandler(b)
 
@@ -112,9 +119,12 @@ func main() {
 	protected.HandleFunc("/system/backups/create/cfg", sysHandler.CreateConfigBackup).Methods("POST")
 	protected.HandleFunc("/system/backups", sysHandler.ListBackups).Methods("GET")
 	protected.HandleFunc("/system/backups/download/{filename}", sysHandler.DownloadBackup).Methods("GET")
+	protected.HandleFunc("/system/backups/{filename}", sysHandler.DeleteBackup).Methods("DELETE")
 	protected.HandleFunc("/system/backups/upload", sysHandler.UploadBackup).Methods("POST")
 	protected.HandleFunc("/system/backups/restore/db", sysHandler.RestoreDBBackup).Methods("POST")
 	protected.HandleFunc("/system/backups/restore/cfg", sysHandler.RestoreConfigBackup).Methods("POST")
+	protected.HandleFunc("/system/license/upload", sysHandler.UploadLicense).Methods("POST")
+	protected.HandleFunc("/system/support/bundle", sysHandler.GenerateSupportBundle).Methods("POST")
 	protected.HandleFunc("/system/stats", sysHandler.GetSystemStats).Methods("GET")
 
 	protected.HandleFunc("/phones", phoneHandler.CreatePhone).Methods("POST")

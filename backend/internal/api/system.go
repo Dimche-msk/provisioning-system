@@ -1,6 +1,7 @@
 package api
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,33 +11,40 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"provisioning-system/internal/backup"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
+	"provisioning-system/internal/license"
 	"provisioning-system/internal/logger"
 	"provisioning-system/internal/models"
 	"provisioning-system/internal/provisioner"
+	"provisioning-system/internal/version"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
 type SystemHandler struct {
-	ConfigDir     string
-	Config        **config.SystemConfig
-	ProvManager   *provisioner.Manager
-	DB            *gorm.DB
-	BackupManager *backup.Manager
+	ConfigDir      string
+	Config         **config.SystemConfig
+	ProvManager    *provisioner.Manager
+	DB             *gorm.DB
+	BackupManager  *backup.Manager
+	LicenseManager *license.Manager
+	LogFile        string
 }
 
-func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB, bm *backup.Manager) *SystemHandler {
+func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB, bm *backup.Manager, lm *license.Manager, logFile string) *SystemHandler {
 	return &SystemHandler{
-		ConfigDir:     configDir,
-		Config:        cfg,
-		ProvManager:   pm,
-		DB:            db,
-		BackupManager: bm,
+		ConfigDir:      configDir,
+		Config:         cfg,
+		ProvManager:    pm,
+		DB:             db,
+		BackupManager:  bm,
+		LicenseManager: lm,
+		LogFile:        logFile,
 	}
 }
 
@@ -329,6 +337,30 @@ func (h *SystemHandler) DownloadBackup(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filePath)
 }
 
+func (h *SystemHandler) DeleteBackup(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	filename := vars["filename"]
+	if filename == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	// Basic security check to prevent traversal
+	if strings.Contains(filename, "..") || strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
+		http.Error(w, "Invalid filename", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.BackupManager.DeleteBackup(filename); err != nil {
+		logger.Error("Failed to delete backup %s: %v", filename, err)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to delete backup: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Backup deleted successfully"}`))
+}
+
 func (h *SystemHandler) UploadBackup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -441,6 +473,104 @@ func (h *SystemHandler) RestoreConfigBackup(w http.ResponseWriter, r *http.Reque
 	w.Write([]byte(`{"status": "ok", "message": "Configuration restored successfully. Please 'Reload' and 'Apply' to finalize."}`))
 }
 
+func (h *SystemHandler) UploadLicense(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	r.ParseMultipartForm(1 << 20) // 1MB limit for key
+	file, _, err := r.FormFile("license")
+	if err != nil {
+		http.Error(w, `{"error": "Failed to get license file"}`, http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	targetPath := filepath.Join(h.ConfigDir, "license.key")
+	out, err := os.Create(targetPath)
+	if err != nil {
+		http.Error(w, `{"error": "Failed to save license file"}`, http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	if _, err := io.Copy(out, file); err != nil {
+		http.Error(w, `{"error": "Failed to write license file"}`, http.StatusInternalServerError)
+		return
+	}
+
+	h.LicenseManager.Reload()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "License uploaded successfully"}`))
+}
+
+func (h *SystemHandler) GenerateSupportBundle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	bundleName := fmt.Sprintf("support_bundle_%s.zip", time.Now().Format("20060102_150405"))
+	bundlePath := filepath.Join(h.BackupManager.Config.Database.BackupDir, bundleName)
+
+	outFile, err := os.Create(bundlePath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to create bundle: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+	defer outFile.Close()
+
+	zw := zip.NewWriter(outFile)
+	defer zw.Close()
+
+	// 1. Add Entire Config Dir (recursive)
+	if err := h.BackupManager.AddDirToZip(zw, h.ConfigDir, "config"); err != nil {
+		logger.Warn("Failed to add config to support bundle: %v", err)
+	}
+
+	// 2. Add Database
+	// We should probably use a snapshot or just copy the file if it's small
+	// For support bundle, a direct copy of the DB file is usually fine if we don't care about absolute consistency
+	dbPath := (*h.Config).Database.Path
+	if err := h.BackupManager.AddFileToZip(zw, dbPath, "provisioning.db"); err != nil {
+		logger.Warn("Failed to add database to support bundle: %v", err)
+	}
+
+	// 3. Add Log File (if specified)
+	if h.LogFile != "" {
+		if err := h.BackupManager.AddFileToZip(zw, h.LogFile, filepath.Base(h.LogFile)); err != nil {
+			logger.Warn("Failed to add log file to support bundle: %v", err)
+		}
+	} else {
+		// Fallback to access.log in config dir if it exists
+		accessLog := filepath.Join(h.ConfigDir, "access.log")
+		if _, err := os.Stat(accessLog); err == nil {
+			h.BackupManager.AddFileToZip(zw, accessLog, "access.log")
+		}
+	}
+
+	// 4. Add system info
+	info := map[string]interface{}{
+		"version":    version.Version,
+		"time":       time.Now(),
+		"license":    h.LicenseManager.GetStatus(),
+		"config_dir": h.ConfigDir,
+		"log_file":   h.LogFile,
+	}
+	infoData, _ := json.MarshalIndent(info, "", "  ")
+	wi, _ := zw.Create("system_info.json")
+	wi.Write(infoData)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":   "ok",
+		"message":  "Support bundle generated",
+		"filename": bundleName,
+	})
+}
+
 type DashboardStats struct {
 	Domain string `json:"domain"`
 	Vendor string `json:"vendor"`
@@ -462,5 +592,6 @@ func (h *SystemHandler) GetSystemStats(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"stats":        stats,
 		"total_phones": totalPhones,
+		"license":      h.LicenseManager.GetStatus(),
 	})
 }

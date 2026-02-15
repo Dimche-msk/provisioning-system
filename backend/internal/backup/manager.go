@@ -25,8 +25,9 @@ type Manager struct {
 type BackupType string
 
 const (
-	BackupTypeDB     BackupType = "db"
-	BackupTypeConfig BackupType = "config"
+	BackupTypeDB      BackupType = "db"
+	BackupTypeConfig  BackupType = "config"
+	BackupTypeSupport BackupType = "support"
 )
 
 type BackupInfo struct {
@@ -107,6 +108,8 @@ func (m *Manager) ListBackups() ([]BackupInfo, error) {
 				bType = BackupTypeDB
 			} else if strings.HasPrefix(name, "cfg_") {
 				bType = BackupTypeConfig
+			} else if strings.HasPrefix(name, "support_bundle_") {
+				bType = BackupTypeSupport
 			} else {
 				continue // Ignore other zip files
 			}
@@ -201,6 +204,28 @@ func (m *Manager) RestoreConfig(filename string) error {
 	return nil
 }
 
+// DeleteBackup deletes a backup file
+func (m *Manager) DeleteBackup(filename string) error {
+	// Basic security check to prevent traversal (redundant but safe)
+	if strings.Contains(filename, "..") || strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
+		return fmt.Errorf("invalid filename")
+	}
+
+	backupDir := m.Config.Database.BackupDir
+	filePath := filepath.Join(backupDir, filename)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return fmt.Errorf("backup file not found")
+	}
+
+	if err := os.Remove(filePath); err != nil {
+		return fmt.Errorf("failed to delete backup: %w", err)
+	}
+
+	logger.Info("Backup deleted: %s", filename)
+	return nil
+}
+
 func isSubpath(parent, child string) bool {
 	rel, err := filepath.Rel(parent, child)
 	if err != nil {
@@ -231,6 +256,82 @@ func (m *Manager) rotateBackups(bType BackupType) error {
 		}
 	}
 	return nil
+}
+
+func (m *Manager) AddFileToZip(zw *zip.Writer, source, nameInZip string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		return err
+	}
+
+	header, err := zip.FileInfoHeader(info)
+	if err != nil {
+		return err
+	}
+
+	header.Name = nameInZip
+	header.Method = zip.Deflate
+
+	writer, err := zw.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(writer, file)
+	return err
+}
+
+func (m *Manager) AddDirToZip(zw *zip.Writer, source, prefix string) error {
+	return filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		header, err := zip.FileInfoHeader(info)
+		if err != nil {
+			return err
+		}
+
+		relPath, err := filepath.Rel(source, path)
+		if err != nil {
+			return err
+		}
+
+		if prefix != "" {
+			header.Name = filepath.Join(prefix, relPath)
+		} else {
+			header.Name = relPath
+		}
+
+		if info.IsDir() {
+			header.Name += "/"
+		} else {
+			header.Method = zip.Deflate
+		}
+
+		writer, err := zw.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		_, err = io.Copy(writer, file)
+		return err
+	})
 }
 
 func zipFile(source, target, nameInZip string) error {

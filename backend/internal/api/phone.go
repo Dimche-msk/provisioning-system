@@ -511,6 +511,7 @@ func (h *PhoneHandler) GetVendors(w http.ResponseWriter, r *http.Request) {
 			"id":       v.ID,
 			"name":     v.Name,
 			"features": v.Features,
+			"accounts": v.Accounts,
 		})
 	}
 

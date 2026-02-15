@@ -123,7 +123,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                 }
               })} ${validate_component(Table_head, "Table.Head").$$render($$result, {}, {}, {
                 default: () => {
-                  return `User`;
+                  return `Description`;
                 }
               })} ${validate_component(Table_head, "Table.Head").$$render($$result, {}, {}, {
                 default: () => {
@@ -164,7 +164,7 @@ const Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
                   }
                 })} ${validate_component(Table_cell, "Table.Cell").$$render($$result, {}, {}, {
                   default: () => {
-                    return `${escape(row.user)}`;
+                    return `${escape(row.description)}`;
                   }
                 })} ${validate_component(Table_cell, "Table.Cell").$$render($$result, { class: "text-sm text-muted-foreground" }, {}, {
                   default: () => {

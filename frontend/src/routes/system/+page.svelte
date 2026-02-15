@@ -12,6 +12,7 @@
         RotateCcw,
         Download,
         Archive,
+        Trash2,
     } from "lucide-svelte";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
@@ -21,6 +22,12 @@
         AlertDescription,
         AlertTitle,
     } from "$lib/components/ui/alert";
+    import {
+        licenseInfo,
+        isPro,
+        fetchLicenseStatus,
+    } from "$lib/stores/licenseStore";
+    import { Shield, LifeBuoy } from "lucide-svelte";
 
     let loading = false;
     let applying = false;
@@ -35,6 +42,7 @@
     let restoreLoading = false;
 
     onMount(async () => {
+        await fetchLicenseStatus();
         await loadDomains();
         await loadBackups();
     });
@@ -187,6 +195,36 @@
         }
     }
 
+    async function deleteBackup(filename) {
+        if (
+            !confirm(
+                $t("backup.delete_confirm") || `Delete backup ${filename}?`,
+            )
+        )
+            return;
+
+        backupLoading = true;
+        try {
+            let res = await fetch(`/api/system/backups/${filename}`, {
+                method: "DELETE",
+            });
+            res = await handleResponse(res);
+            if (!res) return;
+
+            if (res.ok) {
+                toast.success($t("backup.delete_success") || "Backup deleted");
+                await loadBackups();
+            } else {
+                const data = await res.json();
+                toast.error(data.error || "Failed to delete backup");
+            }
+        } catch (e) {
+            toast.error("Error: " + e.message);
+        } finally {
+            backupLoading = false;
+        }
+    }
+
     async function prepareConfig() {
         loading = true;
         configPrepared = false;
@@ -302,6 +340,65 @@
             await deploy(domain);
         }
     }
+
+    async function uploadLicense(event) {
+        /** @type {HTMLInputElement} */
+        const target = event.target;
+        const file = target?.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("license", file);
+
+        try {
+            let res = await fetch("/api/system/license/upload", {
+                method: "POST",
+                body: formData,
+            });
+            res = await handleResponse(res);
+            if (!res) return;
+
+            if (res.ok) {
+                toast.success($t("system.license_uploaded"));
+                await fetchLicenseStatus();
+            } else {
+                const data = await res.json();
+                toast.error(data.error || $t("system.upload_error"));
+            }
+        } catch (e) {
+            toast.error(
+                $t("system.upload_error") +
+                    ": " +
+                    (e instanceof Error ? e.message : String(e)),
+            );
+        } finally {
+            event.target.value = ""; // Reset
+        }
+    }
+
+    async function generateSupportBundle() {
+        try {
+            let res = await fetch("/api/system/support/bundle", {
+                method: "POST",
+            });
+            res = await handleResponse(res);
+            if (!res) return;
+
+            if (res.ok) {
+                toast.success($t("system.support_bundle_ready"));
+                await loadBackups();
+            } else {
+                const data = await res.json();
+                toast.error(data.error || $t("system.reload_error"));
+            }
+        } catch (e) {
+            toast.error(
+                $t("system.reload_error") +
+                    ": " +
+                    (e instanceof Error ? e.message : String(e)),
+            );
+        }
+    }
 </script>
 
 <div class="p-6 space-y-6">
@@ -402,6 +499,179 @@
 
     <Card.Root>
         <Card.Header>
+            <Card.Title class="flex items-center gap-2">
+                <Shield class="w-5 h-5 text-primary" />
+                {$t("system.license")}
+            </Card.Title>
+            <Card.Description>{$t("system.license_desc")}</Card.Description>
+        </Card.Header>
+        <Card.Content class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1.5">
+                    <div
+                        class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                    >
+                        <span class="text-xs opacity-60"
+                            >{$t("system.license_tier")}:</span
+                        >
+                        <span
+                            class="font-bold border px-2 py-0.5 text-xs rounded-full bg-white dark:bg-slate-800"
+                            class:text-green-600={$isPro}
+                            class:border-green-600={$isPro}
+                        >
+                            {#if $licenseInfo.tier === "Free" && $licenseInfo.license_key}
+                                {$t("system.key_uploaded") || "Key Uploaded"}
+                            {:else}
+                                {$licenseInfo.tier}
+                            {/if}
+                        </span>
+                    </div>
+
+                    {#if $licenseInfo.issued_to}
+                        <div
+                            class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                        >
+                            <span class="text-xs opacity-60"
+                                >{$t("system.license_issued_to")}:</span
+                            >
+                            <span class="font-medium text-sm"
+                                >{$licenseInfo.issued_to}</span
+                            >
+                        </div>
+                    {/if}
+
+                    <div
+                        class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                    >
+                        <span class="text-xs opacity-60"
+                            >{$t("system.support_level") ||
+                                "Support Level"}:</span
+                        >
+                        <span class="font-medium text-sm"
+                            >{$licenseInfo.support_level}</span
+                        >
+                    </div>
+
+                    {#if $licenseInfo.valid_from}
+                        <div
+                            class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                        >
+                            <span class="text-xs opacity-60"
+                                >{$t("system.license_valid_from")}:</span
+                            >
+                            <span class="font-mono text-xs"
+                                >{new Date(
+                                    $licenseInfo.valid_from,
+                                ).toLocaleDateString()}</span
+                            >
+                        </div>
+                    {/if}
+
+                    {#if $licenseInfo.expiry}
+                        <div
+                            class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                        >
+                            <span class="text-xs opacity-60"
+                                >{$t("system.license_expiry")}:</span
+                            >
+                            <span
+                                class="font-mono text-xs"
+                                class:text-destructive={new Date(
+                                    $licenseInfo.expiry,
+                                ) < new Date()}
+                            >
+                                {new Date(
+                                    $licenseInfo.expiry,
+                                ).toLocaleDateString()}
+                            </span>
+                        </div>
+                    {/if}
+
+                    {#if $licenseInfo.license_key}
+                        <div
+                            class="flex flex-col gap-0.5 p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg"
+                        >
+                            <span
+                                class="text-[10px] opacity-40 uppercase tracking-widest"
+                                >{$t("system.license_key")}:</span
+                            >
+                            <span
+                                class="font-mono text-[10px] break-all opacity-60"
+                                >{$licenseInfo.license_key}</span
+                            >
+                        </div>
+                    {/if}
+
+                    <div class="flex flex-col gap-2">
+                        <Button
+                            variant={$isPro ? "default" : "outline"}
+                            class="w-full"
+                            on:click={() => {
+                                if ($isPro) {
+                                    toast.info(
+                                        $t("system.opening_support_ticket"),
+                                    );
+                                    // window.open('https://support.example.com', '_blank');
+                                } else {
+                                    toast.warning(
+                                        $t("system.pro_required_for_support"),
+                                    );
+                                }
+                            }}
+                        >
+                            <LifeBuoy class="mr-2 h-4 w-4" />
+                            {$t("system.request_support")}
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            class="opacity-70"
+                            on:click={generateSupportBundle}
+                        >
+                            <Archive class="mr-2 h-4 w-4" />
+                            {$t("system.generate_diagnostic_bundle")}
+                        </Button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div
+                        class="p-4 border border-dashed rounded-lg flex flex-col items-center justify-center gap-3"
+                    >
+                        <Shield class="w-8 h-8 opacity-20" />
+                        <div class="text-center">
+                            <p class="text-sm font-semibold">
+                                {$t("system.upload_license_key")}
+                            </p>
+                            <p class="text-xs opacity-60">
+                                {$t("system.license_upload_hint")}
+                            </p>
+                        </div>
+                        <input
+                            type="file"
+                            id="license-upload"
+                            class="hidden"
+                            on:change={uploadLicense}
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            on:click={() =>
+                                document
+                                    .getElementById("license-upload")
+                                    ?.click()}
+                        >
+                            <UploadCloud class="mr-2 h-4 w-4" />
+                            {$t("common.upload")}
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </Card.Content>
+    </Card.Root>
+
+    <Card.Root>
+        <Card.Header>
             <Card.Title>{$t("backup.create")}</Card.Title>
             <Card.Description>{$t("backup.description")}.</Card.Description>
         </Card.Header>
@@ -475,11 +745,17 @@
                                         >
                                             {$t("backup.db_type")}
                                         </span>
-                                    {:else}
+                                    {:else if backup.type === "config"}
                                         <span
                                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
                                         >
                                             {$t("backup.cfg_type")}
+                                        </span>
+                                    {:else if backup.type === "support"}
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                                        >
+                                            {$t("backup.support_type")}
                                         </span>
                                     {/if}
                                 </Table.Cell>
@@ -506,12 +782,27 @@
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        on:click={() => restoreBackup(backup)}
-                                        disabled={restoreLoading}
+                                        class="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                        on:click={() =>
+                                            deleteBackup(backup.name)}
+                                        disabled={backupLoading}
                                     >
-                                        <RotateCcw class="mr-2 h-4 w-4" />
-                                        {$t("common.restore")}
+                                        <Trash2 class="h-4 w-4" />
                                     </Button>
+
+                                    {#if backup.type !== "support"}
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            on:click={() =>
+                                                restoreBackup(backup)}
+                                            disabled={backupLoading ||
+                                                restoreLoading}
+                                        >
+                                            <RotateCcw class="mr-2 h-4 w-4" />
+                                            {$t("common.restore")}
+                                        </Button>
+                                    {/if}
                                 </Table.Cell>
                             </Table.Row>
                         {/each}

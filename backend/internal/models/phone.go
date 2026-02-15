@@ -2,15 +2,12 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Phone struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 
 	Domain                string      `gorm:"index" json:"domain"`
 	Vendor                string      `json:"vendor"`
