@@ -1,6 +1,6 @@
-id: mitel-6869
-name: Mitel 6869i
-image: mitel6869i.png
+id: mitel-6865
+name: Mitel 6865i
+image: mitel6865i.png
 type: phone
 own_soft_keys: 44
 own_hard_keys: 12

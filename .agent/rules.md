@@ -13,3 +13,6 @@ If it is necessary to check the operation of a feature or fix:
 1. **Stick to the task**: Do not modify parts of the code that are not directly related to the current objective.
 2. **Preserve UI defaults**: Do not change placeholders, labels, or default selection values (e.g., "Все" for filters) unless explicitly requested.
 3. **Be conservative**: When refactoring, maintain existing UI patterns and localized strings.
+16: 
+17: ## Version Management
+1. **Unified Versioning**: Follow the procedures in the `Version Management` skill to update project versions.

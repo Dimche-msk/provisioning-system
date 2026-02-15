@@ -2,12 +2,12 @@ package provisioner
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"provisioning-system/internal/config"
+	"provisioning-system/internal/logger"
 	"provisioning-system/internal/models"
 
 	"github.com/flosch/pongo2/v6"
@@ -137,11 +137,11 @@ func (m *Manager) LoadVendors(vendorsDir string) error {
 			if _, err := os.Stat(featuresPath); err == nil {
 				featuresData, err := os.ReadFile(featuresPath)
 				if err != nil {
-					log.Printf("Warning: Failed to read features file %s: %v", featuresPath, err)
+					logger.Warn("Failed to read features file %s: %v", featuresPath, err)
 				} else {
 					var features []Feature
 					if err := yaml.Unmarshal(featuresData, &features); err != nil {
-						log.Printf("Warning: Failed to parse features file %s: %v", featuresPath, err)
+						logger.Warn("Failed to parse features file %s: %v", featuresPath, err)
 					} else {
 						vc.Features = features
 					}
@@ -155,11 +155,11 @@ func (m *Manager) LoadVendors(vendorsDir string) error {
 			if _, err := os.Stat(accountsPath); err == nil {
 				accountsData, err := os.ReadFile(accountsPath)
 				if err != nil {
-					log.Printf("Warning: Failed to read accounts file %s: %v", accountsPath, err)
+					logger.Warn("Failed to read accounts file %s: %v", accountsPath, err)
 				} else {
 					var accounts []Feature
 					if err := yaml.Unmarshal(accountsData, &accounts); err != nil {
-						log.Printf("Warning: Failed to parse accounts file %s: %v", accountsPath, err)
+						logger.Warn("Failed to parse accounts file %s: %v", accountsPath, err)
 					} else {
 						vc.Accounts = accounts
 					}
@@ -451,14 +451,14 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 	for _, phone := range phones {
 		mac := ""
 		if phone.MacAddress != nil {
-			mac = *phone.MacAddress
+			mac = strings.ReplaceAll(*phone.MacAddress, ":", "")
 		}
 		// Log generation start
-		log.Printf("Generating config for phone %s", mac)
-		_ = mac // Use to avoid unused variable error if not logging
+		logger.Info("Generating config for phone %s (Vendor: %s, Model: %s, Domain: %s)", mac, phone.Vendor, phone.ModelID, phone.Domain)
 
 		vendor, ok := m.getVendorByID(phone.Vendor)
 		if !ok || vendor.PhoneConfigFile == "" || vendor.PhoneConfigTemplate == "" {
+			logger.Warn("Skip phone %s: vendor %s not found or no config support", mac, phone.Vendor)
 			continue // Skip if no config support
 		}
 
@@ -490,6 +490,7 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 		var keysConfig []string
 		model, modelOk := m.getModelByID(phone.ModelID)
 		if !modelOk {
+			logger.Warn("Skip phone %s: model %s not found", mac, phone.ModelID)
 			continue
 		}
 
@@ -540,12 +541,12 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 			if assignmentType == "Line" {
 				for _, accFeature := range accountTemplates {
 					for _, param := range accFeature.Params {
-						m.renderAndAppend(&keysConfig, param, ctx, mk.Settings)
+						m.renderAndAppend(&keysConfig, param, ctx, mk.Settings, fmt.Sprintf("Key 0-%d (Line Account %d)", mk.Index, accNum))
 					}
 				}
 			} else if feature, ok := featuresMap[assignmentType]; ok {
 				for _, param := range feature.Params {
-					m.renderAndAppend(&keysConfig, param, ctx, mk.Settings)
+					m.renderAndAppend(&keysConfig, param, ctx, mk.Settings, fmt.Sprintf("Key 0-%d (Feature %s)", mk.Index, assignmentType))
 				}
 			}
 		}
@@ -560,61 +561,76 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 			domainCtx[k] = v
 		}
 
+		number := ""
+		if phone.PhoneNumber != nil {
+			number = *phone.PhoneNumber
+		}
+
 		context := pongo2.Context{
 			"phone":       phone,
 			"vendor":      vendor,
 			"variables":   domainCtx,
 			"keys_config": keysConfig,
+			"account": map[string]interface{}{
+				"id":           phone.ID,
+				"domain":       phone.Domain,
+				"vendor":       phone.Vendor,
+				"mac_address":  mac,
+				"phone_number": number,
+				"ip_address":   phone.IPAddress,
+				"type":         phone.Type,
+			},
 		}
 
 		// Render main template
 		tplPath := filepath.Join(vendor.Dir, vendor.PhoneConfigTemplate)
 		tplData, err := os.ReadFile(tplPath)
 		if err != nil {
-			log.Printf("Error reading phone template %s: %v", tplPath, err)
+			logger.Error("Error reading phone template %s: %v", tplPath, err)
 			continue
 		}
 
 		mainTpl, err := pongo2.FromString(string(tplData))
 		if err != nil {
-			log.Printf("Error parsing phone template %s: %v", tplPath, err)
+			logger.Error("Error parsing phone template %s: %v", tplPath, err)
 			continue
 		}
 
 		finalConfig, err := mainTpl.Execute(context)
 		if err != nil {
-			log.Printf("Error executing phone template %s: %v", tplPath, err)
+			logger.Error("Error executing phone template %s: %v", tplPath, err)
 			continue
 		}
 
 		// Save to file
 		fileNameTpl, err := pongo2.FromString(vendor.PhoneConfigFile)
 		if err != nil {
-			log.Printf("Error parsing phone config name template: %v", err)
+			logger.Error("Error parsing phone config name template: %v", err)
 			continue
 		}
 		fileName, err := fileNameTpl.Execute(context)
 		if err != nil {
-			log.Printf("Error executing phone config name template: %v", err)
+			logger.Error("Error executing phone config name template: %v", err)
 			continue
 		}
 
 		fullPath := filepath.Join(outputDir, phone.Domain, fileName)
 		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
-			log.Printf("Error creating directory %s: %v", filepath.Dir(fullPath), err)
+			logger.Error("Error creating directory %s: %v", filepath.Dir(fullPath), err)
 			continue
 		}
 
 		if err := os.WriteFile(fullPath, []byte(finalConfig), 0644); err != nil {
-			log.Printf("Error writing config file %s: %v", fullPath, err)
+			logger.Error("Error writing config file %s: %v", fullPath, err)
 			continue
 		}
+		logger.Info("Config saved to: %s", fullPath)
 	}
 
 	return warnings, nil
 }
 
-func (m *Manager) renderAndAppend(keysConfig *[]string, param FeatureParam, ctx pongo2.Context, modelSettings map[string]string) {
+func (m *Manager) renderAndAppend(keysConfig *[]string, param FeatureParam, ctx pongo2.Context, modelSettings map[string]string, debugCtx string) {
 	val := ctx[param.ID]
 	if val == nil {
 		if param.Value != "" {
@@ -638,16 +654,19 @@ func (m *Manager) renderAndAppend(keysConfig *[]string, param FeatureParam, ctx 
 		}
 
 		if out, err := renderPongoTemplate(param.ConfigTemplate, renderCtx); err == nil {
+			logger.Info("  [%s] Rendering param %s -> %s", debugCtx, param.ID, out)
 			*keysConfig = append(*keysConfig, out)
+		} else {
+			logger.Error("  [%s] Failed to render param %s: %v", debugCtx, param.ID, err)
 		}
 	}
 }
 
-// DeletePhoneConfig удаляет конфигурационный файл для телефона
-func (m *Manager) DeletePhoneConfig(outputDir string, phone models.Phone) error {
+// GetPhoneConfigPath returns the path to the phone's configuration file (without checking its existence)
+func (m *Manager) GetPhoneConfigPath(outputDir string, phone models.Phone) (string, error) {
 	mac := ""
 	if phone.MacAddress != nil {
-		mac = *phone.MacAddress
+		mac = strings.ReplaceAll(*phone.MacAddress, ":", "")
 	}
 	number := ""
 	if phone.PhoneNumber != nil {
@@ -656,18 +675,12 @@ func (m *Manager) DeletePhoneConfig(outputDir string, phone models.Phone) error 
 
 	vendor, ok := m.getVendorByID(phone.Vendor)
 	if !ok {
-		// Если вендор не найден, мы не можем узнать имя файла, чтобы удалить его.
-		// Это не обязательно ошибка, может конфига и не было.
-		return fmt.Errorf("vendor %s not found", phone.Vendor)
+		return "", fmt.Errorf("vendor %s not found", phone.Vendor)
 	}
 
 	if vendor.PhoneConfigFile == "" {
-		return nil // Нет шаблона имени файла -> нет файла
+		return "", nil // No filename template -> no file
 	}
-
-	// Подготавливаем контекст (минимальный, нужен только для имени файла)
-	// Для имени файла обычно нужен mac или number.
-	// Lines и прочее не нужны для имени файла, но на всякий случай передадим пустые.
 
 	ctx := pongo2.Context{
 		"account": map[string]interface{}{
@@ -679,37 +692,41 @@ func (m *Manager) DeletePhoneConfig(outputDir string, phone models.Phone) error 
 			"ip_address":   phone.IPAddress,
 			"type":         phone.Type,
 		},
-		// domain context might be needed if filename depends on domain variables (unlikely but possible)
 	}
 
-	// Генерируем имя файла
 	filenameTpl, err := pongo2.FromString(vendor.PhoneConfigFile)
 	if err != nil {
-		return fmt.Errorf("failed to parse filename template: %w", err)
+		return "", fmt.Errorf("failed to parse filename template: %w", err)
 	}
 	filename, err := filenameTpl.Execute(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to execute filename template: %w", err)
+		return "", fmt.Errorf("failed to execute filename template: %w", err)
 	}
 
-	targetFile := filepath.Join(outputDir, phone.Domain, filename)
+	return filepath.Join(outputDir, phone.Domain, filename), nil
+}
 
-	// Удаляем файл
-	if err := os.Remove(targetFile); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("failed to remove config file %s: %w", targetFile, err)
+// DeletePhoneConfig deletes the configuration file for the phone
+func (m *Manager) DeletePhoneConfig(outputDir string, phone models.Phone) error {
+	path, err := m.GetPhoneConfigPath(outputDir, phone)
+	if err != nil {
+		return err
+	}
+	if path == "" {
+		return nil
 	}
 
+	if info, err := os.Stat(path); err == nil && !info.IsDir() {
+		logger.Info("Deleting old config file: %s", path)
+		return os.Remove(path)
+	}
 	return nil
 }
 
-func renderPongoTemplate(tplStr string, ctx pongo2.Context) (string, error) {
-	tpl, err := pongo2.FromString(tplStr)
+func renderPongoTemplate(tplString string, ctx pongo2.Context) (string, error) {
+	tpl, err := pongo2.FromString(tplString)
 	if err != nil {
-		return "", fmt.Errorf("error parsing template: %w", err)
+		return "", err
 	}
-	out, err := tpl.Execute(ctx)
-	if err != nil {
-		return "", fmt.Errorf("error executing template: %w", err)
-	}
-	return out, nil
+	return tpl.Execute(ctx)
 }

@@ -144,11 +144,9 @@
                     mac: headers.findIndex(
                         (h) => h.includes("mac") || h.includes("мак"),
                     ),
-                    user: headers.findIndex(
+                    description: headers.findIndex(
                         (h) =>
-                            h.includes("user") ||
-                            h.includes("имя") ||
-                            h.includes("name"),
+                            h.includes("description") || h.includes("описание"),
                     ),
                     vendor: headers.findIndex(
                         (h) =>
@@ -173,7 +171,7 @@
                         id: index,
                         number: row[colMap.number],
                         mac: row[colMap.mac],
-                        user: row[colMap.user],
+                        description: row[colMap.description],
                         vendor: row[colMap.vendor],
                         model: row[colMap.model],
                         domain: row[colMap.domain],
@@ -295,7 +293,7 @@
                 id: conflictPhone?.id, // Undefined if not updating, so omitted in JSON
                 mac_address: String(row.mac),
                 phone_number: String(row.number),
-                description: row.user || "",
+                description: row.description || "",
                 vendor: vendorId,
                 model_id: modelId,
                 domain: domain,
@@ -309,15 +307,16 @@
             const line = {
                 type: "line",
                 number: 1,
+                account_number: 1,
                 expansion_module_number: 0,
                 key_number: 0,
                 additional_info: JSON.stringify({
-                    display_name: row.user || "",
+                    display_name: row.description || "",
                     user_name: row.login || row.number, // Fallback to number if login missing
                     auth_name: row.login || row.number,
                     password: row.password || domainVars.sip_password || "",
                     line_number: String(row.number), // Use phone number
-                    screen_name: row.user || "", // Use user name
+                    screen_name: row.description || "", // Use user name
                     registrar1_ip: domainVars.sip_server_ip || "",
                 }),
             };
@@ -442,7 +441,7 @@
                             <Table.Head>MAC</Table.Head>
                             <Table.Head>Number</Table.Head>
                             <Table.Head>Vendor/Model</Table.Head>
-                            <Table.Head>User</Table.Head>
+                            <Table.Head>Description</Table.Head>
                             <Table.Head>Message</Table.Head>
                             <Table.Head class="text-right">Actions</Table.Head>
                         </Table.Row>
@@ -468,7 +467,7 @@
                                 <Table.Cell
                                     >{row.vendor} / {row.model}</Table.Cell
                                 >
-                                <Table.Cell>{row.user}</Table.Cell>
+                                <Table.Cell>{row.description}</Table.Cell>
                                 <Table.Cell
                                     class="text-sm text-muted-foreground"
                                 >

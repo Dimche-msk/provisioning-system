@@ -73,8 +73,19 @@ The system is delivered as a compiled executable file (single binary), which con
     *   **Windows**:
         Run `provisioning-system-windows-amd64.exe` via the command line or as a service.
 
+### Command Line Arguments
+
+The following flags can be used when running the executable:
+
+*   `--config-dir` — Path to the directory containing `provisioning-system.yaml` and the `vendors/` folder (defaults to `.`).
+*   `--log-level` — Server logging level (`DEBUG`, `INFO`, `WARN`, `ERROR`). Defaults to `ERROR`. For detailed debugging, use `INFO` or `DEBUG`.
+
 5.  **Usage**:
     Open a browser and go to `http://<server-address>:8080` (default port). Login and password are set in the configuration file.
+
+6. **Database location**:
+    The database is located in the `backend/` folder and is named `provisioning.db`.
+    Backups are stored in the `backend/backups/` folder.
 
 ### Building from Source
 
@@ -108,6 +119,18 @@ If you want to build the project yourself:
     ```
 
 4.  The ready binary file `provisioning-system` (or `.exe`) will appear in the `backend` folder.
+
+
+### Running dev server
+1. run backend
+```bash
+go -C backend run cmd/server/main.go --config-dir ../conf
+```
+2. run frontend
+```bash
+cd frontend
+npm run dev
+```
 
 ## 3. System Configuration
 
@@ -191,6 +214,7 @@ static_dir: static            # Folder with static files (firmware, images) to b
 phone_config_file: "spa{{account.mac_address}}.xml" # Configuration file name template
 phone_config_template: templates/phone.tpl          # Path to the main configuration template
 features_file: templates/features.yaml              # [Optional] Path to advanced features definition
+accounts_file: accounts.yaml                        # [Optional] Path to account definitions (fields for the account creation dialog)
 ```
 
 ### Advanced Feature Configuration (features.yaml)
@@ -248,7 +272,7 @@ Templates use **Pongo2** syntax (similar to Jinja2 for Go). They allow dynamic f
 The following objects are available in templates:
 
 1.  **`account`** — Current phone object:
-    *   `mac_address`: Phone MAC address.
+    *   `mac_address`: Phone MAC address (automatically cleaned of colons, e.g., `001565ABCDEF`). Standard filters `|upper` and `|lower` are available to change the case.
     *   `phone_number`: Main phone number.
     *   `lines`: List of phone lines.
         *   `number`: Line number (1, 2, ...).
@@ -338,7 +362,27 @@ The main section for working with devices.
 *   **Edit**: Clicking on a table row opens detailed phone settings.
 *   **Import**: The "Import" button allows bulk uploading of phones from an Excel file.
 
-#### Editing a Phone
+#### Excel Import Format
+
+The system supports bulk importing of phones from Excel files (`.xlsx` or `.xls`). The importer automatically detects columns based on keywords in the header row (first row).
+
+| Column | English Keywords | Russian Keywords | Required | Description |
+| :--- | :--- | :--- | :---: | :--- |
+| **MAC Address** | `mac` | `мак` | Yes | Unique device MAC address (e.g., `001122334455`) |
+| **Phone Number** | `number` | `номер` | Yes | Main phone number / Line 1 number |
+| **Description** | `description`, `описание` | No | Display description for the phone |
+| **Vendor** | `vendor` | `производитель` | Yes | Vendor Name (e.g., `Mitel`) or Vendor ID (`mitel`) |
+| **Model** | `model` | `модель` | Yes | Model Name (e.g., `6873i`) or Model ID |
+| **Domain** | `domain` | `домен` | No | Domain name (defaults to first available if empty) |
+| **SIP Login** | `login` | `логин` | No | SIP authorization name (defaults to phone number) |
+| **SIP Password**| `password` | `пароль` | No | SIP password (defaults to domain's `sip_password` variable) |
+
+**Notes:**
+- Vendors and Models must already exist in the system configuration.
+- The importer creates **one SIP line** (Line 1) for each phone.
+- If a phone with the same MAC address already exists, you can choose to skip or overwrite.
+
+### Editing a Phone
 In the phone card, you can configure:
 *   **Basic Parameters**: MAC, model, domain, description.
 *   **Lines**: Configuration of SIP accounts for each line (number, password, display name).

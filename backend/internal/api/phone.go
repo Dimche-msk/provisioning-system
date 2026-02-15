@@ -16,6 +16,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"provisioning-system/internal/logger"
 	"provisioning-system/internal/models"
 	"provisioning-system/internal/provisioner"
 
@@ -193,7 +194,7 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 
 	// Deploy to domain
 	if err := h.deployDomain(phone.Domain, &phone); err != nil {
-		fmt.Printf("Failed to deploy domain %s: %v\n", phone.Domain, err)
+		logger.Warn("Failed to deploy domain %s: %v", phone.Domain, err)
 		// We don't fail the request if deployment fails, but we log it.
 		// Or should we? User might want to know.
 		// Let's keep it as is for now, but maybe add a warning header?
@@ -430,17 +431,30 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 	tempPhone.Type = reqPhone.Type
 	tempPhone.Lines = reqPhone.Lines // This is a slice, so it's a reference, but GeneratePhoneConfigs reads it.
 
-	// Generate new config (Dry Run / Pre-check)
+	// Determine if config path will change
 	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
+	oldPath, _ := h.ProvManager.GetPhoneConfigPath(outputDir, existingPhone)
+	newPath, _ := h.ProvManager.GetPhoneConfigPath(outputDir, tempPhone)
+
+	logger.Info("[UpdatePhone] Old config path: %s", oldPath)
+	logger.Info("[UpdatePhone] New config path: %s", newPath)
+
+	if oldPath != newPath && oldPath != "" {
+		logger.Info("[UpdatePhone] Paths differ, deleting old config: %s", oldPath)
+		if err := h.ProvManager.DeletePhoneConfig(outputDir, existingPhone); err != nil {
+			logger.Warn("Failed to delete old config %s: %v", oldPath, err)
+		}
+	} else {
+		logger.Info("[UpdatePhone] Paths match, skipping deletion")
+	}
+
+	// Generate new config
+	logger.Info("[UpdatePhone] Generating new config...")
 	if _, err := h.ProvManager.GeneratePhoneConfigs(outputDir, []models.Phone{tempPhone}); err != nil {
 		http.Error(w, fmt.Sprintf("Failed to generate configs: %v", err), http.StatusInternalServerError)
 		return
 	}
-
-	// Delete old config
-	if err := h.ProvManager.DeletePhoneConfig(outputDir, existingPhone); err != nil {
-		fmt.Printf("Warning: Failed to delete old config: %v\n", err)
-	}
+	logger.Info("[UpdatePhone] Generation complete")
 
 	// Apply updates to DB
 	existingPhone = tempPhone // Copy fields back (except Lines which need association update)
@@ -546,7 +560,7 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 	// 1. Delete config file
 	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
 	if err := h.ProvManager.DeletePhoneConfig(outputDir, phone); err != nil {
-		fmt.Printf("Warning: Failed to delete config file: %v\n", err)
+		logger.Warn("Failed to delete config file: %v", err)
 	}
 
 	// 2. Delete from DB
@@ -561,7 +575,7 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 
 	// 3. Execute DeleteCmd (Deploy changes)
 	if err := h.executeDeleteCmd(phone.Domain, &phone); err != nil {
-		fmt.Printf("Warning: Failed to execute delete command for domain %s: %v\n", phone.Domain, err)
+		logger.Warn("Failed to execute delete command for domain %s: %v", phone.Domain, err)
 		// We don't fail the request if the hook fails, but we log it.
 	}
 
@@ -569,7 +583,7 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		var allPhones []models.Phone
 		if err := h.DB.Preload("Lines").Find(&allPhones).Error; err != nil {
-			fmt.Printf("Failed to fetch phones for directory regeneration: %v\n", err)
+			logger.Error("Failed to fetch phones for directory regeneration: %v", err)
 			return
 		}
 		outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"

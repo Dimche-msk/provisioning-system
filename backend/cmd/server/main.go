@@ -18,6 +18,7 @@ import (
 	"provisioning-system/internal/broadcaster"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
+	"provisioning-system/internal/logger" // This is the custom logger package
 	"provisioning-system/internal/provisioner"
 	"provisioning-system/internal/version"
 )
@@ -28,7 +29,11 @@ var staticFS embed.FS
 func main() {
 	// 1. Парсинг аргументов CLI
 	configDir := flag.String("config-dir", ".", "Directory containing provisioning-system.yaml and vendors/")
+	logLevel := flag.String("log-level", "ERROR", "Log level (DEBUG, INFO, WARN, ERROR)")
 	flag.Parse()
+
+	// 2. Инициализация логгера
+	logger.SetLevel(*logLevel)
 
 	// 2. Загрузка конфигурации
 	cfg, err := config.LoadConfig(*configDir)

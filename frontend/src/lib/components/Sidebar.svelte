@@ -3,6 +3,8 @@
     import { t } from "svelte-i18n";
     import { Settings, Home, Phone, Activity } from "lucide-svelte";
 
+    import { APP_VERSION } from "$lib/version";
+
     const menuItems = [
         { href: "/", label: "menu.home", icon: Home },
         { href: "/phones", label: "menu.phones", icon: Phone },
@@ -34,6 +36,6 @@
         {/each}
     </nav>
     <div class="p-4 border-t border-gray-200 dark:border-gray-800">
-        <p class="text-xs text-center text-gray-500">v0.1.17</p>
+        <p class="text-xs text-center text-gray-500">v{APP_VERSION}</p>
     </div>
 </aside>
