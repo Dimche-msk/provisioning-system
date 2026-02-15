@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// 7. Инициализация Backup Manager
-	backupManager := backup.NewManager(cfg, database)
+	backupManager := backup.NewManager(cfg, database, *configDir)
 
 	// 8. Инициализация API Handlers
 	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager)
@@ -108,9 +108,13 @@ func main() {
 	protected.HandleFunc("/domains", sysHandler.GetDomains).Methods("GET")
 	protected.HandleFunc("/deploy", sysHandler.Deploy).Methods("POST")
 
-	protected.HandleFunc("/system/backup", sysHandler.CreateBackup).Methods("POST")
+	protected.HandleFunc("/system/backups/create/db", sysHandler.CreateDBBackup).Methods("POST")
+	protected.HandleFunc("/system/backups/create/cfg", sysHandler.CreateConfigBackup).Methods("POST")
 	protected.HandleFunc("/system/backups", sysHandler.ListBackups).Methods("GET")
-	protected.HandleFunc("/system/restore", sysHandler.RestoreBackup).Methods("POST")
+	protected.HandleFunc("/system/backups/download/{filename}", sysHandler.DownloadBackup).Methods("GET")
+	protected.HandleFunc("/system/backups/upload", sysHandler.UploadBackup).Methods("POST")
+	protected.HandleFunc("/system/backups/restore/db", sysHandler.RestoreDBBackup).Methods("POST")
+	protected.HandleFunc("/system/backups/restore/cfg", sysHandler.RestoreConfigBackup).Methods("POST")
 	protected.HandleFunc("/system/stats", sysHandler.GetSystemStats).Methods("GET")
 
 	protected.HandleFunc("/phones", phoneHandler.CreatePhone).Methods("POST")

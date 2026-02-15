@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +14,11 @@ import (
 	"provisioning-system/internal/backup"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
+	"provisioning-system/internal/logger"
 	"provisioning-system/internal/models"
 	"provisioning-system/internal/provisioner"
 
+	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
@@ -253,19 +256,34 @@ func (h *SystemHandler) Deploy(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *SystemHandler) CreateBackup(w http.ResponseWriter, r *http.Request) {
+func (h *SystemHandler) CreateDBBackup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	if err := h.BackupManager.CreateBackup(); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "Failed to create backup: %v"}`, err), http.StatusInternalServerError)
+	if err := h.BackupManager.CreateBackup(backup.BackupTypeDB); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to create DB backup: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"status": "ok", "message": "Backup created successfully"}`))
+	w.Write([]byte(`{"status": "ok", "message": "Database backup created successfully"}`))
+}
+
+func (h *SystemHandler) CreateConfigBackup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if err := h.BackupManager.CreateBackup(backup.BackupTypeConfig); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to create Config backup: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Configuration backup created successfully"}`))
 }
 
 func (h *SystemHandler) ListBackups(w http.ResponseWriter, r *http.Request) {
@@ -286,7 +304,71 @@ func (h *SystemHandler) ListBackups(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *SystemHandler) RestoreBackup(w http.ResponseWriter, r *http.Request) {
+func (h *SystemHandler) DownloadBackup(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	filename := vars["filename"]
+	if filename == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	// Basic security check to prevent traversal
+	if strings.Contains(filename, "..") || strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
+		http.Error(w, "Invalid filename", http.StatusBadRequest)
+		return
+	}
+
+	filePath := filepath.Join((*h.Config).Database.BackupDir, filename)
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.Error(w, "Backup not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	w.Header().Set("Content-Type", "application/zip")
+	http.ServeFile(w, r, filePath)
+}
+
+func (h *SystemHandler) UploadBackup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// 10MB limit
+	r.ParseMultipartForm(10 << 20)
+
+	file, header, err := r.FormFile("backup")
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to get file from request: %v"}`, err), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	if !strings.HasSuffix(header.Filename, ".zip") {
+		http.Error(w, `{"error": "Only .zip files are allowed"}`, http.StatusBadRequest)
+		return
+	}
+
+	targetPath := filepath.Join((*h.Config).Database.BackupDir, header.Filename)
+	out, err := os.Create(targetPath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to create local file: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to save file: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Backup uploaded successfully"}`))
+}
+
+func (h *SystemHandler) RestoreDBBackup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -305,14 +387,12 @@ func (h *SystemHandler) RestoreBackup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.BackupManager.RestoreBackup(req.Filename); err != nil {
-		http.Error(w, fmt.Sprintf(`{"error": "Failed to restore backup: %v"}`, err), http.StatusInternalServerError)
+	if err := h.BackupManager.RestoreDB(req.Filename); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to restore database: %v"}`, err), http.StatusInternalServerError)
 		return
 	}
 
 	// Re-initialize Database connection
-	// Note: We are updating the content of the struct pointed to by h.DB
-	// This assumes that h.DB is shared by all handlers as a pointer.
 	newDB, err := db.Init((*h.Config).Database.Path)
 	if err != nil {
 		log.Printf("CRITICAL: Failed to re-initialize database after restore: %v", err)
@@ -324,7 +404,41 @@ func (h *SystemHandler) RestoreBackup(w http.ResponseWriter, r *http.Request) {
 	*h.DB = *newDB
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"status": "ok", "message": "Backup restored successfully"}`))
+	w.Write([]byte(`{"status": "ok", "message": "Database restored successfully"}`))
+}
+
+func (h *SystemHandler) RestoreConfigBackup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Filename string `json:"filename"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		logger.Error("Failed to decode restore request: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.Filename == "" {
+		http.Error(w, "Filename is required", http.StatusBadRequest)
+		return
+	}
+
+	logger.Info("RestoreConfigBackup request received for: %s", req.Filename)
+
+	if err := h.BackupManager.RestoreConfig(req.Filename); err != nil {
+		logger.Error("RestoreConfig failed for %s: %v", req.Filename, err)
+		http.Error(w, fmt.Sprintf(`{"error": "Failed to restore configuration: %v"}`, err), http.StatusInternalServerError)
+		return
+	}
+
+	logger.Info("RestoreConfig successfully completed for: %s", req.Filename)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"status": "ok", "message": "Configuration restored successfully. Please 'Reload' and 'Apply' to finalize."}`))
 }
 
 type DashboardStats struct {

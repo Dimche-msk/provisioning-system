@@ -11,6 +11,7 @@
         Database,
         RotateCcw,
         Download,
+        Archive,
     } from "lucide-svelte";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
@@ -59,7 +60,7 @@
             }
         } catch (e) {
             console.error("Failed to load domains", e);
-            toast.error("Failed to load domains");
+            toast.error($t("system.load_domains_error"));
         }
     }
 
@@ -77,52 +78,110 @@
         }
     }
 
-    async function createBackup() {
+    async function createBackup(type) {
         backupLoading = true;
         try {
-            let res = await fetch("/api/system/backup", { method: "POST" });
+            const url =
+                type === "db"
+                    ? "/api/system/backups/create/db"
+                    : "/api/system/backups/create/cfg";
+            let res = await fetch(url, { method: "POST" });
             res = await handleResponse(res);
             if (!res) return;
             if (res.ok) {
-                toast.success("Backup created successfully");
+                toast.success(
+                    type === "db"
+                        ? $t("backup.create_db_success")
+                        : $t("backup.create_cfg_success"),
+                );
                 await loadBackups();
             } else {
                 const data = await res.json();
-                toast.error(data.error || "Failed to create backup");
+                toast.error(data.error || $t("system.reload_error"));
             }
         } catch (e) {
-            toast.error("Error creating backup: " + e.message);
+            toast.error($t("system.reload_error") + ": " + e.message);
         } finally {
             backupLoading = false;
         }
     }
 
-    async function restoreBackup(filename) {
-        if (
-            !confirm(
-                `Are you sure you want to restore from ${filename}? Current data will be lost.`,
-            )
-        )
-            return;
+    async function downloadBackup(filename) {
+        window.location.href = `/api/system/backups/download/${filename}`;
+    }
+
+    async function uploadBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("backup", file);
+
+        backupLoading = true;
+        try {
+            let res = await fetch("/api/system/backups/upload", {
+                method: "POST",
+                body: formData,
+            });
+            res = await handleResponse(res);
+            if (!res) return;
+
+            if (res.ok) {
+                toast.success($t("backup.upload_success"));
+                await loadBackups();
+            } else {
+                const data = await res.json();
+                toast.error(data.error || $t("system.deploy_error"));
+            }
+        } catch (e) {
+            toast.error($t("system.deploy_error") + ": " + e.message);
+        } finally {
+            backupLoading = false;
+            event.target.value = ""; // Reset file input
+        }
+    }
+
+    async function restoreBackup(backupInfo) {
+        const isDB = backupInfo.type === "db";
+        const typeLabel = isDB ? $t("backup.db_type") : $t("backup.cfg_type");
+
+        let confirmMsg = $t("backup.restore_confirm", {
+            values: {
+                type: typeLabel,
+                name: backupInfo.name,
+                target: isDB ? $t("common.data") : $t("phone.settings"),
+            },
+        });
+        if (!confirm(confirmMsg)) return;
 
         restoreLoading = true;
         try {
-            let res = await fetch("/api/system/restore", {
+            const url = isDB
+                ? "/api/system/backups/restore/db"
+                : "/api/system/backups/restore/cfg";
+            let res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ filename }),
+                body: JSON.stringify({ filename: backupInfo.name }),
             });
             res = await handleResponse(res);
             if (!res) return;
             if (res.ok) {
-                toast.success("Backup restored successfully");
+                if (isDB) {
+                    toast.success($t("backup.restore_db_success"));
+                } else {
+                    toast.success($t("backup.restore_cfg_success"), {
+                        description: $t("backup.restore_cfg_instruction"),
+                        duration: 10000,
+                    });
+                }
                 await loadBackups();
             } else {
                 const data = await res.json();
-                toast.error(data.error || "Failed to restore backup");
+                toast.error(data.error || $t("system.reload_error"));
             }
         } catch (e) {
-            toast.error("Error restoring backup: " + e.message);
+            toast.error($t("system.reload_error") + ": " + e.message);
         } finally {
             restoreLoading = false;
         }
@@ -143,23 +202,26 @@
                 if (data.warnings && data.warnings.length > 0) {
                     warnings = data.warnings;
                     configPrepared = false; // Require explicit ignore
-                    toast.warning("Configuration prepared with warnings", {
+                    toast.warning($t("system.config_prepared_warnings"), {
                         duration: 5000,
                     });
                 } else {
-                    toast.success(data.message || "Configuration prepared", {
-                        duration: 5000,
-                    });
+                    toast.success(
+                        data.message || $t("system.config_prepared_success"),
+                        {
+                            duration: 5000,
+                        },
+                    );
                     configPrepared = true;
                 }
                 await loadDomains();
             } else {
-                toast.error(data.error || "Failed to prepare configuration", {
+                toast.error(data.error || $t("system.reload_error"), {
                     duration: Infinity,
                 });
             }
         } catch (e) {
-            toast.error("Error preparing configuration: " + e.message, {
+            toast.error($t("system.prepare_error") + ": " + e.message, {
                 duration: Infinity,
             });
         } finally {
@@ -182,17 +244,20 @@
 
             const data = await res.json();
             if (res.ok) {
-                toast.success(data.message || "Configuration applied", {
-                    duration: 5000,
-                });
+                toast.success(
+                    data.message || $t("system.config_apply_success"),
+                    {
+                        duration: 5000,
+                    },
+                );
                 configPrepared = false; // Reset state
             } else {
-                toast.error(data.error || "Failed to apply configuration", {
+                toast.error(data.error || $t("system.reload_error"), {
                     duration: Infinity,
                 });
             }
         } catch (e) {
-            toast.error("Error applying configuration: " + e.message, {
+            toast.error($t("system.apply_error") + ": " + e.message, {
                 duration: Infinity,
             });
         } finally {
@@ -219,12 +284,12 @@
                     duration: 10000,
                 });
             } else {
-                toast.error(data.error || "Deploy failed", {
+                toast.error(data.error || $t("system.deploy_error"), {
                     duration: Infinity,
                 });
             }
         } catch (e) {
-            toast.error("Deploy failed: " + e.message, {
+            toast.error($t("system.deploy_error") + ": " + e.message, {
                 duration: Infinity,
             });
         } finally {
@@ -255,7 +320,9 @@
                     <RefreshCw
                         class="mr-2 h-4 w-4 {loading ? 'animate-spin' : ''}"
                     />
-                    {loading ? "Preparing..." : $t("system.reload_button")}
+                    {loading
+                        ? $t("system.preparing")
+                        : $t("system.reload_button")}
                 </Button>
 
                 <Button
@@ -264,7 +331,9 @@
                     disabled={loading || applying || !configPrepared}
                 >
                     <Check class="mr-2 h-4 w-4" />
-                    {applying ? "Applying..." : $t("system.apply_button")}
+                    {applying
+                        ? $t("system.applying")
+                        : $t("system.apply_button")}
                 </Button>
             </div>
 
@@ -273,7 +342,9 @@
                     <AlertTriangle class="h-4 w-4" />
                     <div class="flex justify-between items-start w-full">
                         <div>
-                            <AlertTitle>Warnings</AlertTitle>
+                            <AlertTitle
+                                >{$t("system.warnings_title")}</AlertTitle
+                            >
                             <AlertDescription>
                                 <ul
                                     class="list-disc pl-4 text-sm space-y-1 mt-2"
@@ -290,7 +361,7 @@
                             class="ml-4 bg-white text-destructive hover:bg-gray-100 border-destructive/20"
                             on:click={ignoreWarnings}
                         >
-                            Ignore
+                            {$t("system.ignore_button")}
                         </Button>
                     </div>
                 </Alert>
@@ -331,20 +402,51 @@
 
     <Card.Root>
         <Card.Header>
-            <Card.Title>Backup & Restore</Card.Title>
-            <Card.Description
-                >{$t("backup.description")}.</Card.Description
-            >
+            <Card.Title>{$t("backup.create")}</Card.Title>
+            <Card.Description>{$t("backup.description")}.</Card.Description>
         </Card.Header>
         <Card.Content class="space-y-6">
-            <div class="flex items-center gap-4">
+            <div class="flex flex-wrap items-center gap-4">
                 <Button
-                    on:click={createBackup}
+                    on:click={() => createBackup("db")}
                     disabled={backupLoading || restoreLoading}
                 >
                     <Database class="mr-2 h-4 w-4" />
-                    {backupLoading ? "Creating Backup..." : $t("backup.create") }
+                    {backupLoading
+                        ? $t("common.creating")
+                        : $t("backup.create_db")}
                 </Button>
+
+                <Button
+                    on:click={() => createBackup("cfg")}
+                    disabled={backupLoading || restoreLoading}
+                >
+                    <Archive class="mr-2 h-4 w-4" />
+                    {backupLoading
+                        ? $t("common.creating")
+                        : $t("backup.create_cfg")}
+                </Button>
+
+                <div class="flex-1"></div>
+
+                <div class="relative">
+                    <input
+                        type="file"
+                        id="backup-upload"
+                        class="hidden"
+                        accept=".zip"
+                        on:change={uploadBackup}
+                    />
+                    <Button
+                        variant="ghost"
+                        on:click={() =>
+                            document.getElementById("backup-upload").click()}
+                        disabled={backupLoading || restoreLoading}
+                    >
+                        <UploadCloud class="mr-2 h-4 w-4" />
+                        {$t("backup.upload")}
+                    </Button>
+                </div>
             </div>
 
             <div class="border rounded-md">
@@ -352,16 +454,36 @@
                     <Table.Header>
                         <Table.Row>
                             <Table.Head>{$t("common.name")}</Table.Head>
+                            <Table.Head>{$t("backup.type")}</Table.Head>
                             <Table.Head>{$t("common.date")}</Table.Head>
                             <Table.Head>{$t("common.size")}</Table.Head>
-                            <Table.Head class="text-right">{$t("common.actions")}</Table.Head>
+                            <Table.Head class="text-right"
+                                >{$t("common.actions")}</Table.Head
+                            >
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {#each backups as backup}
                             <Table.Row>
-                                <Table.Cell>{backup.name}</Table.Cell>
-                                <Table.Cell
+                                <Table.Cell class="font-mono text-xs"
+                                    >{backup.name}</Table.Cell
+                                >
+                                <Table.Cell>
+                                    {#if backup.type === "db"}
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                                        >
+                                            {$t("backup.db_type")}
+                                        </span>
+                                    {:else}
+                                        <span
+                                            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                                        >
+                                            {$t("backup.cfg_type")}
+                                        </span>
+                                    {/if}
+                                </Table.Cell>
+                                <Table.Cell class="whitespace-nowrap"
                                     >{new Date(
                                         backup.time,
                                     ).toLocaleString()}</Table.Cell
@@ -369,16 +491,26 @@
                                 <Table.Cell
                                     >{(backup.size / 1024 / 1024).toFixed(2)} MB</Table.Cell
                                 >
-                                <Table.Cell class="text-right">
+                                <Table.Cell
+                                    class="text-right flex justify-end gap-2"
+                                >
                                     <Button
                                         variant="outline"
                                         size="sm"
                                         on:click={() =>
-                                            restoreBackup(backup.name)}
+                                            downloadBackup(backup.name)}
+                                    >
+                                        <Download class="h-4 w-4" />
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        on:click={() => restoreBackup(backup)}
                                         disabled={restoreLoading}
                                     >
                                         <RotateCcw class="mr-2 h-4 w-4" />
-                                        Restore
+                                        {$t("common.restore")}
                                     </Button>
                                 </Table.Cell>
                             </Table.Row>
@@ -386,10 +518,10 @@
                         {#if backups.length === 0}
                             <Table.Row>
                                 <Table.Cell
-                                    colspan={4}
-                                    class="text-center text-muted-foreground"
+                                    colspan={5}
+                                    class="text-center text-muted-foreground py-8"
                                 >
-                                    No backups found
+                                    {$t("common.no_results")}
                                 </Table.Cell>
                             </Table.Row>
                         {/if}
