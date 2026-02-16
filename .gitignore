@@ -33,6 +33,7 @@ backups/
 brain/
 .gemini/
 /sample_config
-DS_Store
+.DS_Store
 /conf/temp_configs/
 /conf/temp_configs.bak/
+_*/
