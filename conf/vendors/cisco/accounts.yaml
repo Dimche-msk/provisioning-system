@@ -1,0 +1,31 @@
+- id: account
+  name: SIP Account
+  params:
+    - id: user_name
+      label: Extension
+      type: string
+      config_template: "<User_ID_{{key_index}}_>{{value}}</User_ID_{{key_index}}_>"
+    - id: auth_name
+      label: Auth Name
+      type: string
+      config_template: "<User_ID_{{key_index}}_>{{value}}</User_ID_{{key_index}}_>"
+    - id: password
+      label: Password
+      type: password
+      config_template: "<Password_{{key_index}}_>{{value}}</Password_{{key_index}}_>"
+    - id: proxy_ip
+      label: Proxy IP
+      type: string
+      config_template: "<Proxy_{{key_index}}_>{{value}}</Proxy_{{key_index}}_>"
+    - id: proxy_port
+      label: Proxy Port
+      type: number
+      config_template: "<SIP_Port_{{key_index}}_>{{value}}</SIP_Port_{{key_index}}_>"
+    - id: registrar_ip
+      label: Registrar IP
+      type: string
+      config_template: "<Proxy_{{key_index}}_>{{value}}</Proxy_{{key_index}}_>"
+    - id: registrar_port
+      label: Registrar Port
+      type: number
+      config_template: "<SIP_Port_{{key_index}}_>{{value}}</SIP_Port_{{key_index}}_>"

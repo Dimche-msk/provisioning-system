@@ -1,8 +1,8 @@
 id: cisco-SPA525
 name: Cisco SPA525
-image: cisco-spa525.png
+image: cisco-spa525g.png
 type: phone
-own_hard_keys: 5
+own_hard_keys: 4
 own_soft_keys: 0
 max_account_lines: 5
 supported_expansion_modules:
@@ -13,8 +13,8 @@ keys:
   - index: 1
     type: line
     label: "Line 1"
-    x: 10
-    y: 50
+    x: 490
+    y: 75
     settings:
       label: "linekey.1.label"
       value: "linekey.1.value"
@@ -23,22 +23,88 @@ keys:
   - index: 2
     type: line
     label: "Line 2"
-    x: 10
-    y: 100
+    x: 490
+    y: 92
     settings:
       label: "linekey.2.label"
       value: "linekey.2.value"
       type: "linekey.2.type"
       line: "linekey.2.line"
+  - index: 3
+    type: line
+    label: "Line 3"
+    x: 490
+    y: 113
+    settings:
+      label: "linekey.3.label"
+      value: "linekey.3.value"
+      type: "linekey.3.type"
+      line: "linekey.3.line"
+  - index: 4
+    type: line
+    label: "Line 4"
+    x: 490
+    y: 129
+    settings:
+      label: "linekey.4.label"
+      value: "linekey.4.value"
+      type: "linekey.4.type"
+      line: "linekey.4.line"
+  - index: 5
+    type: line
+    label: "Line 5"
+    x: 490
+    y: 150
+    settings:
+      label: "linekey.5.label"
+      value: "linekey.5.value"
+      type: "linekey.5.type"
+      line: "linekey.5.line"
 
-settings:
-  - group: "Pickup Features"
-    params:
-      - key: "features.pickup.blf_audio_enable"
-        label: "BLF Audio Enable"
-        type: boolean
-        default: 1
-      - key: "features.pickup.direct_pickup_code"
-        label: "Direct Pickup Code"
-        type: string
-        default: "*8#"
+  - index: 1
+    type: hardkey
+    label: "КЛ. 1"
+    x: 311
+    y: 217
+    settings:
+      label: "hardkey.1.label"
+      value: "hardkey.1.value"
+      type: "hardkey.1.type"
+  - index: 2
+    type: hardkey
+    label: "КЛ. 2"
+    x: 349
+    y: 217
+    settings:
+      label: "hardkey.2.label"
+      value: "hardkey.2.value"
+      type: "hardkey.2.type"
+  - index: 3
+    type: hardkey
+    label: "КЛ. 3"
+    x: 388
+    y: 217
+    settings:
+      label: "hardkey.3.label"
+      value: "hardkey.3.value"
+      type: "hardkey.3.type"
+  - index: 4
+    type: hardkey
+    label: "КЛ. 4"
+    x: 426
+    y: 217
+    settings:
+      label: "hardkey.4.label"
+      value: "hardkey.4.value"
+      type: "hardkey.4.type"
+
+key_types:
+  - id: Line
+    verbose: "Линия"
+    polygon: "10,10,50,10,50,50,10,50"
+    image: "cisco-spa525g.png"
+
+  - id: hardkey
+    verbose: "Клавиша"
+    polygon: ""
+    image: "cisco-spa525g.png"

@@ -3,3 +3,5 @@ name: Eltex
 static_dir: static
 phone_config_template: templates/phone.tpl
 phone_config_file: "eltex_{{account.mac_address}}.cfg"
+features_file: templates/features.yaml
+accounts_file: accounts.yaml

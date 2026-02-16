@@ -1,0 +1,33 @@
+- id: blf
+  name: BLF
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: "blf"
+      config_template: "fkey.{{key_index}}.type = {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "fkey.{{key_index}}.label = {{value}}"
+    - id: value
+      label: Extension
+      type: string
+      config_template: "fkey.{{key_index}}.value = {{value}}"
+
+- id: speeddial
+  name: Speed Dial
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: "speed"
+      config_template: "fkey.{{key_index}}.type = {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "fkey.{{key_index}}.label = {{value}}"
+    - id: value
+      label: Extension
+      type: string
+      config_template: "fkey.{{key_index}}.value = {{value}}"

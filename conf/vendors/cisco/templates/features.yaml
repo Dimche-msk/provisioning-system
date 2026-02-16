@@ -1,0 +1,54 @@
+#
+#`{{key_index}}`**: Порядковый номер кнопки/линии (1-N).
+#`{{key_number}}`**: Физический номер кнопки на устройстве или модуле расширения.
+#`{{expansion_module}}`**: Номер модуля расширения (0 для самого телефона).
+#`{{key_type}}`**: Тип кнопки из модели (например, `line`, `soft_key`).
+#`{{label}}`**: Название (label) кнопки из модели.
+#`{{tag}}`**: Сопоставленный тег вендора для данного ID параметра из `settings` модели.
+#`{{settings}}`**: Полная карта всех настроек (`settings`), определенных для этой кнопки в модели.
+- id: blf
+  name: BLF
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: BLF
+      config_template: "{{tag}}:{{value}}"
+    - id: locked
+      label: Locked
+      type: hidden
+      value: 0
+      config_template: "{{id}}:{{value}}"
+    - id: label
+      label: Label
+      param: const
+      type: string
+      config_template: "{{tag}}/{{param}}:{{value}}"
+    - id: value
+      label: Value
+      type: string
+      #test:_3__0__________:111
+      config_template: "key_index:{{key_index}}__key_number:{{key_number}}__expansion_module:{{expansion_module_number}}__key_type:{{type}}__label:{{label}}__tag:{{tag}}__settings:{{settings}}_:{{value}}"
+
+- id: speeddial
+  name: Speed Dial
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: 13
+      config_template: "{{tag}} = {{value}}"
+    - id: line
+      label: Line
+      type: select
+      source: lines
+      config_template: "{{tag}} = {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "{{tag}} = {{value}}"
+    - id: value
+      label: Value
+      type: string
+      config_template: "{{tag}} = {{value}}"
+

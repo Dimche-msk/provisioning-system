@@ -1,0 +1,16 @@
+- id: blf
+  name: BLF
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: "blf"
+      config_template: "key.{{key_index}}.type = {{value}}"
+- id: speeddial
+  name: Speed Dial
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: "sd"
+      config_template: "key.{{key_index}}.type = {{value}}"

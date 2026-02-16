@@ -1,0 +1,15 @@
+- id: account
+  name: SIP Account
+  params:
+    - id: user_name
+      label: Extension
+      type: string
+      config_template: "user_name idx=\"{{key_index}}\" = {{value}}"
+    - id: auth_name
+      label: Auth Name
+      type: string
+      config_template: "user_pname idx=\"{{key_index}}\" = {{value}}"
+    - id: password
+      label: Password
+      type: password
+      config_template: "user_pass idx=\"{{key_index}}\" = {{value}}"

@@ -1,0 +1,7 @@
+- id: account
+  name: SIP Account
+  params:
+    - id: user_name
+      label: Extension
+      type: string
+      config_template: "sip.line.{{key_index}}.user = {{value}}"
