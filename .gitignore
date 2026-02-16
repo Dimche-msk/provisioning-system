@@ -27,8 +27,6 @@ frontend/.env*
 
 # Project Specific
 release/
-temp_configs/
-temp_configs.bak/
 *.log
 logs/
 backups/
@@ -36,3 +34,5 @@ brain/
 .gemini/
 /sample_config
 DS_Store
+/conf/temp_configs/
+/conf/temp_configs.bak/

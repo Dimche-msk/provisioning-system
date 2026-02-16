@@ -45,8 +45,8 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	port := ":" + cfg.Server.Port
-	fmt.Printf("Starting Provisioning Server version %s on port %s...\n", version.Version, port)
+	addressList := strings.Split(cfg.Server.ListenAddress, ",")
+	fmt.Printf("Starting Provisioning Server version %s...\n", version.Version)
 	fmt.Printf("Using config dir: %s\n", *configDir)
 
 	// 3. Инициализация компонентов
@@ -222,7 +222,25 @@ func main() {
 		fileServer.ServeHTTP(w, r)
 	})
 
-	if err := http.ListenAndServe(port, r); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+	for i, addr := range addressList {
+		addr = strings.TrimSpace(addr)
+		if addr == "" {
+			continue
+		}
+		fullAddr := fmt.Sprintf("%s:%s", addr, cfg.Server.Port)
+		fmt.Printf("Listening on %s\n", fullAddr)
+
+		if i == len(addressList)-1 {
+			// Last one blocks
+			if err := http.ListenAndServe(fullAddr, r); err != nil {
+				log.Fatalf("Server failed to start on %s: %v", fullAddr, err)
+			}
+		} else {
+			go func(a string) {
+				if err := http.ListenAndServe(a, r); err != nil {
+					log.Printf("Error: Server failed to start on %s: %v", a, err)
+				}
+			}(fullAddr)
+		}
 	}
 }

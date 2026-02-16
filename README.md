@@ -139,6 +139,7 @@ The main configuration file `conf/provisioning-system.yaml` controls server para
 ### Main Sections
 
 *   **server**: Web server settings.
+    *   `listen_address`: IP address to listen on (default "0.0.0.0"). Multiple addresses can be specified using a comma (e.g., "127.0.0.1, 192.168.1.10").
     *   `port`: Port on which the web interface will be available (default "8090").
     *   `serve_configs`: If `true`, the system serves generated configuration files via HTTP.
     *   `log_device_access`: Device access logging level (`none`, `access`, `error`, `full`).

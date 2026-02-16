@@ -28,6 +28,8 @@
     "system.deploy_all": "Deploy All",
     "system.deploying": "Deploying...",
     "system.overview": "System Overview",
+    "system.total_phones": "Total Phones",
+    "system.active_domains": "Active Domains",
     "system.overview_description": "Distribution of phones by domains and vendors",
     "theme.toggle": "Toggle Theme",
     "lang.ru": "Russian",

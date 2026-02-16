@@ -64,7 +64,7 @@
                         class="flex flex-row items-center justify-between space-y-0 pb-2"
                     >
                         <Card.Title class="text-sm font-medium"
-                            >Total Phones</Card.Title
+                            >{$t("system.total_phones")}</Card.Title
                         >
                         <Smartphone class="h-4 w-4 text-muted-foreground" />
                     </Card.Header>
@@ -77,7 +77,7 @@
                         class="flex flex-row items-center justify-between space-y-0 pb-2"
                     >
                         <Card.Title class="text-sm font-medium"
-                            >Active Domains</Card.Title
+                            >{$t("system.active_domains")}</Card.Title
                         >
                         <Server class="h-4 w-4 text-muted-foreground" />
                     </Card.Header>
@@ -100,7 +100,8 @@
                         <Table.Root>
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.Head>{$t("phone.domain")}</Table.Head>
+                                    <Table.Head>{$t("phone.domain")}</Table.Head
+                                    >
                                     {#each vendors as vendor}
                                         <Table.Head class="capitalize"
                                             >{vendor}</Table.Head

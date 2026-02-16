@@ -3357,6 +3357,22 @@
          <UserName>User-2418</UserName>
          <Registrar></Registrar>
        </Entry>
+    <!-- Phone: 66:55:44:99:88 -->
+    <Description></Description>
+    <Number>4848</Number>
+       <Entry>
+         <Name>4848</Name>
+         <UserName>4848</UserName>
+         <Registrar></Registrar>
+       </Entry>
   <!-- Domain: branch-1 -->
   <!-- Domain: Вынос 2 (Цех Б) -->
+    <!-- Phone: 44:77:55:88:66:99 -->
+    <Description></Description>
+    <Number>9898</Number>
+       <Entry>
+         <Name>9898</Name>
+         <UserName>9898</UserName>
+         <Registrar></Registrar>
+       </Entry>
   <!-- Domain: New_Domain -->

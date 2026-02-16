@@ -20,6 +20,7 @@ type DomainSettings struct {
 
 type SystemConfig struct {
 	Server struct {
+		ListenAddress   string `yaml:"listen_address"`
 		Port            string `yaml:"port"`
 		ServeConfigs    bool   `yaml:"serve_configs"`
 		LogDeviceAccess string `yaml:"log_device_access"` // none, access, error, full
@@ -55,6 +56,9 @@ func LoadConfig(configDir string) (*SystemConfig, error) {
 	}
 
 	// Дефолтные значения
+	if cfg.Server.ListenAddress == "" {
+		cfg.Server.ListenAddress = "0.0.0.0"
+	}
 	if cfg.Server.Port == "" {
 		cfg.Server.Port = "8090"
 	}

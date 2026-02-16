@@ -26,6 +26,8 @@
     "system.deploy_all": "Выгрузить все",
     "system.deploying": "Выгрузка...",
     "system.overview": "Информация о системе",
+    "system.total_phones": "Всего телефонов",
+    "system.active_domains": "Активных доменов",
     "system.overview_description": "Распределение телефонов по доменам и производителям",
     "theme.toggle": "Переключить тему",
     "lang.ru": "Русский",

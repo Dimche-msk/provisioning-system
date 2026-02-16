@@ -429,27 +429,27 @@
                             class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                         >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.number")}</th
                             >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("common.description") || "Description"}</th
                             >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.mac")}</th
                             >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.model") || "Model"}</th
                             >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.vendor")}</th
                             >
                             <th
-                                class="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+                                class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
                                 >{$t("phone.domain")}</th
                             >
                             <th
@@ -476,27 +476,27 @@
                                     class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                                     on:click={() => editPhone(phone)}
                                 >
-                                    <td class="p-4 align-middle">
+                                    <td class="py-2 px-4 align-middle">
                                         {#if phone.type === "gateway"}
                                             {phone.ip_address}
                                         {:else}
                                             {phone.phone_number}
                                         {/if}
                                     </td>
-                                    <td class="p-4 align-middle">
+                                    <td class="py-2 px-4 align-middle">
                                         {getLinesDescription(phone)}
                                     </td>
-                                    <td class="p-4 align-middle"
+                                    <td class="py-2 px-4 align-middle"
                                         >{formatMac(phone.mac_address)}</td
                                     >
-                                    <td class="p-4 align-middle"
+                                    <td class="py-2 px-4 align-middle"
                                         >{phone.model_name ||
                                             phone.model_id}</td
                                     >
-                                    <td class="p-4 align-middle"
+                                    <td class="py-2 px-4 align-middle"
                                         >{phone.vendor_name || phone.vendor}</td
                                     >
-                                    <td class="p-4 align-middle"
+                                    <td class="py-2 px-4 align-middle"
                                         >{phone.domain}</td
                                     >
                                     <td class="p-2 align-middle text-right">
