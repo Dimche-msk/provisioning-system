@@ -9,6 +9,8 @@ supported_expansion_modules:
   - M680
   - M685
 maximum_expansion_modules: 3
+other_features:
+  - RingTon
 key_types:
   - id: Line
     verbose: "Линия"

@@ -3365,6 +3365,19 @@
          <UserName>4848</UserName>
          <Registrar></Registrar>
        </Entry>
+    <!-- Phone: 12:34:56:23:45 -->
+    <Description></Description>
+    <Number>543456</Number>
+       <Entry>
+         <Name>543456</Name>
+         <UserName>543456</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
   <!-- Domain: branch-1 -->
   <!-- Domain: Вынос 2 (Цех Б) -->
     <!-- Phone: 44:77:55:88:66:99 -->

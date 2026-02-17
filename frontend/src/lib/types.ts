@@ -3,8 +3,8 @@ export interface PhoneLine {
     phone_id?: number;
     type: string;
     account_number: number;
-    panel_number?: number;
-    key_number?: number;
+    panel_number?: number | null;
+    key_number?: number | null;
     additional_info: string;
 }
 
@@ -51,6 +51,7 @@ export interface DeviceModel {
     image: string;
     keys: ModelKey[];
     key_types: KeyType[];
+    other_features: string[];
 }
 
 export interface KeyType {

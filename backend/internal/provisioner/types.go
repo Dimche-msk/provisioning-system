@@ -17,9 +17,11 @@ type VendorConfig struct {
 }
 
 type Feature struct {
-	ID     string         `yaml:"id" json:"id"`
-	Name   string         `yaml:"name" json:"name"`
-	Params []FeatureParam `yaml:"params" json:"params"`
+	ID                    string         `yaml:"id" json:"id"`
+	Name                  string         `yaml:"name" json:"name"`
+	AssociatedWithAccount bool           `yaml:"associated_with_account" json:"associated_with_account"`
+	AssociatedWithButton  bool           `yaml:"associated_with_button" json:"associated_with_button"`
+	Params                []FeatureParam `yaml:"params" json:"params"`
 }
 
 type FeatureParam struct {
@@ -45,6 +47,7 @@ type DeviceModel struct {
 	MaximumExpansionModules   int                 `yaml:"maximum_expansion_modules" json:"maximum_expansion_modules"`
 	MaxAccountLines           int                 `yaml:"max_account_lines" json:"max_account_lines"`
 	LineNameFormat            string              `yaml:"line_name_format" json:"line_name_format"` // Regex or format string
+	OtherFeatures             []string            `yaml:"other_features" json:"other_features"`
 	Keys                      []ModelKey          `yaml:"keys" json:"keys"`
 	KeyTypes                  []KeyType           `yaml:"key_types" json:"key_types"`
 	Settings                  []ModelSettingGroup `yaml:"settings" json:"settings"`

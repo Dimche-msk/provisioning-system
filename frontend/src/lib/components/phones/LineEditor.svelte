@@ -39,8 +39,8 @@
         workingLines = JSON.parse(JSON.stringify(lines)).map((l: any) => ({
             ...l,
             account_number: l.account_number || l.number || 1,
-            panel_number: l.panel_number || l.expansion_module_number || 0,
-            key_number: l.key_number || 0,
+            panel_number: l.panel_number === null ? null : l.panel_number || 0,
+            key_number: l.key_number === null ? null : l.key_number || 0,
             type: l.type || "Line",
         }));
         selectedLine = null;
@@ -170,8 +170,24 @@
             panel_number: 0,
             key_number: 1,
             additional_info: "{}",
-        };
+        } as PhoneLine;
         additionalInfo = {};
+    }
+
+    function addFunction() {
+        originalLine = null;
+        selectedLine = null;
+        editForm = {
+            type: model?.other_features?.[0] || "",
+            account_number: 1,
+            panel_number: null,
+            key_number: null,
+            additional_info: "{}",
+        } as any;
+        additionalInfo = {};
+
+        // If the selected feature is associated with an account, we keep the account_number.
+        // If not, it might not matter much, but we'll follow the feature definition in the template.
     }
 
     function save() {
@@ -180,16 +196,25 @@
             return;
         }
 
-        // Ensure numbers are integers
-        editForm.account_number = parseInt(String(editForm.account_number), 10);
-        editForm.panel_number = parseInt(String(editForm.panel_number), 10);
-        editForm.key_number = parseInt(String(editForm.key_number), 10);
+        // Ensure numbers are integers if they are not null
+        if (editForm.account_number !== null)
+            editForm.account_number = parseInt(
+                String(editForm.account_number),
+                10,
+            );
+        if (editForm.panel_number !== null)
+            editForm.panel_number = parseInt(String(editForm.panel_number), 10);
+        if (editForm.key_number !== null)
+            editForm.key_number = parseInt(String(editForm.key_number), 10);
 
         // Validation: Check for duplicates (Type + Panel + Key must be unique)
+        // General features don't have panel/key, so they might have multiple entries of same type?
+        // User said: "может быть несколько записай для одного аппарата с одним и тем же типом доп. функции"
         for (const line of workingLines) {
             if (originalLine && line === originalLine) continue;
 
             if (
+                editForm.panel_number !== null &&
                 line.type === editForm.type &&
                 line.panel_number === editForm.panel_number &&
                 line.key_number === editForm.key_number
@@ -252,7 +277,10 @@
         if (line.type === "Line") {
             return info.display_name || info.label || "";
         } else {
-            return info.label || info.value || "";
+            const feature = currentVendorFeatures.find(
+                (f) => f.id === line.type || f.id === info.type,
+            );
+            return info.label || info.value || feature?.name || line.type;
         }
     }
 
@@ -376,10 +404,23 @@
                                 </button>
                             {/if}
                         </div>
-                        <Button on:click={add} disabled={!!editForm}>
-                            <Plus class="mr-2 h-4 w-4" />
-                            {$t("common.add") || "Add Line"}
-                        </Button>
+                        <div class="flex gap-2">
+                            <Button
+                                on:click={add}
+                                variant="outline"
+                                disabled={!!editForm}
+                            >
+                                <Plus class="mr-2 h-4 w-4" />
+                                {$t("common.add") || "Add Line"}
+                            </Button>
+                            <Button
+                                on:click={addFunction}
+                                disabled={!!editForm}
+                            >
+                                <Plus class="mr-2 h-4 w-4" />
+                                {$t("common.add_function") || "Add Function"}
+                            </Button>
+                        </div>
                     </div>
 
                     <!-- Editor Form -->
@@ -405,61 +446,81 @@
                                         class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                                         bind:value={editForm.type}
                                     >
-                                        {#if model?.key_types && model.key_types.length > 0}
-                                            {#each model.key_types as kt}
-                                                <option value={kt.id}
-                                                    >{kt.verbose ||
-                                                        kt.id}</option
+                                        {#if editForm.panel_number !== null}
+                                            {#if model?.key_types && model.key_types.length > 0}
+                                                {#each model.key_types as kt}
+                                                    <option value={kt.id}
+                                                        >{kt.verbose ||
+                                                            kt.id}</option
+                                                    >
+                                                {/each}
+                                            {:else}
+                                                <option value="Line"
+                                                    >Линия</option
+                                                >
+                                                {#each currentVendorFeatures.filter((f) => f.associated_with_button) as f}
+                                                    <option value={f.id}
+                                                        >{f.name}</option
+                                                    >
+                                                {/each}
+                                            {/if}
+                                        {:else}
+                                            <!-- General Features -->
+                                            {#each model?.other_features || [] as of}
+                                                <option value={of}
+                                                    >{currentVendorFeatures.find(
+                                                        (feat) =>
+                                                            feat.id === of,
+                                                    )?.name || of}</option
                                                 >
                                             {/each}
-                                        {:else}
-                                            <option value="Line">Линия</option>
-                                            <option value="Free"
-                                                >Свободно</option
-                                            >
-                                            <option value="topsoftkey"
-                                                >Верхняя клавиша</option
-                                            >
-                                            <option value="softkey"
-                                                >Программная клавиша</option
-                                            >
-                                            <option value="bottomkey"
-                                                >Нижняя клавиша</option
-                                            >
-                                            {#if maxHardKeys > 0}
-                                                <option value="hard_key"
-                                                    >Клавиша корпуса</option
-                                                >
-                                            {/if}
                                         {/if}
+                                        <option value="custom">Другое</option>
                                     </select>
                                 </div>
-                                <div class="space-y-2">
-                                    <Label>Аккаунт #</Label>
-                                    <Input
-                                        type="number"
-                                        bind:value={editForm.account_number}
-                                    />
-                                </div>
-                                <div class="space-y-2">
-                                    <Label>Кнопка #</Label>
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        bind:value={editForm.key_number}
-                                    />
-                                </div>
-                                {#if phone.expansion_modules_count > 0}
+                                {#if editForm.panel_number !== null}
                                     <div class="space-y-2">
-                                        <Label>Панель #</Label>
+                                        <Label>Аккаунт #</Label>
                                         <Input
                                             type="number"
-                                            min="0"
-                                            max={phone.expansion_modules_count ||
-                                                0}
-                                            bind:value={editForm.panel_number}
+                                            bind:value={editForm.account_number}
                                         />
                                     </div>
+                                    <div class="space-y-2">
+                                        <Label>Кнопка #</Label>
+                                        <Input
+                                            type="number"
+                                            min="1"
+                                            bind:value={editForm.key_number}
+                                        />
+                                    </div>
+                                    {#if phone.expansion_modules_count > 0}
+                                        <div class="space-y-2">
+                                            <Label>Панель #</Label>
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max={phone.expansion_modules_count ||
+                                                    0}
+                                                bind:value={
+                                                    editForm.panel_number
+                                                }
+                                            />
+                                        </div>
+                                    {/if}
+                                {:else}
+                                    <!-- General feature fields if needed at top level -->
+                                    {#if currentVendorFeatures.find((f) => f.id === editForm.type)?.associated_with_account}
+                                        <div class="space-y-2 col-span-2">
+                                            <Label>Аккаунт #</Label>
+                                            <Input
+                                                type="number"
+                                                bind:value={
+                                                    editForm.account_number
+                                                }
+                                            />
+                                        </div>
+                                    {/if}
                                 {/if}
                             </div>
 
@@ -555,28 +616,11 @@
                                     {/if}
                                 </div>
                             {:else}
-                                <!-- Keys -->
+                                <!-- Features -->
                                 <div class="col-span-3 space-y-4">
-                                    <div class="space-y-2">
-                                        <Label>Функция</Label>
-                                        <select
-                                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            bind:value={additionalInfo.type}
-                                        >
-                                            {#each currentVendorFeatures as feature}
-                                                <option value={feature.id}
-                                                    >{feature.name}</option
-                                                >
-                                            {/each}
-                                            <option value="custom"
-                                                >Другое</option
-                                            >
-                                        </select>
-                                    </div>
-
-                                    {#if additionalInfo.type && additionalInfo.type !== "custom"}
+                                    {#if editForm && currentVendorFeatures.find((f) => f.id === editForm.type)}
                                         <div class="grid grid-cols-3 gap-4">
-                                            {#each currentVendorFeatures.find((f) => f.id === additionalInfo.type)?.params || [] as param}
+                                            {#each currentVendorFeatures.find((f) => f.id === editForm.type).params || [] as param}
                                                 {#if param.type !== "hidden"}
                                                     <div class="space-y-2">
                                                         <Label
@@ -615,7 +659,7 @@
                                                 {/if}
                                             {/each}
                                         </div>
-                                    {:else if additionalInfo.type === "custom"}
+                                    {:else if editForm.type === "custom"}
                                         <div class="grid grid-cols-2 gap-4">
                                             <div class="space-y-2">
                                                 <Label>Метка</Label>
@@ -704,10 +748,18 @@
                                             {line.account_number}
                                         </Table.Cell>
                                         <Table.Cell>
-                                            {line.panel_number === 0
-                                                ? "Осн."
-                                                : `Расш ${line.panel_number}`} /
-                                            {line.key_number}
+                                            {#if line.panel_number !== null && line.key_number !== null}
+                                                {line.panel_number === 0
+                                                    ? "Осн."
+                                                    : `Расш ${line.panel_number}`}
+                                                /
+                                                {line.key_number}
+                                            {:else}
+                                                <span
+                                                    class="text-muted-foreground italic"
+                                                    >Общая</span
+                                                >
+                                            {/if}
                                         </Table.Cell>
                                         <Table.Cell>
                                             <span

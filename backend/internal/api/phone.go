@@ -395,7 +395,7 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 				for i := 1; i <= reqPhone.ExpansionModulesCount; i++ {
 					count := 0
 					for _, l := range reqPhone.Lines {
-						if l.PanelNumber == i {
+						if l.PanelNumber != nil && *l.PanelNumber == i {
 							count++
 						}
 					}

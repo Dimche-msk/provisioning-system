@@ -481,9 +481,15 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 
 		// Map DB Assignments (Panel-Key overrides)
 		dbLinesMap := make(map[string]models.PhoneLine)
+		var generalFeatures []models.PhoneLine
 		for _, l := range phone.Lines {
-			key := fmt.Sprintf("%d-%d", l.PanelNumber, l.KeyNumber)
-			dbLinesMap[key] = l
+			if l.PanelNumber != nil && l.KeyNumber != nil {
+				key := fmt.Sprintf("%d-%d", *l.PanelNumber, *l.KeyNumber)
+				dbLinesMap[key] = l
+			} else {
+				// No button association -> likely a general feature
+				generalFeatures = append(generalFeatures, l)
+			}
 		}
 
 		// Main Rendering Loop - Based on Model
@@ -551,7 +557,36 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 			}
 		}
 
-		// 2. Process Expansion Modules (To be implemented when we have M685/M680 models)
+		// 2. Process General Features (RingTone, etc.)
+		for _, gf := range generalFeatures {
+			if feature, ok := featuresMap[gf.Type]; ok {
+				gfData := gf.GetAdditionalInfoMap()
+				ctx := pongo2.Context{
+					"type": gf.Type,
+				}
+				// Add assignment data
+				for k, v := range gfData {
+					ctx[k] = v
+				}
+				// If associated with account, add account context
+				if feature.AssociatedWithAccount {
+					accNum := gf.AccountNumber
+					if acc, ok := phoneAccounts[accNum]; ok {
+						ctx["account"] = acc
+						ctx["account_number"] = accNum
+						for k, v := range acc {
+							ctx["account_"+k] = v
+						}
+					}
+				}
+
+				for _, param := range feature.Params {
+					m.renderAndAppend(&keysConfig, param, ctx, nil, fmt.Sprintf("General Feature %s", gf.Type))
+				}
+			}
+		}
+
+		// 3. Process Expansion Modules (To be implemented when we have M685/M680 models)
 		// ...
 
 		// 3. Render Final Config
