@@ -126,10 +126,16 @@
       label: Type
       type: hidden
       value: "ring_tone"
-    - id: value
+    - id: file
       label: Ring Tone File
       type: string
-      config_template: "sip line{{account_number}} ringtone:{{value}}"
+    - id: volume
+      label: Volume
+    - id: repeat
+      label: Repeat
+      config_template: |
+        # Функция {{name}}: {{file}}, громкость={{volume}}, повтор={{repeat}}
+        account_{{account_number}}_ringtone:{{file}}/{{volume}}/{{repeat}}
 # 0-N/A1-Conference
 # 2-Forward
 # 3-Transfer

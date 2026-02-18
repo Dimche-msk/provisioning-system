@@ -35,5 +35,6 @@ brain/
 /sample_config
 .DS_Store
 /conf/temp_configs/
+/conf/pre_configs/
 /conf/temp_configs.bak/
 _*/

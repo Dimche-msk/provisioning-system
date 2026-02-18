@@ -551,6 +551,8 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 					}
 				}
 			} else if feature, ok := featuresMap[assignmentType]; ok {
+				ctx["feature_name"] = feature.Name
+				ctx["name"] = feature.Name
 				for _, param := range feature.Params {
 					m.renderAndAppend(&keysConfig, param, ctx, mk.Settings, fmt.Sprintf("Key 0-%d (Feature %s)", mk.Index, assignmentType))
 				}
@@ -579,6 +581,9 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 						}
 					}
 				}
+
+				ctx["feature_name"] = feature.Name
+				ctx["name"] = feature.Name
 
 				for _, param := range feature.Params {
 					m.renderAndAppend(&keysConfig, param, ctx, nil, fmt.Sprintf("General Feature %s", gf.Type))
