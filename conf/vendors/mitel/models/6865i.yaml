@@ -2,8 +2,8 @@ id: mitel-6865
 name: Mitel 6865i
 image: mitel6865i.png
 type: phone
-own_soft_keys: 44
-own_hard_keys: 12
+own_soft_keys: 8
+own_hard_keys: 0
 max_account_lines: 24
 supported_expansion_modules:
   - M680
@@ -11,34 +11,30 @@ supported_expansion_modules:
 maximum_expansion_modules: 3
 keys:
   - index: 1
-    type: line
-    label: "Line 1"
+    type: softkey
+    label: "L1"
     x: 10
     y: 50
-    settings:
-      label: "linekey.1.label"
-      value: "linekey.1.value"
-      type: "linekey.1.type"
-      line: "linekey.1.line"
   - index: 2
-    type: line
-    label: "Line 2"
+    type: softkey
+    label: "L2"
     x: 10
     y: 100
-    settings:
-      label: "linekey.2.label"
-      value: "linekey.2.value"
-      type: "linekey.2.type"
-      line: "linekey.2.line"
+
+key_types:
+  - id: softkey
+    verbose: "Soft Key"
+    polygon: ""
+    image: "mitel6865i.png"
+  - id: prgkey
+    verbose: "Programmable Key"
+    polygon: ""
+    image: "mitel6865i.png"
 
 settings:
-  - group: "Pickup Features"
+  - group: "Global Settings"
     params:
-      - key: "features.pickup.blf_audio_enable"
-        label: "BLF Audio Enable"
+      - key: "sip silence suppression"
+        label: "Silence Suppression"
         type: boolean
-        default: 1
-      - key: "features.pickup.direct_pickup_code"
-        label: "Direct Pickup Code"
-        type: string
-        default: "*8#"
+        default: 0

@@ -2,5 +2,13 @@ id: M680
 name: Mitel M680 Expansion Module
 type: expansion-module
 own_hard_keys: 16
+own_soft_keys: 0
+key_types:
+  - id: ExpMod1SoftKey
+    verbose: "Expansion Module 1 Key"
+  - id: ExpMod2SoftKey
+    verbose: "Expansion Module 2 Key"
+  - id: ExpMod3SoftKey
+    verbose: "Expansion Module 3 Key"
 keys: []
 settings: []

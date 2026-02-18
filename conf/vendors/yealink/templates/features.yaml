@@ -1,5 +1,6 @@
 - id: blf
   name: BLF
+  associated_with_button: true
   params:
     - id: type
       label: Type
@@ -22,6 +23,7 @@
 
 - id: sd
   name: Speed Dial
+  associated_with_button: true
   params:
     - id: type
       label: Type
@@ -41,43 +43,3 @@
       label: Value
       type: string
       config_template: "linekey.{{key_index}}.value = {{value}}"
-# 0-N/A1-Conference
-# 2-Forward
-# 3-Transfer
-# 4-Hold
-# 5-DND
-# 7-Recall
-# 8-SMS
-# 9-Pickup(pick up/Direct Pickup)
-# 10-Call Park
-# 11-DTMF
-# 12-Voice Mail
-# 13-SpeedDial(Speed Dial)
-# 14-Intercom
-# 15-Line
-# 16-BLF
-# 17-URL
-# 18-Group Listening
-# 20-Private Hold
-# 22-XML Group
-# 23-Group Pickup
-# 24-Paging(Multicast Paging)
-# 25-Record
-# 27-XML Browser
-# 34-Hot Desking
-# 35-URL Record
-# 38-LDAP (only appear when “ldap.enable=1”)39-BLF List
-# 40-Prefix
-# 41-Zero Touch
-# 42-ACD
-# 45-Local Group
-# 50-Phone Lock
-# 56-Retrieve Park
-# 61-Directory
-# 66-Paging List
-# 73-Custom Key (only available when “features.enhanced_dss_keys.enable=1”)
-# 77-Mobile Account (only applicable to T57W/T54W/T53W/T53/T53C/T48U/T46U/T43U/T42U phones when the Bluetooth-enabled mobile phone is connected)
-# 104-Google Contacts (only appear when “google_contact_server.enable = 1”)
-# 105-XML Park (not applicable to CP920 phones)
-# 150-Extend (only applicable to T54W/T53W/T53/T53C/T46U/T46S/T43U/T42S/T42U/T41S/T27G phones)
-# 310-DECT Intercom (only applicable to T57W/T54W/T53W/T53/T53C phones when the DECT USB dongle is connected)

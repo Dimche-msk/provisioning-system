@@ -6,52 +6,23 @@ own_hard_keys: 3
 max_account_lines: 2
 keys:
   - index: 1
-    type: line
-    label: "Line 1"
-    x: 245
-    y: 190
-    settings:
-      label: "linekey.1.label"
-      value: "linekey.1.value"
-      type: "linekey.1.type"
-      line: "linekey.1.line"
-  - index: 2
-    type: line
-    label: "Line 2"
-    x: 217
-    y: 190
-    settings:
-      label: "linekey.2.label"
-      value: "linekey.2.value"
-      type: "linekey.2.type"
-      line: "linekey.2.line"
-
-  - index: 1
-    type: hardkey
-    label: "КЛ. 1"
+    type: prgkey
+    label: "Key 1"
     x: 240
     y: 125
-
   - index: 2
-    type: hardkey
-    label: "КЛ. 2"
+    type: prgkey
+    label: "Key 2"
     x: 240
     y: 148
-
   - index: 3
-    type: hardkey
-    label: "КЛ. 3"
+    type: prgkey
+    label: "Key 3"
     x: 240
     y: 168
-    
 
 key_types:
-  - id: Line
-    verbose: "Линия"
-    polygon: "10,10,50,10,50,50,10,50"
-    image: "mitel6863i.png"
-
-  - id: hardkey
-    verbose: "Клавиша"
+  - id: prgkey
+    verbose: "Programmable Key"
     polygon: ""
     image: "mitel6863i.png"

@@ -1,35 +1,14 @@
-#
-#`{{key_index}}`**: Порядковый номер кнопки/линии (1-N).
-#`{{key_number}}`**: Физический номер кнопки на устройстве или модуле расширения.
-#`{{expansion_module}}`**: Номер модуля расширения (0 для самого телефона).
-#`{{key_type}}`**: Тип кнопки из модели (например, `line`, `soft_key`).
-#`{{label}}`**: Название (label) кнопки из модели.
-#`{{tag}}`**: Сопоставленный тег вендора для данного ID параметра из `settings` модели.
-#`{{settings}}`**: Полная карта всех настроек (`settings`), определенных для этой кнопки в модели.
-- id: blf
-  name: BLF
-  associated_with_button: true
-  params:
-    - id: type
-      label: Type
-      type: hidden
-      value: BLF
-      config_template: "{{tag}}:{{value}}"
-    - id: locked
-      label: Locked
-      type: hidden
-      value: 0
-      config_template: "{{id}}:{{value}}"
-    - id: label
-      label: Label
-      param: const
-      type: string
-      config_template: "{{tag}}/{{param}}:{{value}}"
-    - id: value
-      label: Value
-      type: string
-      #test:_3__0__________:111
-      config_template: "key_index:{{key_index}}__key_number:{{key_number}}__expansion_module:{{expansion_module_number}}__key_type:{{type}}__label:{{label}}__tag:{{tag}}__settings:{{settings}}_:{{value}}"
+# Mitel Features Definition
+# Context variables available:
+# {{account_number}} - Account index (1-N)
+# {{key_index}} - Button index on the specific panel (1-N)
+# {{key_number}} - Raw key number
+# {{expansion_module_number}} - Expansion module index (0 for phone)
+# {{tag}} - Feature tag from model (e.g. prgkey, softkey, topsoftkey)
+# {{value}} - User input value
+# {{label}} - User input label
+# {{name}} - Feature name
+
 
 - id: speeddial
   name: Speed Dial
@@ -38,85 +17,104 @@
     - id: type
       label: Type
       type: hidden
-      value: 13
-      config_template: "{{tag}} = {{value}}"
+      value: speeddial
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
+    - id: value
+      label: Number
+      type: string
+      config_template: "{{tag}}{{key_index}} value: {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "{{tag}}{{key_index}} label: {{value}}"
     - id: line
       label: Line
       type: select
-      source: lines
-      config_template: "{{tag}} = {{value}}"
-    - id: label
-      label: Label
-      type: string
-      config_template: "{{tag}} = {{value}}"
-    - id: value
-      label: Value
-      type: string
-      config_template: "{{tag}} = {{value}}"
-- id: PEN
-  name: Personal Number
-  params:
-    - id: type
-      label: Type
-      type: hidden
-      value: PEN
-      config_template: "{{tag}}:{{value}}"
-    - id: monitoredDir
-      label: Monitored Dir
-      type: string
-      config_template: "{{tag}}:{{value}}"
-    - id: label
-      label: Комментарий
-      type: string
-      config_template: "#{{value}}"
-    - id: monitored_dir_name
-      label: Monitored Dir Name
-      type: string
-      config_template: "{{tag}}:{{value}}"
-    - id: keyOnCallList
-      label: Key On Call List
-      type: string
-      config_template: "{{tag}}:{{value}}"
-    - id: keyOffCallList
-      label: Key Off Call List
-      type: string
-      config_template: "{{tag}}:{{value}}"
+      source: accounts
+      config_template: "{{tag}}{{key_index}} line: {{value}}"
 
-- id: retrieve_park
-  name: Retrieve Park
+- id: blf
+  name: BLF
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
-      value: 56
-      config_template: "{{tag}}:{{value}}"
-    - id: label
-      label: Label
-      type: string
-      config_template: "{{tag}}:{{value}}"
+      value: blf
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
     - id: value
       label: Extension
       type: string
-      config_template: "{{tag}}:{{value}}"
+      config_template: "{{tag}}{{key_index}} value: {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "{{tag}}{{key_index}} label: {{value}}"
+    - id: line
+      label: Line
+      type: select
+      source: accounts
+      config_template: "{{tag}}{{key_index}} line: {{value}}"
 
-- id: voicemail
-  name: Voice Mail
+- id: dnd
+  name: Do Not Disturb
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
-      value: 12
-      config_template: "{{tag}}:{{value}}"
+      value: dnd
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}:{{value}}"
+      config_template: "{{tag}}{{key_index}} label: {{value}}"
+
+- id: cfwd
+  name: Call Forward
+  associated_with_button: true
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: cfwd
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
     - id: value
-      label: Extension
+      label: Target
       type: string
-      config_template: "{{tag}}:{{value}}"
+      config_template: "{{tag}}{{key_index}} value: {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "{{tag}}{{key_index}} label: {{value}}"
+
+- id: xml
+  name: XML Application
+  associated_with_button: true
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: xml
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
+    - id: value
+      label: URL
+      type: string
+      config_template: "{{tag}}{{key_index}} value: {{value}}"
+    - id: label
+      label: Label
+      type: string
+      config_template: "{{tag}}{{key_index}} label: {{value}}"
+
+- id: empty
+  name: Empty
+  associated_with_button: true
+  params:
+    - id: type
+      label: Type
+      type: hidden
+      value: empty
+      config_template: "{{tag}}{{key_index}} type: {{value}}"
 
 - id: RingTon
   name: Ring Tone
@@ -131,48 +129,11 @@
       type: string
     - id: volume
       label: Volume
+      type: number
     - id: repeat
       label: Repeat
+      type: number
       config_template: |
         # Функция {{name}}: {{file}}, громкость={{volume}}, повтор={{repeat}}
-        account_{{account_number}}_ringtone:{{file}}/{{volume}}/{{repeat}}
-# 0-N/A1-Conference
-# 2-Forward
-# 3-Transfer
-# 4-Hold
-# 5-DND
-# 7-Recall
-# 8-SMS
-# 9-Pickup(pick up/Direct Pickup)
-# 10-Call Park
-# 11-DTMF
-# 12-Voice Mail
-# 13-SpeedDial(Speed Dial)
-# 14-Intercom
-# 15-Line
-# 16-BLF
-# 17-URL
-# 18-Group Listening
-# 20-Private Hold
-# 22-XML Group
-# 23-Group Pickup
-# 24-Paging(Multicast Paging)
-# 25-Record
-# 27-XML Browser
-# 34-Hot Desking
-# 35-URL Record
-# 38-LDAP (only appear when “ldap.enable=1”)39-BLF List
-# 40-Prefix
-# 41-Zero Touch
-# 42-ACD
-# 45-Local Group
-# 50-Phone Lock
-# 56-Retrieve Park
-# 61-Directory
-# 66-Paging List
-# 73-Custom Key (only available when “features.enhanced_dss_keys.enable=1”)
-# 77-Mobile Account (only applicable to T57W/T54W/T53W/T53/T53C/T48U/T46U/T43U/T42U phones when the Bluetooth-enabled mobile phone is connected)
-# 104-Google Contacts (only appear when “google_contact_server.enable = 1”)
-# 105-XML Park (not applicable to CP920 phones)
-# 150-Extend (only applicable to T54W/T53W/T53/T53C/T46U/T46S/T43U/T42S/T42U/T41S/T27G phones)
-# 310-DECT Intercom (only applicable to T57W/T54W/T53W/T53/T53C phones when the DECT USB dongle is connected)
+        sip line{{account_number}} ringtone: {{file}}
+        # Note: custom ringtone volume/repeat are often set globally or via specific params

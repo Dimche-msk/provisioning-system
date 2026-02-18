@@ -241,9 +241,12 @@ func (m *Manager) generateForVendor(outputDir string, domain config.DomainSettin
 
 		// Подготавливаем контекст
 		ctx := pongo2.Context{}
+		vars := make(map[string]interface{})
 		for k, v := range domain.Variables {
 			ctx[k] = v
+			vars[k] = v
 		}
+		ctx["variables"] = vars
 		ctx["domain_name"] = domain.Name
 		ctx["vendor_name"] = vendor.Name
 		ctx["phones"] = phones

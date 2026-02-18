@@ -1,5 +1,6 @@
 - id: blf
   name: BLF
+  associated_with_button: true
   params:
     - id: type
       label: Type
@@ -8,6 +9,7 @@
       config_template: "key.{{key_index}}.type = {{value}}"
 - id: speeddial
   name: Speed Dial
+  associated_with_button: true
   params:
     - id: type
       label: Type

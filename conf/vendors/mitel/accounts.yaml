@@ -4,28 +4,36 @@
     - id: user_name
       label: Extension
       type: string
-      config_template: "sip line{{key_index}} user name:{{value}}"
+      config_template: "sip line{{account_number}} user name: {{value}}"
     - id: auth_name
       label: Auth Name
       type: string
-      config_template: "sip line{{key_index}} auth name:{{value}}"
+      config_template: "sip line{{account_number}} auth name: {{value}}"
     - id: password
       label: Password
       type: password
-      config_template: "sip line{{key_index}} password:{{value}}"
+      config_template: "sip line{{account_number}} password: {{value}}"
+    - id: display_name
+      label: Display Name
+      type: string
+      config_template: "sip line{{account_number}} display name: {{value}}"
+    - id: screen_name
+      label: Screen Name
+      type: string
+      config_template: "sip line{{account_number}} screen name: {{value}}"
     - id: proxy_ip
       label: Proxy IP
       type: string
-      config_template: "sip proxy ip:{{value}}"
+      config_template: "sip line{{account_number}} proxy: {{value}}"
     - id: proxy_port
       label: Proxy Port
       type: number
-      config_template: "sip proxy port:{{value}}"
+      config_template: "sip line{{account_number}} proxy port: {{value}}"
     - id: registrar_ip
       label: Registrar IP
       type: string
-      config_template: "sip registrar ip:{{value}}"
+      config_template: "sip line{{account_number}} registrar: {{value}}"
     - id: registrar_port
       label: Registrar Port
       type: number
-      config_template: "sip registrar port:{{value}}"
+      config_template: "sip line{{account_number}} registrar port: {{value}}"

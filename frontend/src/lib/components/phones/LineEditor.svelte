@@ -447,23 +447,12 @@
                                         bind:value={editForm.type}
                                     >
                                         {#if editForm.panel_number !== null}
-                                            {#if model?.key_types && model.key_types.length > 0}
-                                                {#each model.key_types as kt}
-                                                    <option value={kt.id}
-                                                        >{kt.verbose ||
-                                                            kt.id}</option
-                                                    >
-                                                {/each}
-                                            {:else}
-                                                <option value="Line"
-                                                    >Линия</option
+                                            <option value="Line">Линия</option>
+                                            {#each currentVendorFeatures.filter((f) => f.associated_with_button) as f}
+                                                <option value={f.id}
+                                                    >{f.name}</option
                                                 >
-                                                {#each currentVendorFeatures.filter((f) => f.associated_with_button) as f}
-                                                    <option value={f.id}
-                                                        >{f.name}</option
-                                                    >
-                                                {/each}
-                                            {/if}
+                                            {/each}
                                         {:else}
                                             <!-- General Features -->
                                             {#each model?.other_features || [] as of}
@@ -472,6 +461,12 @@
                                                         (feat) =>
                                                             feat.id === of,
                                                     )?.name || of}</option
+                                                >
+                                            {/each}
+                                            <!-- Also show general features explicitly marked as associated_with_account -->
+                                            {#each currentVendorFeatures.filter((f) => f.associated_with_account && !model?.other_features?.includes(f.id)) as f}
+                                                <option value={f.id}
+                                                    >{f.name}</option
                                                 >
                                             {/each}
                                         {/if}

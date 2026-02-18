@@ -16,20 +16,19 @@ key_types:
     verbose: "Линия"
     polygon: "10,10,50,10,50,50,10,50"
     image: "mitel6873i.png"
-  - id: Free
-    verbose: "Свободно"
+
+  - id: softkey
+    verbose: "Программная кнопка (экран)"
+    polygon: "10,10,50,10,50,50,10,50"
+    image: "mitel6873i.png"
+
+  - id: topsoftkey
+    verbose: "Верхняя  (экран)"
     polygon: "60,10,100,10,100,50,60,50"
     image: "mitel6873i.png"
-  - id: topsoftkey
-    verbose: "Программные кнопки наверху экрана"
-    polygon: ""
-    image: "mitel6873i.png"
-  - id: softkey
-    verbose: "Программная клавиша"
-    polygon: ""
-    image: "mitel6873i.png"
-  - id: bottomkey
-    verbose: "Программные кнопки. Нижняя строка"
+
+  - id: prgkey
+    verbose: "Программируемая клавиша"
     polygon: ""
     image: "mitel6873i.png"
 keys:
@@ -45,6 +44,7 @@ keys:
     label: "L2"
     x: 440
     y: 325
+
   - index: 1
     type: topsoftkey
     label: "Верхняя строка"

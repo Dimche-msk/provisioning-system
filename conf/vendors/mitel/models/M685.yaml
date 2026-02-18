@@ -1,7 +1,14 @@
 id: M685
 name: Mitel M685 Expansion Module
 type: expansion-module
-own_hard_keys: 28
-own_soft_keys: 56
+own_hard_keys: 0
+own_soft_keys: 84
+key_types:
+  - id: ExpMod1SoftKey
+    verbose: "Expansion Module 1 Key"
+  - id: ExpMod2SoftKey
+    verbose: "Expansion Module 2 Key"
+  - id: ExpMod3SoftKey
+    verbose: "Expansion Module 3 Key"
 keys: []
 settings: []
