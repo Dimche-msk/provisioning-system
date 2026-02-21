@@ -3,6 +3,7 @@ name: Yealink
 phone_config_file: "{{account.mac_address}}.cfg"
 phone_config_template: templates/phone.tpl
 features_file: templates/features.yaml
+accounts_file: accounts.yaml
 static_dir: static
 
 #  Phone Model Common CFG File

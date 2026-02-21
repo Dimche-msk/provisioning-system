@@ -470,15 +470,18 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 		for _, f := range vendor.Features {
 			featuresMap[f.ID] = f
 		}
-		accountTemplates := vendor.Accounts
 
 		// Map Account Data from DB
+		var linesForContext []map[string]interface{}
 		phoneAccounts := make(map[int]map[string]interface{})
 		for _, l := range phone.Lines {
 			if l.Type == "Line" {
 				accData := l.GetAdditionalInfoMap()
 				accData["account_number"] = l.AccountNumber
+				accData["number"] = l.AccountNumber
+				accData["type"] = strings.ToLower(l.Type)
 				phoneAccounts[l.AccountNumber] = accData
+				linesForContext = append(linesForContext, accData)
 			}
 		}
 
@@ -547,13 +550,7 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 			}
 
 			// Render
-			if assignmentType == "Line" {
-				for _, accFeature := range accountTemplates {
-					for _, param := range accFeature.Params {
-						m.renderAndAppend(&keysConfig, param, ctx, mk.Settings, fmt.Sprintf("Key 0-%d (Line Account %d)", mk.Index, accNum))
-					}
-				}
-			} else if feature, ok := featuresMap[assignmentType]; ok {
+			if feature, ok := featuresMap[assignmentType]; ok {
 				ctx["feature_name"] = feature.Name
 				ctx["name"] = feature.Name
 				for _, param := range feature.Params {
@@ -622,6 +619,7 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 				"phone_number": number,
 				"ip_address":   phone.IPAddress,
 				"type":         phone.Type,
+				"lines":        linesForContext,
 			},
 		}
 

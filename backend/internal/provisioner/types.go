@@ -24,14 +24,21 @@ type Feature struct {
 	Params                []FeatureParam `yaml:"params" json:"params"`
 }
 
+type ParamOption struct {
+	Value string `yaml:"value" json:"value"`
+	Label string `yaml:"label" json:"label"`
+}
+
 type FeatureParam struct {
 	ID             string                 `yaml:"id" json:"id"`
 	Label          string                 `yaml:"label" json:"label"`
-	Type           string                 `yaml:"type" json:"type"`                         // string, select, etc.
-	Value          string                 `yaml:"value,omitempty" json:"value,omitempty"`   // Fixed value if any
-	ConfigTemplate string                 `yaml:"config_template" json:"config_template"`   // Template line
-	Source         string                 `yaml:"source,omitempty" json:"source,omitempty"` // e.g. "lines" for select source
-	Extra          map[string]interface{} `yaml:",inline" json:"extra"`                     // Capture any other fields
+	Type           string                 `yaml:"type" json:"type"`                           // string, select, boolean, etc.
+	Value          string                 `yaml:"value,omitempty" json:"value,omitempty"`     // Fixed value if any
+	ConfigTemplate string                 `yaml:"config_template" json:"config_template"`     // Template line
+	Source         string                 `yaml:"source,omitempty" json:"source,omitempty"`   // e.g. "lines" for select source
+	Options        []ParamOption          `yaml:"options,omitempty" json:"options,omitempty"` // Static options
+	Params         []FeatureParam         `yaml:"params,omitempty" json:"params,omitempty"`   // Nested params
+	Extra          map[string]interface{} `yaml:",inline" json:"extra"`                       // Capture any other fields
 }
 
 type DeviceModel struct {

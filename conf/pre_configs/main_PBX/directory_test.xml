@@ -3378,6 +3378,32 @@
          <UserName></UserName>
          <Registrar></Registrar>
        </Entry>
+    <!-- Phone: 55:77:88:99:66 -->
+    <Description></Description>
+    <Number>7474</Number>
+       <Entry>
+         <Name>7474</Name>
+         <UserName>7474</UserName>
+         <Registrar></Registrar>
+       </Entry>
+    <!-- Phone: 44:77:11:22:55:99 -->
+    <Description></Description>
+    <Number>123123</Number>
+       <Entry>
+         <Name>123123</Name>
+         <UserName>123123</UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
+       <Entry>
+         <Name></Name>
+         <UserName></UserName>
+         <Registrar></Registrar>
+       </Entry>
   <!-- Domain: branch-1 -->
   <!-- Domain: Вынос 2 (Цех Б) -->
     <!-- Phone: 44:77:55:88:66:99 -->

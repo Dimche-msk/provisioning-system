@@ -34,7 +34,7 @@ brain/
 .gemini/
 /sample_config
 .DS_Store
-/conf/temp_configs/
-/conf/temp_configs.bak/
-/conf/pre_configs/
+conf/temp_configs/
+conf/temp_configs.bak/
+conf/pre_configs/
 _*/

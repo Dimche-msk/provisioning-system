@@ -41,3 +41,45 @@ auto resync time: 03:00
 
 # Expansion Module Settings (if any)
 # ...
+#---------------------------------------------------------
+# softkey selection list page A-269
+#softkey selection list: blf, speeddial, line, xml
+# values 
+# none
+# filter
+# line
+# callers
+# speeddial
+# redial
+# dnd
+# conf
+# blf
+# xfer
+# list
+# icom
+# acd
+# services
+# xml
+# phonelock
+# flash
+# paging
+# spre
+# save
+# park
+# delete
+# pickup
+# hotdesklogin
+# lcr
+# discreetringing
+# callforward
+# callhistory
+# blfxfer
+# mystatus
+# speeddialxfer
+# contacts
+# speeddialconf
+# favorite
+# speeddialmwi
+# empty
+# directory
+#
