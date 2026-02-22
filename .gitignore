@@ -27,6 +27,7 @@ frontend/.env*
 
 # Project Specific
 release/
+marketing/
 *.log
 logs/
 backups/
