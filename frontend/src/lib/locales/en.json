@@ -67,6 +67,7 @@
     "common.data": "data",
     "common.add_key": "Add Key",
     "common.description": "Description",
+    "common.mxone_name": "MXone name (name1 name2)",
     "common.cancel": "Cancel",
     "common.name": "Name",
     "common.upload": "Upload",

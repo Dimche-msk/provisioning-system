@@ -157,21 +157,35 @@
                     (h) => h.includes("domain") || h.includes("домен"),
                 );
 
-                parsedRows = rows.map((row: any, index) => {
-                    const rowData: any = {
-                        id: index,
-                        mac: macIdx !== -1 ? row[macIdx] : "",
-                        number: numberIdx !== -1 ? row[numberIdx] : "",
-                        description: descIdx !== -1 ? row[descIdx] : "",
-                        vendor: vendorIdx !== -1 ? row[vendorIdx] : "",
-                        model: modelIdx !== -1 ? row[modelIdx] : "",
-                        domain: domainIdx !== -1 ? row[domainIdx] : "",
-                        dynamicFields: {},
-                        status: "pending",
-                        message: "",
-                    };
+                const portIdx = headers.findIndex(
+                    (h) => h.includes("port") || h.includes("порт") || h.includes("line") || h.includes("линия")
+                );
 
-                    // Collect all other columns as dynamic fields
+                const deviceMap = new Map();
+
+                rows.forEach((row: any, index) => {
+                    const macRaw = macIdx !== -1 ? row[macIdx] : "";
+                    if (!macRaw) return;
+                    const mac = String(macRaw).trim();
+
+                    let device = deviceMap.get(mac);
+                    if (!device) {
+                        device = {
+                            id: index,
+                            mac: mac,
+                            number: numberIdx !== -1 ? row[numberIdx] : "",
+                            description: descIdx !== -1 ? row[descIdx] : "",
+                            vendor: vendorIdx !== -1 ? row[vendorIdx] : "",
+                            model: modelIdx !== -1 ? row[modelIdx] : "",
+                            domain: domainIdx !== -1 ? row[domainIdx] : "",
+                            linesData: [],
+                            status: "pending",
+                            message: "",
+                        };
+                        deviceMap.set(mac, device);
+                    }
+
+                    const dynamicFields: any = {};
                     rawHeaders.forEach((header, hIdx) => {
                         if (
                             hIdx === macIdx ||
@@ -179,18 +193,25 @@
                             hIdx === descIdx ||
                             hIdx === vendorIdx ||
                             hIdx === modelIdx ||
-                            hIdx === domainIdx
+                            hIdx === domainIdx ||
+                            hIdx === portIdx
                         )
                             return;
 
                         const val = row[hIdx];
                         if (val !== undefined && val !== null && val !== "") {
-                            rowData.dynamicFields[header] = String(val);
+                            dynamicFields[header] = String(val);
                         }
                     });
 
-                    return rowData;
+                    device.linesData.push({
+                        number: numberIdx !== -1 ? row[numberIdx] : "",
+                        port: portIdx !== -1 ? row[portIdx] : device.linesData.length + 1,
+                        dynamicFields
+                    });
                 });
+
+                parsedRows = Array.from(deviceMap.values());
 
                 validateRows();
             } catch (err) {
@@ -301,7 +322,7 @@
             const phoneData: Phone = {
                 id: conflictPhone?.id, // Undefined if not updating, so omitted in JSON
                 mac_address: String(row.mac),
-                phone_number: String(row.number),
+                phone_number: String(row.linesData[0]?.number || row.number),
                 description: String(row.description || ""), // Set phone description
                 vendor: vendorId,
                 model_id: modelId,
@@ -312,20 +333,30 @@
                 expansion_module_model: "", // Initialize required field
             };
 
-            // Construct Line Additional Info
-            const additionalInfo: Record<string, string> = {
-                ...row.dynamicFields,
-            };
+            row.linesData.forEach((lineData: any) => {
+                const portNum = parseInt(lineData.port) || phoneData.lines.length + 1;
+                const additionalInfo: Record<string, string> = { ...lineData.dynamicFields };
+                
+                // Populate standard required fields so the UI Form loads them correctly
+                if (lineData.number) {
+                    const numStr = String(lineData.number);
+                    if (!additionalInfo.auth_name) additionalInfo.auth_name = numStr;
+                    if (!additionalInfo.display_name) additionalInfo.display_name = numStr;
+                    if (!additionalInfo.user_name) additionalInfo.user_name = numStr;
+                    if (!additionalInfo.screen_name) additionalInfo.screen_name = numStr;
+                }
+                if (!additionalInfo.line_number) {
+                    additionalInfo.line_number = String(portNum);
+                }
 
-            // Construct Line
-            const line = {
-                type: "Line",
-                account_number: 1,
-                panel_number: 0,
-                key_number: 1,
-                additional_info: JSON.stringify(additionalInfo),
-            };
-            phoneData.lines = [line];
+                phoneData.lines.push({
+                    type: "Line",
+                    account_number: portNum,
+                    panel_number: 0,
+                    key_number: portNum,
+                    additional_info: JSON.stringify(additionalInfo),
+                });
+            });
 
             return {
                 ...row,

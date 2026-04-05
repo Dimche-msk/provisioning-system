@@ -1,0 +1,4 @@
+id: yeastar
+name: Yeastar
+phone_config_file: "cfg{{ account.mac_address | lower }}.xml"
+phone_config_template: templates/phone.tpl

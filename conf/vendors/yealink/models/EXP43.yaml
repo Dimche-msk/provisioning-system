@@ -1,7 +1,14 @@
-id: EXP50
-name: Yealink EXP50 Expansion Module
+id: EXP43
+name: Yealink EXP43 Expansion Module
 type: expansion-module
-own_hard_keys: 48
+own_hard_keys: 60
+key_types:
+  - id: page1keys
+    verbose: "Expansion Module Page 1 Key"
+  - id: page2keys
+    verbose: "Expansion Module Page 2 Key"
+  - id: page3keys
+    verbose: "Expansion Module Page 3 Key"
 keys:
   - index: 1
     type: line
@@ -98,5 +105,29 @@ keys:
   - index: 47
     type: line
   - index: 48
+    type: line
+  - index: 49
+    type: line
+  - index: 50
+    type: line
+  - index: 51
+    type: line
+  - index: 52
+    type: line
+  - index: 53
+    type: line
+  - index: 54
+    type: line
+  - index: 55
+    type: line
+  - index: 56
+    type: line
+  - index: 57
+    type: line
+  - index: 58
+    type: line
+  - index: 59
+    type: line
+  - index: 60
     type: line
 settings: []

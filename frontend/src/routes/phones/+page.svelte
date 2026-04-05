@@ -434,7 +434,8 @@
                             >
                             <th
                                 class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"
-                                >{$t("common.description") || "Description"}</th
+                                >{$t("common.mxone_name") ||
+                                    "MXone name (name1 name2)"}</th
                             >
                             <th
                                 class="h-10 px-4 text-left align-middle font-medium text-muted-foreground"

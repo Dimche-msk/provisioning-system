@@ -1,0 +1,6 @@
+id: yeastar-TA3200
+name: TA3200
+type: phone
+max_account_lines: 32
+maximum_expansion_modules: 0
+keys: []

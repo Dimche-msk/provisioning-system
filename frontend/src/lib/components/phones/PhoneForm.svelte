@@ -403,7 +403,7 @@
 
         <div class="space-y-2">
             <Label for="description-{formId}"
-                >{$t("common.description") || "Description"}</Label
+                >{$t("common.mxone_name") || "MXone name"}</Label
             >
             <Input id="description-{formId}" bind:value={phone.description} />
         </div>

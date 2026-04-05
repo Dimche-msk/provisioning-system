@@ -1,0 +1,128 @@
+id: yealink-SIP-T46U
+name: Yealink SIP-T46U
+image: Yealink-T46U.png
+type: phone
+own_hard_keys: 4
+max_account_lines: 10
+maximum_expansion_modules: 3
+supported_expansion_modules:
+  - EXP43
+keys:
+  - index: 1
+    type: line
+    label: "Line 1"
+    x: 320
+    y: 120
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+      line: "linekey.1.line"
+  - index: 2
+    type: line
+    label: "Line 2"
+    x: 320
+    y: 148
+    settings:
+      label: "linekey.2.label"
+      value: "linekey.2.value"
+      type: "linekey.2.type"
+      line: "linekey.2.line"
+  - index: 3
+    type: line
+    label: "Line 3"
+    x: 320
+    y: 175
+    settings:
+      label: "linekey.3.label"
+      value: "linekey.3.value"
+      type: "linekey.3.type"
+      line: "linekey.3.line"
+  - index: 4
+    type: line
+    label: "Line 4"
+    x: 320
+    y: 202
+    settings:
+      label: "linekey.4.label"
+      value: "linekey.4.value"
+      type: "linekey.4.type"
+      line: "linekey.4.line"
+
+  - index: 5
+    type: line
+    label: "Line 5"
+    x: 320
+    y: 228
+    settings:
+      label: "linekey.5.label"
+      value: "linekey.5.value"
+      type: "linekey.5.type"
+      line: "linekey.5.line"
+      
+  - index: 6
+    type: line
+    label: "Line 6"
+    x: 690
+    y: 120
+    settings:
+      label: "linekey.6.label"
+      value: "linekey.6.value"
+      type: "linekey.6.type"
+      line: "linekey.6.line"
+      
+  - index: 7
+    type: line
+    label: "Line 7"
+    x: 690
+    y: 148
+    settings:
+      label: "linekey.7.label"
+      value: "linekey.7.value"
+      type: "linekey.7.type"
+      line: "linekey.7.line"
+      
+  - index: 8
+    type: line
+    label: "Line 8"
+    x: 690
+    y: 175
+    settings:
+      label: "linekey.8.label"
+      value: "linekey.8.value"
+      type: "linekey.8.type"
+      line: "linekey.8.line"
+      
+  - index: 9
+    type: line
+    label: "Line 9"
+    x: 690
+    y: 202
+    settings:
+      label: "linekey.9.label"
+      value: "linekey.9.value"
+      type: "linekey.9.type"
+      line: "linekey.9.line"
+      
+  - index: 10
+    type: line
+    label: "Line 10"
+    x: 690
+    y: 228
+    settings:
+      label: "linekey.10.label"
+      value: "linekey.10.value"
+      type: "linekey.10.type"
+      line: "linekey.10.line"
+
+settings:
+  - group: "Pickup Features"
+    params:
+      - key: "features.pickup.blf_audio_enable"
+        label: "BLF Audio Enable"
+        type: boolean
+        default: 1
+      - key: "features.pickup.direct_pickup_code"
+        label: "Direct Pickup Code"
+        type: string
+        default: "*8#"

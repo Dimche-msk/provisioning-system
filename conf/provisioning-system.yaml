@@ -20,7 +20,16 @@ database:
 # При скачивании файла, сначала файл ищется в первом домене, а потом в других. Т.е. Общие файлы конфигурации будут из первого домена
 domains:
   - name: "main_PBX"
-    deploy_cmd: "echo 'Deploying {{.Phone.MacAddress}} to default server'" # Legacy
+    deploy_commands:
+      - >
+        {{- $pass := .Vars.sip_password -}}
+        {{- if and .Vars.PasswdPre (and .Vars.PasswdPost .Phone.PhoneNumber) -}}
+          {{- $pass = print .Vars.PasswdPre .Phone.PhoneNumber .Vars.PasswdPost -}}
+        {{- else if gt (len .Phone.Lines) 0 -}}
+          {{- $linePass := (index .Phone.Lines 0).GetAdditionalInfoMap.password -}}
+          {{- if $linePass }}{{ $pass = $linePass }}{{ end -}}
+        {{- end -}}
+        ./provision_subscriber.sh -n "{{if .Phone.PhoneNumber}}{{.Phone.PhoneNumber}}{{end}}" -f "{{.Phone.Description}}" -c {{.Vars.default_csp}} -p "{{$pass}}" 
     # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy
     #deploy_commands:
     #  - "echo '1. Uploading config for {{.Phone.MacAddress}} to server ({{.Vars.http_prov_server}})' > 123.txt"
@@ -30,8 +39,10 @@ domains:
       - "echo '1. Removing config for {{.Phone.MacAddress}} from server'"
       - "echo '2. Removing Asterisk peer for {{.Phone.MacAddress}}'"
       - "echo '3. Reloading Asterisk: asterisk -rx \"sip reload\"'"
-    generate_random_password: True
+    # generate_random_password: True
     variables:
+      PasswdPre: "Pre_"
+      PasswdPost: "_Post"
       ntp_server: "pool.ntp.org"
       sip_server1_ip: "192.168.88.150"
       sip_server1_port: "5060"

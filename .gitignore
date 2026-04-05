@@ -39,3 +39,5 @@ conf/temp_configs/
 conf/temp_configs.bak/
 conf/pre_configs/
 _*/
+technical_design.md
+technical_design_license_storage.md

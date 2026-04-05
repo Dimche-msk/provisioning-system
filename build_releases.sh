@@ -17,6 +17,12 @@ echo "Updating Backend static files..."
 rm -rf backend/cmd/server/static/*
 cp -r frontend/build/* backend/cmd/server/static/
 
+# Sync VERSION to Go backend
+VERSION=$(cat VERSION)
+echo "Syncing backend version to $VERSION..."
+sed -i.bak "s/Version = \".*\"/Version = \"$VERSION\"/" backend/internal/version/version.go
+rm -f backend/internal/version/version.go.bak
+
 # macOS (Darwin)
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Building for macOS Intel (AMD64)..."

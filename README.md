@@ -132,6 +132,39 @@ cd frontend
 npm run dev
 ```
 
+### Creating systemd unit
+
+Create file `/etc/systemd/system/provisioning-system.service` with the following content:
+```bash
+chown mxone_admin:eri_sn_g /usr/local/sbin/provisioning-system-linux-amd64
+touch /var/log/provisioning-system.log
+chown mxone_admin:eri_sn_g /var/log/provisioning-system.log
+```
+
+```conf
+[Unit]
+Description=Provisioning System Service
+After=network.target
+
+[Service]
+Type=simple
+# Указываем пользователя, от которого будет запущен процесс
+User=mxone_admin
+Group=eri_sn_g
+
+# Рабочая директория важна, так как вы используете относительный путь ./conf
+WorkingDirectory=/usr/local/sbin/provisioning-system/
+
+# Полный путь к бинарнику и его аргументы
+ExecStart=/usr/local/sbin/provisioning-system/provisioning-system-linux-amd64 -config-dir ./conf -log-file /var/log/provisioning-system.log
+
+# Автоматический перезапуск при сбое
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
 ## 3. System Configuration
 
 The main configuration file `conf/provisioning-system.yaml` controls server parameters, database, authorization, and domain settings.

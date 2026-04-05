@@ -528,7 +528,7 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 				"panel_number":     0,
 				"expansion_module": 0,
 				"key_type":         mk.Type,
-				"type":             assignmentType,
+				"assignment_type":  assignmentType,
 				"label":            mk.Label,
 				"settings":         mk.Settings,
 				"x":                mk.X,
@@ -591,9 +591,67 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 			}
 		}
 
-		// 3. Process Expansion Modules (To be implemented when we have M685/M680 models)
-		// ...
+		// 3. Process Expansion Modules
+		if phone.ExpansionModulesCount > 0 && phone.ExpansionModuleModel != "" {
+			expModel, expOk := m.getModelByID(phone.ExpansionModuleModel)
+			if expOk {
+				for panelIdx := 1; panelIdx <= phone.ExpansionModulesCount; panelIdx++ {
+					for _, mk := range expModel.Keys {
+						keyID := fmt.Sprintf("%d-%d", panelIdx, mk.Index)
+						dbLine, hasOverride := dbLinesMap[keyID]
 
+						assignmentType := mk.Type
+						accNum := mk.Account
+						lineData := make(map[string]interface{})
+
+						if hasOverride {
+							assignmentType = dbLine.Type
+							accNum = dbLine.AccountNumber
+							lineData = dbLine.GetAdditionalInfoMap()
+						}
+
+						// Base Context
+						ctx := pongo2.Context{
+							"key_index":        mk.Index,
+							"key_number":       mk.Index,
+							"panel_number":     panelIdx,
+							"expansion_module": panelIdx,
+							"key_type":         mk.Type,
+							"assignment_type":  assignmentType,
+							"label":            mk.Label,
+							"settings":         mk.Settings,
+							"x":                mk.X,
+							"y":                mk.Y,
+						}
+
+						// Add Account Data
+						if acc, ok := phoneAccounts[accNum]; ok {
+							ctx["account"] = acc
+							ctx["account_number"] = accNum
+							for k, v := range acc {
+								ctx["account_"+k] = v
+							}
+						}
+
+						// Add Assignment Overrides
+						for k, v := range lineData {
+							ctx[k] = v
+						}
+
+						// Render
+						if feature, ok := featuresMap[assignmentType]; ok {
+							ctx["feature_name"] = feature.Name
+							ctx["name"] = feature.Name
+							for _, param := range feature.Params {
+								m.renderAndAppend(&keysConfig, param, ctx, mk.Settings, fmt.Sprintf("ExpModule %d Key %d-%d (Feature %s)", panelIdx, panelIdx, mk.Index, assignmentType))
+							}
+						}
+					}
+				}
+			} else {
+				logger.Warn("Expansion module model %s not found for phone %s", phone.ExpansionModuleModel, mac)
+			}
+		}
 		// 3. Render Final Config
 		domainConfig := m.Config.GetEffectiveDomainConfig(phone.Domain)
 		domainCtx := make(map[string]interface{})

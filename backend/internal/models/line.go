@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -23,7 +24,11 @@ func (l PhoneLine) GetAdditionalInfoMap() map[string]interface{} {
 	if l.AdditionalInfo == "" {
 		return make(map[string]interface{})
 	}
-	if err := json.Unmarshal([]byte(l.AdditionalInfo), &m); err != nil {
+	
+	dec := json.NewDecoder(strings.NewReader(l.AdditionalInfo))
+	dec.UseNumber() // Decodes numbers as json.Number instead of float64
+	
+	if err := dec.Decode(&m); err != nil {
 		return make(map[string]interface{})
 	}
 	return m

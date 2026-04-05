@@ -69,6 +69,7 @@
     "common.data": "данные",
     "common.add_key": "Добавить клавишу",
     "common.description": "Описание",
+    "common.mxone_name": "Имя (name1 name2)",
     "common.cancel": "Отмена",
     "common.name": "Имя",
     "common.upload": "Загрузить",

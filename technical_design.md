@@ -1,42 +1,103 @@
-# Technical Design: License Storage
+# Подробное техническое описание: Система Провижининга
 
-## Overview
-The Provisioning System uses a file-based license management system. The license is stored in a standardized JSON format, allowing for both online and offline verification and reporting.
+## 1. Архитектура Бэкенда (Go)
 
-## File Location
-The license information is stored in a file named `license.key`. 
-By default, this file is located in the configuration directory specified by the `--config-dir` flag (defaults to the current working directory).
+### Модуль `provisioner` (Сердце генерации)
+Этот модуль отвечает за чтение шаблонов и преобразование данных из БД в итоговые конфигурационные файлы.
+- **`Manager` (struct)**: Центральный объект. Содержит загруженные данные вендоров и логику генерации. Поля включают `Config` (общие настройки), `Vendors` (метаданные производителей) и `Models` (спецификации устройств).
+- **`LoadVendors(vendorsDir string)`**: Рекурсивно сканирует `conf/vendors/`. Ищет файлы `vendor.yaml`, и если они присутствуют, загружает связанные `features.yaml` и `accounts.yaml`. Ошибки парсинга логируются, но не прерывают загрузку других вендоров.
+- **`LoadModels()`**: Ищет папки `models` внутри каждого вендора. Модель описывает количество физических кнопок, поддержку модулей расширения (EXP) и тип устройства.
+- **`GeneratePhoneConfigs(outputDir string, phones []Phone)`**:
+  1. Итерирует по списку телефонов.
+  2. Для каждого устройства на основе его `Vendor` и `ModelID` находит соответствующий основной шаблон (обычно `conf/vendors/{vendor}/templates/phone.tpl`).
+  3. Формирует контекст для шаблонизатора (`pongo2.Context`):
+     - `account`: базовые данные (MAC, номер телефона, пароль).
+     - `domain`: переменные домена (например, IP сервера регистрации).
+     - `phone`: физические параметры устройства.
+  4. Подготавливает массив настроек кнопок через вызовы `renderAndAppend`.
+  5. Выполняет финальный рендеринг через движок Pongo2 (совместим с Jinja2).
+  6. Сохраняет итоговый файл в структурированную директорию: `outputDir/{domain_name}/{file_name_by_vendor_rules}`.
+- **`renderAndAppend(keysConfig *[]string, param FeatureParam, ctx, settings)`**: 
+  - Берет YAML-шаблон конкретной функции из `features.yaml` (например, для BLF: `linekey.{{key}}.type = 16`).
+  - Выполняет микро-рендеринг для этой строки, подставляя номер кнопки (`key`) и значение (`value`).
+  - Добавляет результат в массив `keys_config`.
 
-Common path: `conf/license.key`
+### Модуль `api` (Обработка HTTP/REST)
+Использует роутер `gorilla/mux` для маршрутизации запросов.
+- **`PhoneHandler`**:
+  - `CreatePhone(w, r)`: Принимает POST. Валидирует MAC-адрес, сохраняет в SQLite и **автоматически генерирует файл конфигурации** для нового устройства.
+  - `UpdatePhone(w, r)`: Принимает PUT. Обновляет запись в БД. Если изменились параметры, влияющие на конфиг, вызывает `GeneratePhoneConfigs` для немедленного обновления файла на диске.
+  - `DeletePhone(w, r)`: Удаляет запись из БД и **физически удаляет файл конфигурации** из `temp_configs`, а также выполняет `delete_commands` из конфига домена (например, для очистки кэша на TFTP-сервере).
+- **`SystemHandler`**:
+  - `Reload(w, r)`: Сбрасывает текущее состояние `Manager` и заново сканирует диск. Это позволяет изменять шаблоны `.tpl` или YAML-файлы без остановки всего сервера.
+  - `Deploy(w, r)`: Выполняет внешние скрипты или команды (например, `rsync` или `git push`), указанные в `deploy_commands`.
+  - `GetSystemStats(w, r)`: Возвращает JSON со статистикой: общее количество устройств, распределение по вендорам и состояние доменов.
 
-## Data Format
-The `license.key` file is a UTF-8 encoded plain text file containing a JSON object.
+### Модуль `backup` (Менеджер резервного копирования)
+- **`CreateBackup(bType BackupType)`**:
+  - **DB**: Копирует файл `provisioning.db` (SQLite) в папку бэкапов, добавляя дату и время.
+  - **Config**: Архивирует содержимое `conf/` в ZIP. Важно: папка `temp_configs` при этом исключается (через фильтр путей), чтобы бэкап содержал только исходные шаблоны, а не тысячи сгенерированных файлов.
+- **`RestoreDB(filename)`**: Заменяет текущую базу данных файлом из указанного бэкапа. Перед заменой создает временную копию текущей БД.
+- **`RestoreConfig(filename)`**: Очищает текущую папку `conf/` (за исключением активного конфига сервера) и распаковывает туда содержимое ZIP-архива.
 
-### Fields
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `tier` | string | License tier: `Free`, `Pro`, or `VIP`. |
-| `customer_id` | string | Internal system identifier for the customer. |
-| `issued_to` | string | Name of the person or organization to whom the license is issued. |
-| `valid_from` | string (ISO8601) | The date and time when the license becomes valid. |
-| `expiry` | string (ISO8601) | The date and time when the license expires. |
-| `support_level` | string | The level of technical support included (e.g., `Community`, `VIP`, `Standard`). |
-| `license_key` | string (UUID) | A unique identifier for the license instance. |
+---
 
-### Example
-```json
-{
-  "tier": "Pro",
-  "customer_id": "CUST-123456",
-  "issued_to": "Acme Corp",
-  "valid_from": "2026-01-01T00:00:00Z",
-  "expiry": "2027-01-01T00:00:00Z",
-  "support_level": "VIP",
-  "license_key": "550e8400-e29b-41d4-a716-446655440000"
-}
-```
+## 2. Процесс генерации конфигурации (Step-by-Step)
 
-## Management
-- **Loading**: The backend `LicenseManager` loads this file on startup and during any "Reload Configuration" action.
-- **Verification**: If the file is missing or invalid, the system defaults to the `Free` tier.
-- **Reporting**: The license information is included in the `GetSystemStats` API response and embedded in the `system_info.json` file within generated support bundles for offline identification.
+1.  **Триггер**: Нажатие кнопки "Сохранить" в UI или вызов API.
+2.  **Сбор данных**: Запрос в БД получает структуру `Phone` и связанный массив `Lines` (кнопки).
+3.  **Инициализация контекста**:
+    - Переменные вендора (из `vendor.yaml`).
+    - Параметры SIP-аккаунтов (из `accounts.yaml`).
+    - Кастомные переменные домена из глобального конфига.
+4.  **Рендеринг строк функций**: Для каждой кнопки (LineEditor) бэкенд ищет описание в `features.yaml`, рендерит строку (например, `memorykey.1.value = 101`) и добавляет в массив `keys_config`.
+5.  **Финальный проход**: Основной шаблон `phone.tpl` (YAML, XML или CFG формат) вставляет массив `keys_config` в нужное место с помощью цикла:
+    ```jinja2
+    {% for line in keys_config %}{{ line }}{% endfor %}
+    ```
+6.  **Сохранение**: Файл кладется в `conf/temp_configs/{domain}/`.
+
+---
+
+## 3. Назначение папок и файлов в `conf/`
+
+-   **`provisioning-system.yaml`**: Основной файл. Описывает порты, логины, пароли администратора, пути к БД и, самое главное, **список доменов** с их специфичными командами деплоя.
+-   **`vendors/`**: Содержит интеллект системы. Внутри каждой папки вендора:
+    -   `templates/`: Основные скелеты конфигураций.
+    -   `models/`: Спецификации по каждой модели (сколько кнопок рисовать в UI).
+    -   `accounts.yaml` / `features.yaml`: Правила формирования строк настроек.
+-   **`temp_configs/`**: Место, где хранятся реально работающие конфигурации, доступные устройствам для скачивания.
+-   **`temp_configs.bak/`**: Автоматически создаваемая копия предыдущего состояния конфигов перед массовыми изменениями.
+-   **`pre_configs/`**: Коллекция образцов и заготовок для ручного анализа или быстрого старта новых вендоров.
+-   **`license.key`**: Цифровая подпись, определяющая лимиты (количество устройств) и доступный функционал.
+
+---
+
+## 4. Процедура Бэкапа и Восстановления
+
+### Создание бэкапа
+-   Система поддерживает "ротацию" бэкапов: старые копии (более 10 штук одного типа) автоматически удаляются.
+-   Бэкапы создаются в формате `.db` для базы и `.zip` для конфигураций.
+-   Бэкап также можно инициировать через кнопку "Скачать бэкап", тогда сервер создаст его на лету и отдаст браузеру.
+
+### Восстановление
+1.  **База данных**: При восстановлении БД система "на горячую" подменяет файл SQLite. Все изменения вступают в силу немедленно.
+2.  **Конфигурация**: Восстановление конфигов замещает все шаблоны вендоров. После этого рекомендуется выполнить `Reload` в меню системы, чтобы `Manager` перечитал новые шаблоны с диска.
+
+---
+
+## 5. Фронтенд (SvelteKit + Tailwind CSS)
+
+### Технологический стек
+-   **SvelteKit**: Фреймворк с поддержкой SSR (Server Side Rendering) и высокопроизводительной реактивностью.
+-   **Tailwind CSS**: Мощная система стилизации. Все цвета и отступы описаны в `tailwind.config.js`.
+-   **Lucide-Svelte**: Векторные иконки.
+
+### Модули и Компоненты
+-   **`lib/stores/theme.ts`**: Хранит состояние темной темы. Использует классы Tailwind (`dark:`) для мгновенного переключения интерфейса.
+-   **`lib/stores/licenseStore.js`**: Подписывается на события API и скрывает/блокирует функции UI, если лицензия просрочена или достигнут лимит устройств.
+-   **`lib/components/phones/LineEditor.svelte`**:
+    -   Динамически подгружает доступные функции от бэкенда.
+    -   Следит, чтобы "глобальные" функции (например, настройка порта) добавлялись только один раз.
+    -   Использует интерактивный выбор типов кнопок (BLF, Линия, Парковка).
+-   **`lib/components/ui/`**: Набор стандартизированных элементов (кнопки, таблицы, поля ввода), обеспечивающий единство дизайна во всем приложении.

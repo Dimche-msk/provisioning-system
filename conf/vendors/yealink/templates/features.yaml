@@ -6,7 +6,7 @@
       label: Type
       type: hidden
       value: 16
-      config_template: "linekey.{{key_index}}.type = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}linekey.{{key_index}}.type = {{value}}{% endif %}"
     - id: ringtype
       label: Ring Type
       type: select
@@ -19,15 +19,15 @@
           label: "Ring 2"
         - value: "3"
           label: "Ring 3"
-      config_template: "linekey.{{key_index}}.ring_type = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.ring_type = {{value}}{% else %}linekey.{{key_index}}.ring_type = {{value}}{% endif %}"
     - id: label
       label: Label
       type: string
-      config_template: "linekey.{{key_index}}.label = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}linekey.{{key_index}}.label = {{value}}{% endif %}"
     - id: value
       label: Value
       type: string
-      config_template: "linekey.{{key_index}}.value = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}linekey.{{key_index}}.value = {{value}}{% endif %}"
 
 - id: sd
   name: Speed Dial
@@ -37,20 +37,20 @@
       label: Type
       type: hidden
       value: 13
-      config_template: "linekey.{{key_index}}.type = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}linekey.{{key_index}}.type = {{value}}{% endif %}"
     - id: line
       label: Line
       type: select
       source: lines
-      config_template: "linekey.{{key_index}}.line = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{value}}{% else %}linekey.{{key_index}}.line = {{value}}{% endif %}"
     - id: label
       label: Label
       type: string
-      config_template: "linekey.{{key_index}}.label = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}linekey.{{key_index}}.label = {{value}}{% endif %}"
     - id: value
       label: Value
       type: string
-      config_template: "linekey.{{key_index}}.value = {{value}}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}linekey.{{key_index}}.value = {{value}}{% endif %}"
 
 - id: pc_port
   name: PC Port
