@@ -23,11 +23,14 @@ domains:
     deploy_commands:
       - >
         {{- $pass := .Vars.sip_password -}}
-        {{- if and .Vars.PasswdPre (and .Vars.PasswdPost .Phone.PhoneNumber) -}}
+        {{- $linePass := "" -}}
+        {{- if gt (len .Phone.Lines) 0 -}}
+          {{- $linePass = (index .Phone.Lines 0).GetAdditionalInfoMap.password -}}
+        {{- end -}}
+        {{- if $linePass -}}
+          {{- $pass = $linePass -}}
+        {{- else if and .Vars.PasswdPre (and .Vars.PasswdPost .Phone.PhoneNumber) -}}
           {{- $pass = print .Vars.PasswdPre .Phone.PhoneNumber .Vars.PasswdPost -}}
-        {{- else if gt (len .Phone.Lines) 0 -}}
-          {{- $linePass := (index .Phone.Lines 0).GetAdditionalInfoMap.password -}}
-          {{- if $linePass }}{{ $pass = $linePass }}{{ end -}}
         {{- end -}}
         ./provision_subscriber.sh -n "{{if .Phone.PhoneNumber}}{{.Phone.PhoneNumber}}{{end}}" -f "{{.Phone.Description}}" -c {{.Vars.default_csp}} -p "{{$pass}}" 
     # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy
@@ -61,7 +64,7 @@ domains:
       sip_password: "SipPasswd$"
       admin_password: "Admin"
       user_password: "User"
-
+      default_csp: 3
   - name: "branch-1"
     deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
     variables:

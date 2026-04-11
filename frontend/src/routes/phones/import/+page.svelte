@@ -158,7 +158,11 @@
                 );
 
                 const portIdx = headers.findIndex(
-                    (h) => h.includes("port") || h.includes("порт") || h.includes("line") || h.includes("линия")
+                    (h) =>
+                        h.includes("port") ||
+                        h.includes("порт") ||
+                        h.includes("line") ||
+                        h.includes("линия"),
                 );
 
                 const deviceMap = new Map();
@@ -206,8 +210,11 @@
 
                     device.linesData.push({
                         number: numberIdx !== -1 ? row[numberIdx] : "",
-                        port: portIdx !== -1 ? row[portIdx] : device.linesData.length + 1,
-                        dynamicFields
+                        port:
+                            portIdx !== -1
+                                ? row[portIdx]
+                                : device.linesData.length + 1,
+                        dynamicFields,
                     });
                 });
 
@@ -334,16 +341,23 @@
             };
 
             row.linesData.forEach((lineData: any) => {
-                const portNum = parseInt(lineData.port) || phoneData.lines.length + 1;
-                const additionalInfo: Record<string, string> = { ...lineData.dynamicFields };
-                
+                const portNum =
+                    parseInt(lineData.port) || phoneData.lines.length + 1;
+                const additionalInfo: Record<string, string> = {
+                    ...lineData.dynamicFields,
+                };
+
                 // Populate standard required fields so the UI Form loads them correctly
                 if (lineData.number) {
                     const numStr = String(lineData.number);
-                    if (!additionalInfo.auth_name) additionalInfo.auth_name = numStr;
-                    if (!additionalInfo.display_name) additionalInfo.display_name = numStr;
-                    if (!additionalInfo.user_name) additionalInfo.user_name = numStr;
-                    if (!additionalInfo.screen_name) additionalInfo.screen_name = numStr;
+                    if (!additionalInfo.auth_name)
+                        additionalInfo.auth_name = numStr;
+                    if (!additionalInfo.display_name)
+                        additionalInfo.display_name = numStr;
+                    if (!additionalInfo.user_name)
+                        additionalInfo.user_name = numStr;
+                    if (!additionalInfo.screen_name)
+                        additionalInfo.screen_name = numStr;
                 }
                 if (!additionalInfo.line_number) {
                     additionalInfo.line_number = String(portNum);

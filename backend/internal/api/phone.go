@@ -611,13 +611,59 @@ func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone) 
 func (h *PhoneHandler) executeCommands(commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
 	sourceDir, _ := filepath.Abs(filepath.Join(h.ConfigDir, "temp_configs", domainName))
 
+	// Data preparation: flatten the phone object to handle pointers and ensure all fields are available
+	// We use manual mapping to ensure keys match field names (PascalCase) used in templates
+	phoneMap := map[string]interface{}{
+		"ID":                    phone.ID,
+		"Domain":                phone.Domain,
+		"Vendor":                phone.Vendor,
+		"ModelID":               phone.ModelID,
+		"ExpansionModulesCount": phone.ExpansionModulesCount,
+		"ExpansionModuleModel":  phone.ExpansionModuleModel,
+		"Type":                  phone.Type,
+		"IPAddress":             phone.IPAddress,
+		"Description":           phone.Description,
+		"ModelName":             phone.ModelName,
+		"VendorName":            phone.VendorName,
+		"MacAddress":            "",
+		"PhoneNumber":           "",
+	}
+	if phone.MacAddress != nil {
+		phoneMap["MacAddress"] = *phone.MacAddress
+	}
+	if phone.PhoneNumber != nil {
+		phoneMap["PhoneNumber"] = *phone.PhoneNumber
+	}
+
+	var lines []map[string]interface{}
+	for _, l := range phone.Lines {
+		lineMap := map[string]interface{}{
+			"ID":                   l.ID,
+			"PhoneID":              l.PhoneID,
+			"Type":                 l.Type,
+			"AccountNumber":        l.AccountNumber,
+			"AdditionalInfo":       l.AdditionalInfo,
+			"KeyNumber":            nil,
+			"PanelNumber":          nil,
+			"GetAdditionalInfoMap": l.GetAdditionalInfoMap(),
+		}
+		if l.KeyNumber != nil {
+			lineMap["KeyNumber"] = *l.KeyNumber
+		}
+		if l.PanelNumber != nil {
+			lineMap["PanelNumber"] = *l.PanelNumber
+		}
+		lines = append(lines, lineMap)
+	}
+	phoneMap["Lines"] = lines
+
 	// Data for template
 	data := struct {
-		Phone  *models.Phone
+		Phone  map[string]interface{}
 		Domain string
 		Vars   map[string]string
 	}{
-		Phone:  phone,
+		Phone:  phoneMap,
 		Domain: domainName,
 		Vars:   domainVars,
 	}
