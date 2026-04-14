@@ -21,6 +21,10 @@
       label: Password
       type: password
       config_template: "account.{{account_number}}.password = {{value}}"
+    - id: enable
+      label: Enable
+      type: boolean
+      config_template: "account.{{account_number}}.enable = {{1 if value else 0}}"
 
     - id: custom_sip_server
       label: Custom SIP Server

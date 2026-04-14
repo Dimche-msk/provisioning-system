@@ -83,6 +83,7 @@
     "common.filters": "Фильтры",
     "menu.phones": "Телефоны",
     "menu.debug": "Отладка",
+    "menu.migration": "Миграция",
     "lines.configure": "Настрока линий",
     "lines.title": "Настрока параметров линий и клавиш",
     "lines.description": "Запрограммировано линий: ",

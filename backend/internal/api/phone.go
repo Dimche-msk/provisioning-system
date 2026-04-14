@@ -525,10 +525,11 @@ func (h *PhoneHandler) GetVendors(w http.ResponseWriter, r *http.Request) {
 // Query params: vendor
 func (h *PhoneHandler) GetModels(w http.ResponseWriter, r *http.Request) {
 	vendor := r.URL.Query().Get("vendor")
+	includeModules := r.URL.Query().Get("include_modules") == "true"
 	var models []provisioner.DeviceModel
 
 	for _, m := range h.ProvManager.Models {
-		if m.Type == "expansion-module" {
+		if m.Type == "expansion-module" && !includeModules {
 			continue
 		}
 		if vendor == "" || strings.EqualFold(m.Vendor, vendor) {

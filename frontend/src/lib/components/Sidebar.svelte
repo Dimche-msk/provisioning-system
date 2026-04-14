@@ -1,7 +1,7 @@
 <script>
     import { page } from "$app/stores";
     import { t } from "svelte-i18n";
-    import { Settings, Home, Phone, Activity } from "lucide-svelte";
+    import { Settings, Home, Phone, Activity, Wand2 } from "lucide-svelte";
 
     import { APP_VERSION } from "$lib/version";
 
@@ -10,6 +10,7 @@
         { href: "/phones", label: "menu.phones", icon: Phone },
         { href: "/system", label: "menu.system", icon: Settings },
         { href: "/debug", label: "menu.debug", icon: Activity },
+        { href: "/system/migration", label: "menu.migration", icon: Wand2 },
     ];
 </script>
 

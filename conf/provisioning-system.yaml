@@ -87,4 +87,12 @@ domains:
       sip_server_ip: "172.16.00.150"
       sip_server_port: "5060"
       sip_password: "SipPasswd$"
+  - name: "Tower"
+    generate_random_password: False
+    variables:
+      ntp_server: "pool.ntp.org"
+      sip_server_ip: "10.0.0.4"
+      sip_server_port: "5060"
+      sip_password: "SipPasswd$"
+
 

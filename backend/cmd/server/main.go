@@ -94,6 +94,7 @@ func main() {
 	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager, licenseManager, *logFile)
 	phoneHandler := api.NewPhoneHandler(*configDir, database, provManager)
 	debugHandler := api.NewDebugHandler(b)
+	migrationHandler := api.NewMigrationHandler(database)
 
 	// API Routes
 	apiRouter := r.PathPrefix("/api").Subrouter()
@@ -134,6 +135,8 @@ func main() {
 
 	protected.HandleFunc("/vendors", phoneHandler.GetVendors).Methods("GET")
 	protected.HandleFunc("/models", phoneHandler.GetModels).Methods("GET")
+
+	protected.HandleFunc("/migration/apply", migrationHandler.ApplyMigration).Methods("POST")
 
 	// Debug API (SSE)
 	protected.HandleFunc("/debug/logs", debugHandler.StreamLogs).Methods("GET")
