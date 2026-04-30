@@ -7,18 +7,34 @@
       type: hidden
       value: 16
       config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}linekey.{{key_index}}.type = {{value}}{% endif %}"
+    - id: line_association
+      type: hidden
+      value: "1" # Значение заглушка, чтобы сработал рендеринг шаблона
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{account.number}}{% else %}linekey.{{key_index}}.line = {{account.number}}{% endif %}"
     - id: ringtype
       label: Ring Type
       type: select
       options:
-        - value: "0"
-          label: "Common"
-        - value: "1"
+        - value: "Silent.wav"
+          label: "Silent"
+        - value: "Ring1.wav"
           label: "Ring 1"
-        - value: "2"
+        - value: "Ring2.wav"
           label: "Ring 2"
-        - value: "3"
+        - value: "Ring3.wav"
           label: "Ring 3"
+        - value: "Ring4.wav"
+          label: "Ring 4"
+        - value: "Ring5.wav"
+          label: "Ring 5"
+        - value: "Ring6.wav"
+          label: "Ring 6"
+        - value: "Ring7.wav"
+          label: "Ring 7"
+        - value: "Ring8.wav"
+          label: "Ring 8"        
+        - value: "Splash.wav"
+          label: "Splash"
       config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.ring_type = {{value}}{% else %}linekey.{{key_index}}.ring_type = {{value}}{% endif %}"
     - id: label
       label: Label

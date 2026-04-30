@@ -54,8 +54,8 @@ lang.wui = Russian
 lang.gui = English
 
 #---------------------------------------FEATURES----------------------------
-features.pickup.blf_audio_enable = 1
-features.pickup.blf_visual_enable = 1
+features.pickup.blf_audio_enable = 0
+features.pickup.blf_visual_enable = 0
 features.pickup.direct_pickup_code = *8#
 features.pickup.direct_pickup_enable = 1
 ########################################################################################

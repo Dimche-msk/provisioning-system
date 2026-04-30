@@ -29,3 +29,11 @@
       label: Registrar Port
       type: number
       config_template: "<SIP_Port_{{key_index}}_>{{value}}</SIP_Port_{{key_index}}_>"
+    - id: line_enable
+      label: Line Enable
+      type: boolean
+      config_template: "<Line_Enable_{{key_index}}_>{{ if value }}Yes{{ else }}No{{ end }}</Line_Enable_{{key_index}}_>"
+    - id: extension_mapping
+      label: Extension Mapping
+      type: number
+      config_template: "<Extension_{{key_index}}_>{{value}}</Extension_{{key_index}}_>"

@@ -6,6 +6,16 @@ mkdir -p release
 
 echo "Starting build process..."
 
+# Read version
+VERSION=$(cat VERSION)
+echo "Syncing version $VERSION to all components..."
+
+# Sync to Frontend
+echo "Syncing frontend version..."
+sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" frontend/package.json
+sed -i.bak "s/export const APP_VERSION = \".*\"/export const APP_VERSION = \"$VERSION\"/" frontend/src/lib/version.ts
+rm -f frontend/package.json.bak frontend/src/lib/version.ts.bak
+
 # 0. Build Frontend
 echo "Building Frontend..."
 cd frontend
@@ -17,9 +27,8 @@ echo "Updating Backend static files..."
 rm -rf backend/cmd/server/static/*
 cp -r frontend/build/* backend/cmd/server/static/
 
-# Sync VERSION to Go backend
-VERSION=$(cat VERSION)
-echo "Syncing backend version to $VERSION..."
+# Sync to Go backend
+echo "Syncing backend version..."
 sed -i.bak "s/Version = \".*\"/Version = \"$VERSION\"/" backend/internal/version/version.go
 rm -f backend/internal/version/version.go.bak
 
