@@ -56,6 +56,7 @@ func main() {
 
 	// 4. Настройка роутинга
 	r := mux.NewRouter()
+	r.SkipClean(true)
 
 	// Раздача сгенерированных конфигов (если включено)
 	if cfg.Server.ServeConfigs {
@@ -154,14 +155,16 @@ func main() {
 
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
+		
 		// API requests should not be handled here
-		if strings.HasPrefix(path, "/api/") {
+		cleanPathForCheck := strings.TrimLeft(path, "/")
+		if strings.HasPrefix(cleanPathForCheck, "api/") {
 			http.NotFound(w, r)
 			return
 		}
 
 		// 1. Check if it matches a static file (Frontend)
-		f, err := dist.Open(strings.TrimPrefix(path, "/"))
+		f, err := dist.Open(strings.TrimLeft(path, "/"))
 		if err == nil {
 			f.Close()
 			fileServer.ServeHTTP(w, r)
