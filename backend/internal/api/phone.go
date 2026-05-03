@@ -508,10 +508,11 @@ func (h *PhoneHandler) GetVendors(w http.ResponseWriter, r *http.Request) {
 	var vendors []map[string]interface{}
 	for _, v := range h.ProvManager.Vendors {
 		vendors = append(vendors, map[string]interface{}{
-			"id":       v.ID,
-			"name":     v.Name,
-			"features": v.Features,
-			"accounts": v.Accounts,
+			"id":                    v.ID,
+			"name":                  v.Name,
+			"features":              v.Features,
+			"accounts":              v.Accounts,
+			"phone_config_template": v.PhoneConfigTemplate,
 		})
 	}
 

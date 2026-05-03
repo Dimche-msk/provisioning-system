@@ -24,6 +24,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
+	"gopkg.in/yaml.v3"
 )
 
 type SystemHandler struct {
@@ -594,4 +595,363 @@ func (h *SystemHandler) GetSystemStats(w http.ResponseWriter, r *http.Request) {
 		"total_phones": totalPhones,
 		"license":      h.LicenseManager.GetStatus(),
 	})
+}
+
+func (h *SystemHandler) GetSystemConfig(w http.ResponseWriter, r *http.Request) {
+	// Return the current parsed config
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(*h.Config)
+}
+
+func (h *SystemHandler) GetSystemConfigSample(w http.ResponseWriter, r *http.Request) {
+	samplePath := filepath.Join(h.ConfigDir, "provisioning-system.sample.yaml")
+	data, err := os.ReadFile(samplePath)
+	if err != nil {
+		// If sample doesn't exist, return empty or error
+		http.Error(w, "Sample config not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/yaml")
+	w.Write(data)
+}
+
+func (h *SystemHandler) UpdateSystemConfig(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var newCfg config.SystemConfig
+	if err := json.NewDecoder(r.Body).Decode(&newCfg); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// 1. Create backup before modification
+	if err := h.BackupManager.CreateBackup(backup.BackupTypeConfig); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to create backup: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 2. Save to file
+	configPath := filepath.Join(h.ConfigDir, "provisioning-system.yaml")
+	
+	// We use yaml.v3 to marshal the struct back to file.
+	// Note: this will lose original comments, but it's the safest way to ensure valid YAML.
+	data, err := yaml.Marshal(newCfg)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to marshal config: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	if err := os.WriteFile(configPath, data, 0644); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to write config file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Reload system state
+	// We reuse the Reload logic but slightly more targeted if needed.
+	// For now, full reload is safest.
+	*h.Config = &newCfg
+	h.ProvManager.Config = &newCfg
+
+	// Trigger full internal reload (vendors, models, etc.)
+	h.ProvManager.LoadVendors(filepath.Join(h.ConfigDir, "vendors"))
+	h.ProvManager.LoadModels()
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":  "ok",
+		"message": "Configuration updated and system reloaded",
+	})
+}
+
+func (h *SystemHandler) UpdateVendorFeatures(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	var features []provisioner.Feature
+	if err := json.NewDecoder(r.Body).Decode(&features); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Save to file
+	filePath := filepath.Join(targetVendor.Dir, targetVendor.FeaturesFile)
+	
+	data, err := yaml.Marshal(features)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to marshal YAML: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	if err := os.WriteFile(filePath, data, 0644); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to write file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Update in memory
+	targetVendor.Features = features
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Features updated successfully"})
+}
+
+func (h *SystemHandler) UpdateVendorAccounts(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	var accounts []provisioner.Feature
+	if err := json.NewDecoder(r.Body).Decode(&accounts); err != nil {
+		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Save to file
+	filePath := filepath.Join(targetVendor.Dir, targetVendor.AccountsFile)
+	
+	data, err := yaml.Marshal(accounts)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to marshal YAML: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	if err := os.WriteFile(filePath, data, 0644); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to write file: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Update in memory
+	targetVendor.Accounts = accounts
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Accounts updated successfully"})
+}
+
+func (h *SystemHandler) GetVendorTemplate(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	if targetVendor.PhoneConfigTemplate == "" {
+		http.Error(w, "Template not configured for this vendor", http.StatusBadRequest)
+		return
+	}
+
+	filePath := filepath.Join(targetVendor.Dir, targetVendor.PhoneConfigTemplate)
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to read template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write(content)
+}
+
+func (h *SystemHandler) UpdateVendorTemplate(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	if targetVendor.PhoneConfigTemplate == "" {
+		http.Error(w, "Template not configured for this vendor", http.StatusBadRequest)
+		return
+	}
+
+	content, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+		return
+	}
+
+	filePath := filepath.Join(targetVendor.Dir, targetVendor.PhoneConfigTemplate)
+	if err := os.WriteFile(filePath, content, 0644); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to write template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Template updated successfully"})
+}
+
+func (h *SystemHandler) ListVendorTemplates(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	var files []string
+	err := filepath.Walk(targetVendor.Dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return nil
+		}
+		if filepath.Ext(path) == ".tpl" {
+			rel, _ := filepath.Rel(targetVendor.Dir, path)
+			files = append(files, rel)
+		}
+		return nil
+	})
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to list templates: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{"files": files})
+}
+
+func (h *SystemHandler) GetVendorTemplateFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+	fileName := r.URL.Query().Get("file")
+
+	if fileName == "" {
+		http.Error(w, "File parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	// Security: prevent path traversal
+	filePath := filepath.Join(targetVendor.Dir, fileName)
+	if !strings.HasPrefix(filePath, targetVendor.Dir) {
+		http.Error(w, "Access denied", http.StatusForbidden)
+		return
+	}
+
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to read template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write(content)
+}
+
+func (h *SystemHandler) UpdateVendorTemplateFile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vendorID := vars["id"]
+	fileName := r.URL.Query().Get("file")
+
+	if fileName == "" {
+		http.Error(w, "File parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	// Find vendor
+	var targetVendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			targetVendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+
+	if targetVendor == nil {
+		http.Error(w, "Vendor not found", http.StatusNotFound)
+		return
+	}
+
+	// Security: prevent path traversal
+	filePath := filepath.Join(targetVendor.Dir, fileName)
+	if !strings.HasPrefix(filePath, targetVendor.Dir) {
+		http.Error(w, "Access denied", http.StatusForbidden)
+		return
+	}
+
+	content, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := os.WriteFile(filePath, content, 0644); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to write template: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Template updated successfully"})
 }

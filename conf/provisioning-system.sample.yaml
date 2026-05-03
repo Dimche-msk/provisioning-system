@@ -1,0 +1,58 @@
+# Provisioning System Sample Configuration
+# This file serves as a template for the UI to understand available fields and their metadata.
+# Metadata format in comments: [label: "Name", type: "string|number|boolean|select|password|list_string|map", help: "Description", options: "opt1,opt2", readonly: true]
+
+# [section: Server Settings]
+server:
+  # [label: Listen Address, readonly: true, type: string, help: IP address to bind the server to (0.0.0.0 for all interfaces)]
+  listen_address: "0.0.0.0"
+  
+  # [label: HTTP Port, readonly: true,, type: number, help: Port for API and provisioning file server. Changing this requires manual server restart.]
+  port: "8080"
+  
+  # [label: Serve Configs, type: boolean, help: Enable internal HTTP server to serve generated configuration files to devices]
+  serve_configs: true
+  
+  # [label: Device Logging Level, type: select, options: "none,access,error,full", help: Detail level of device access logs]
+  log_device_access: full
+  
+  # [label: Access Log Path, type: string, help: Path to the device access log file]
+  log_file_path: ./access.log
+
+# [section: Authentication]
+auth:
+  # [label: Admin Username, type: string]
+  admin_user: "admin"
+  
+  # [label: Admin Password, type: password, help: Leave empty in UI to keep current password]
+  admin_password: "password123"
+  
+  # [label: Session Secret Key, type: string, readonly: true, help: Changing this will invalidate all active sessions.]
+  secret_key: "change-me-to-something-random"
+
+# [section: Database & Backups]
+database:
+  # [label: SQLite DB Path, type: string, readonly: true, help: Path to the SQLite database file.]
+  path: "provisioning.db"
+  
+  # [label: Backup Directory, type: string, help: Folder where database and config backups will be stored]
+  backup_dir: "backups"
+
+# [section: Domains Management]
+# [help: Define locations or groups of devices with specific variables and deployment scripts]
+domains:
+  - name: "default" # [label: Domain Name, type: string]
+    generate_random_password: true # [label: Auto-generate Passwords, type: boolean, help: If enabled, new devices will get random SIP passwords if not specified]
+    
+    # [label: Deployment Commands, type: list_string, readonly: true, help: Scripts executed after 'Apply'. Edit manually in YAML for safety.]
+    deploy_commands:
+      - "echo 'Deploying to {{.Name}}'"
+      
+    # [label: Deletion Commands, type: list_string, readonly: true, help: Scripts executed on deletion. Edit manually in YAML for safety.]
+    delete_commands:
+      - "echo 'Deleting from {{.Name}}'"
+      
+    # [label: Domain Variables, type: map, help: Custom variables available in templates (e.g. sip_server_ip, ntp_server)]
+    variables:
+      sip_server: "127.0.0.1"
+      ntp_server: "pool.ntp.org"

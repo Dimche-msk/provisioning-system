@@ -9,33 +9,33 @@ import (
 )
 
 type DomainSettings struct {
-	Name                   string            `yaml:"name"`
-	DeployCmd              string            `yaml:"deploy_cmd"`               // Legacy: single command
-	DeleteCmd              string            `yaml:"delete_cmd"`               // Legacy: single command
-	DeployCommands         []string          `yaml:"deploy_commands"`          // New: list of commands
-	DeleteCommands         []string          `yaml:"delete_commands"`          // New: list of commands
-	GenerateRandomPassword bool              `yaml:"generate_random_password"` // If true, generate random password for new phones
-	Variables              map[string]string `yaml:"variables"`
+	Name                   string            `yaml:"name" json:"name"`
+	DeployCmd              string            `yaml:"deploy_cmd" json:"deploy_cmd"`                           // Legacy: single command
+	DeleteCmd              string            `yaml:"delete_cmd" json:"delete_cmd"`                           // Legacy: single command
+	DeployCommands         []string          `yaml:"deploy_commands" json:"deploy_commands"`                // New: list of commands
+	DeleteCommands         []string          `yaml:"delete_commands" json:"delete_commands"`                // New: list of commands
+	GenerateRandomPassword bool              `yaml:"generate_random_password" json:"generate_random_password"` // If true, generate random password for new phones
+	Variables              map[string]string `yaml:"variables" json:"variables"`
 }
 
 type SystemConfig struct {
 	Server struct {
-		ListenAddress   string `yaml:"listen_address"`
-		Port            string `yaml:"port"`
-		ServeConfigs    bool   `yaml:"serve_configs"`
-		LogDeviceAccess string `yaml:"log_device_access"` // none, access, error, full
-		LogFilePath     string `yaml:"log_file_path"`
-	} `yaml:"server"`
+		ListenAddress   string `yaml:"listen_address" json:"listen_address"`
+		Port            string `yaml:"port" json:"port"`
+		ServeConfigs    bool   `yaml:"serve_configs" json:"serve_configs"`
+		LogDeviceAccess string `yaml:"log_device_access" json:"log_device_access"` // none, access, error, full
+		LogFilePath     string `yaml:"log_file_path" json:"log_file_path"`
+	} `yaml:"server" json:"server"`
 	Auth struct {
-		AdminUser     string `yaml:"admin_user"`
-		AdminPassword string `yaml:"admin_password"`
-		SecretKey     string `yaml:"secret_key"`
-	} `yaml:"auth"`
+		AdminUser     string `yaml:"admin_user" json:"admin_user"`
+		AdminPassword string `yaml:"admin_password" json:"admin_password"`
+		SecretKey     string `yaml:"secret_key" json:"secret_key"`
+	} `yaml:"auth" json:"auth"`
 	Database struct {
-		Path      string `yaml:"path"`
-		BackupDir string `yaml:"backup_dir"`
-	} `yaml:"database"`
-	Domains []DomainSettings `yaml:"domains"`
+		Path      string `yaml:"path" json:"path"`
+		BackupDir string `yaml:"backup_dir" json:"backup_dir"`
+	} `yaml:"database" json:"database"`
+	Domains []DomainSettings `yaml:"domains" json:"domains"`
 }
 
 func LoadConfig(configDir string) (*SystemConfig, error) {
