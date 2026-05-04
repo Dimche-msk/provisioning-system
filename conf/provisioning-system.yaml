@@ -33,6 +33,12 @@ domains:
           {{- $pass = print .Vars.PasswdPre .Phone.PhoneNumber .Vars.PasswdPost -}}
         {{- end -}}
         ./provision_subscriber.sh -n "{{if .Phone.PhoneNumber}}{{.Phone.PhoneNumber}}{{end}}" -f "{{.Phone.Description}}" -c {{.Vars.default_csp}} -p "{{$pass}}" 
+      - >
+        {{- if eq .Phone.Vendor "mitel" -}}
+          PHONE_IP=$(./scripts/get_mxone_ip.sh "{{.Phone.PhoneNumber}}") && ./scripts/check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}"
+        {{- else -}}
+          PHONE_IP=$(./scripts/get_mxone_ip.sh "{{.Phone.PhoneNumber}}") && ./scripts/check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}"
+        {{- end -}}
     # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy
     #deploy_commands:
     #  - "echo '1. Uploading config for {{.Phone.MacAddress}} to server ({{.Vars.http_prov_server}})' > 123.txt"

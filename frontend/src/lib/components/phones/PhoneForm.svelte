@@ -33,6 +33,7 @@
     let loading = false;
     const formId = Math.random().toString(36).slice(2);
     let showLineEditor = false;
+    let originalPhoneNumber = "";
 
     // Computed
     $: selectedModel = models.find((m) => m.id === phone.model_id);
@@ -55,6 +56,7 @@
         if (phone.vendor) {
             await loadModels(phone.vendor);
         }
+        originalPhoneNumber = phone.phone_number || "";
     });
 
     async function loadDomains() {
@@ -232,6 +234,9 @@
         showLineEditor = false;
     }
     function onPhoneNumberChange() {
+        if (!phone.phone_number) return;
+
+        // Auto-create Line 1 on creation
         if (
             mode === "create" &&
             phone.phone_number &&
@@ -242,7 +247,7 @@
                     type: "Line",
                     account_number: 1,
                     panel_number: 0,
-                    key_number: 1, // Default to 1 for first account key?
+                    key_number: 1,
                     additional_info: JSON.stringify({
                         line_number: "1",
                         display_name: phone.phone_number,
@@ -253,7 +258,49 @@
                     }),
                 },
             ];
-            toast.info("Line 1 automatically created");
+            toast.info($t("phone.line1_auto_created") || "Line 1 automatically created");
+            originalPhoneNumber = phone.phone_number;
+            return;
+        }
+
+        // Auto-update Line 1 on edit if pristine
+        if (mode === "edit" && originalPhoneNumber && phone.phone_number !== originalPhoneNumber) {
+            const line1Index = phone.lines.findIndex(l => l.account_number === 1 && l.type === "Line");
+            if (line1Index !== -1) {
+                const line1 = phone.lines[line1Index];
+                let info: any = {};
+                try {
+                    info = typeof line1.additional_info === 'string' 
+                        ? JSON.parse(line1.additional_info) 
+                        : (line1.additional_info || {});
+                } catch (e) {
+                    console.error("Failed to parse line info", e);
+                    return;
+                }
+
+                // Check if it's "pristine" (matches old number and no password)
+                const isPristine = 
+                    info.user_name === originalPhoneNumber &&
+                    info.auth_name === originalPhoneNumber &&
+                    (info.display_name === originalPhoneNumber || !info.display_name) &&
+                    (info.screen_name === originalPhoneNumber || !info.screen_name) &&
+                    (!info.password);
+
+                if (isPristine) {
+                    info.user_name = phone.phone_number;
+                    info.auth_name = phone.phone_number;
+                    info.display_name = phone.phone_number;
+                    info.screen_name = phone.phone_number;
+                    
+                    line1.additional_info = JSON.stringify(info);
+                    phone.lines[line1Index] = line1;
+                    phone.lines = [...phone.lines]; // Trigger reactivity
+                    toast.info($t("phone.line1_auto_updated") || "Line 1 automatically updated with new number");
+                } else {
+                    toast.warning($t("phone.line1_manual_edit_preserved") || "Line 1 was not updated because it contains manual edits");
+                }
+            }
+            originalPhoneNumber = phone.phone_number;
         }
     }
 </script>
