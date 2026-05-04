@@ -1,4 +1,4 @@
-package api
+package devicelogger
 
 import (
 	"fmt"
@@ -113,24 +113,24 @@ func (l *DeviceLogger) logToFile(event broadcaster.LogEvent) {
 	}
 }
 
-func (l *DeviceLogger) LogCustom(r *http.Request, statusCode int, message string) {
+func (l *DeviceLogger) LogAccess(sourceIP string, statusCode int, method string, requestedFile string, userAgent string, message string) {
 	logLevel := l.Config.Server.LogDeviceAccess
 	if logLevel == "" || logLevel == "none" {
 		return
 	}
 
-	ip, _, err := net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		ip = r.RemoteAddr
+	// Filter based on level
+	if logLevel == "error" && statusCode < 400 {
+		return
 	}
 
 	event := broadcaster.LogEvent{
 		Time:          time.Now(),
-		SourceIP:      ip,
+		SourceIP:      sourceIP,
 		StatusCode:    statusCode,
-		RequestedFile: r.URL.Path,
-		Method:        r.Method,
-		UserAgent:     r.UserAgent(),
+		RequestedFile: requestedFile,
+		Method:        method,
+		UserAgent:     userAgent,
 		Message:       message,
 	}
 
@@ -141,4 +141,13 @@ func (l *DeviceLogger) LogCustom(r *http.Request, statusCode int, message string
 	if l.Config.Server.LogFilePath != "" {
 		l.logToFile(event)
 	}
+}
+
+func (l *DeviceLogger) LogCustom(r *http.Request, statusCode int, message string) {
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		ip = r.RemoteAddr
+	}
+
+	l.LogAccess(ip, statusCode, r.Method, r.URL.Path, r.UserAgent(), message)
 }

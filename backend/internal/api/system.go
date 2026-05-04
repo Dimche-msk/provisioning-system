@@ -20,6 +20,7 @@ import (
 	"provisioning-system/internal/logger"
 	"provisioning-system/internal/models"
 	"provisioning-system/internal/provisioner"
+	"provisioning-system/internal/tftp"
 	"provisioning-system/internal/version"
 
 	"github.com/gorilla/mux"
@@ -35,9 +36,10 @@ type SystemHandler struct {
 	BackupManager  *backup.Manager
 	LicenseManager *license.Manager
 	LogFile        string
+	TFTPServer     *tftp.Server
 }
 
-func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB, bm *backup.Manager, lm *license.Manager, logFile string) *SystemHandler {
+func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provisioner.Manager, db *gorm.DB, bm *backup.Manager, lm *license.Manager, logFile string, tftpSrv *tftp.Server) *SystemHandler {
 	return &SystemHandler{
 		ConfigDir:      configDir,
 		Config:         cfg,
@@ -46,6 +48,7 @@ func NewSystemHandler(configDir string, cfg **config.SystemConfig, pm *provision
 		BackupManager:  bm,
 		LicenseManager: lm,
 		LogFile:        logFile,
+		TFTPServer:     tftpSrv,
 	}
 }
 
@@ -88,7 +91,7 @@ func (h *SystemHandler) Reload(w http.ResponseWriter, r *http.Request) {
 	outputDir := filepath.Join(h.ConfigDir, "pre_configs")
 
 	// Clean pre_configs if exists
-	if err := os.RemoveAll(outputDir); err != nil {
+	if err := h.safeRemoveAll(outputDir); err != nil {
 		log.Printf("Warning: Failed to clean pre_configs: %v", err)
 	}
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
@@ -153,7 +156,7 @@ func (h *SystemHandler) ApplyConfig(w http.ResponseWriter, r *http.Request) {
 
 	// Backup existing temp_configs
 	if _, err := os.Stat(targetDir); err == nil {
-		if err := os.RemoveAll(backupDir); err != nil {
+		if err := h.safeRemoveAll(backupDir); err != nil {
 			log.Printf("Warning: Failed to remove old backup: %v", err)
 		}
 		if err := os.Rename(targetDir, backupDir); err != nil {
@@ -590,10 +593,21 @@ func (h *SystemHandler) GetSystemStats(w http.ResponseWriter, r *http.Request) {
 	h.DB.Model(&models.Phone{}).Count(&totalPhones)
 
 	w.Header().Set("Content-Type", "application/json")
+	
+	tftpStatus := map[string]interface{}{
+		"enabled": (*h.Config).Server.TFTPServer,
+	}
+	if h.TFTPServer != nil {
+		tftpStatus["running"] = h.TFTPServer.Status()
+		tftpStatus["error"] = h.TFTPServer.GetLastError()
+		tftpStatus["port"] = (*h.Config).Server.TFTPPort
+	}
+
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"stats":        stats,
 		"total_phones": totalPhones,
 		"license":      h.LicenseManager.GetStatus(),
+		"tftp":         tftpStatus,
 	})
 }
 
@@ -954,4 +968,29 @@ func (h *SystemHandler) UpdateVendorTemplateFile(w http.ResponseWriter, r *http.
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "message": "Template updated successfully"})
+}
+
+// safeRemoveAll is a more robust version of os.RemoveAll that handles macOS/Windows quirks
+func (h *SystemHandler) safeRemoveAll(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil
+	}
+
+	err := os.RemoveAll(path)
+	if err == nil {
+		return nil
+	}
+
+	// On macOS, if RemoveAll fails with "directory not empty", it might be due to a race condition (e.g. Finder)
+	// Try to move it to a temporary name to clear the path immediately
+	tempPath := path + ".deleted." + fmt.Sprintf("%d", time.Now().UnixNano())
+	if renameErr := os.Rename(path, tempPath); renameErr == nil {
+		go func() {
+			time.Sleep(2 * time.Second) // Wait a bit for OS to release any locks
+			os.RemoveAll(tempPath)
+		}()
+		return nil
+	}
+
+	return err
 }

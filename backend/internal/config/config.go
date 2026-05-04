@@ -25,6 +25,8 @@ type SystemConfig struct {
 		ServeConfigs    bool   `yaml:"serve_configs" json:"serve_configs"`
 		LogDeviceAccess string `yaml:"log_device_access" json:"log_device_access"` // none, access, error, full
 		LogFilePath     string `yaml:"log_file_path" json:"log_file_path"`
+		TFTPServer      bool   `yaml:"tftp_server" json:"tftp_server"`
+		TFTPPort        string `yaml:"tftp_port" json:"tftp_port"`
 	} `yaml:"server" json:"server"`
 	Auth struct {
 		AdminUser     string `yaml:"admin_user" json:"admin_user"`
@@ -70,6 +72,9 @@ func LoadConfig(configDir string) (*SystemConfig, error) {
 	}
 	if cfg.Database.BackupDir == "" {
 		cfg.Database.BackupDir = "backups"
+	}
+	if cfg.Server.TFTPPort == "" {
+		cfg.Server.TFTPPort = "69"
 	}
 
 	return &cfg, nil

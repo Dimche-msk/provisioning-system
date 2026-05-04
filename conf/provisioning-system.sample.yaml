@@ -12,6 +12,8 @@ server:
   
   # [label: Serve Configs, type: boolean, help: Enable internal HTTP server to serve generated configuration files to devices]
   serve_configs: true
+  tftp_server: false
+  tftp_port: "69"
   
   # [label: Device Logging Level, type: select, options: "none,access,error,full", help: Detail level of device access logs]
   log_device_access: full

@@ -2,6 +2,8 @@ server:
   listen_address: "0.0.0.0"
   port: "8080"
   serve_configs: true
+  tftp_server: true
+  tftp_port: "69"
   # New fields:
   log_device_access: full  # Options: none, access, error, full
   log_file_path: ./access.log # Path to the log file

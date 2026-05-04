@@ -190,7 +190,7 @@ func (m *Manager) RestoreConfig(filename string) error {
 			}
 
 			logger.Debug("Removing existing item before restore: %s", entryPath)
-			os.RemoveAll(entryPath)
+			m.safeRemoveAll(entryPath)
 		}
 	}
 
@@ -499,4 +499,29 @@ func unzipDir(zipPath, targetDir string) error {
 		}
 	}
 	return nil
+}
+
+// safeRemoveAll is a more robust version of os.RemoveAll that handles macOS/Windows quirks
+func (m *Manager) safeRemoveAll(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil
+	}
+
+	err := os.RemoveAll(path)
+	if err == nil {
+		return nil
+	}
+
+	// On macOS, if RemoveAll fails with "directory not empty", it might be due to a race condition (e.g. Finder)
+	// Try to move it to a temporary name to clear the path immediately
+	tempPath := path + ".deleted." + fmt.Sprintf("%d", time.Now().UnixNano())
+	if renameErr := os.Rename(path, tempPath); renameErr == nil {
+		go func() {
+			time.Sleep(2 * time.Second) // Wait a bit for OS to release any locks
+			os.RemoveAll(tempPath)
+		}()
+		return nil
+	}
+
+	return err
 }

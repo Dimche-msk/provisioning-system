@@ -8,9 +8,9 @@
     const menuItems = [
         { href: "/", label: "menu.home", icon: Home },
         { href: "/phones", label: "menu.phones", icon: Phone },
-        { href: "/templates", label: "menu.templates", icon: FileCode },
-        { href: "/system", label: "menu.system", icon: Settings },
         { href: "/debug", label: "menu.debug", icon: Activity },
+        { href: "/system", label: "menu.system", icon: Settings },
+        { href: "/templates", label: "menu.templates", icon: FileCode },
         { href: "/system/migration", label: "menu.migration", icon: Wand2 },
     ];
 </script>

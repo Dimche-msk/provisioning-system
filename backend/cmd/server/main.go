@@ -18,9 +18,11 @@ import (
 	"provisioning-system/internal/broadcaster"
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/db"
+	"provisioning-system/internal/devicelogger"
 	"provisioning-system/internal/license"
 	"provisioning-system/internal/logger" // This is the custom logger package
 	"provisioning-system/internal/provisioner"
+	"provisioning-system/internal/tftp"
 	"provisioning-system/internal/version"
 )
 
@@ -51,7 +53,7 @@ func main() {
 
 	// 3. Инициализация компонентов
 	b := broadcaster.New()
-	deviceLogger := api.NewDeviceLogger(cfg, b)
+	deviceLogger := devicelogger.NewDeviceLogger(cfg, b)
 	authHandler := api.NewAuthHandler(cfg)
 
 	// 4. Настройка роутинга
@@ -91,11 +93,22 @@ func main() {
 	// 8. Инициализация Backup Manager
 	backupManager := backup.NewManager(cfg, database, *configDir)
 
+	// 10. Start TFTP Server (if enabled)
+	var tftpSrv *tftp.Server
+	if cfg.Server.TFTPServer {
+		tftpSrv = tftp.NewServer(*configDir, cfg, deviceLogger)
+		go func() {
+			if err := tftpSrv.Start(); err != nil {
+				log.Printf("TFTP Server error: %v", err)
+			}
+		}()
+	}
+
 	// 9. Инициализация API Handlers
-	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager, licenseManager, *logFile)
 	phoneHandler := api.NewPhoneHandler(*configDir, database, provManager)
 	debugHandler := api.NewDebugHandler(b)
 	migrationHandler := api.NewMigrationHandler(database)
+	sysHandler := api.NewSystemHandler(*configDir, &cfg, provManager, database, backupManager, licenseManager, *logFile, tftpSrv)
 
 	// API Routes
 	apiRouter := r.PathPrefix("/api").Subrouter()
