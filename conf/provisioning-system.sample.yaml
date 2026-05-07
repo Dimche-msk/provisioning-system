@@ -46,11 +46,11 @@ domains:
   - name: "default" # [label: Domain Name, type: string]
     generate_random_password: true # [label: Auto-generate Passwords, type: boolean, help: If enabled, new devices will get random SIP passwords if not specified]
     
-    # [label: Deployment Commands, type: list_string, readonly: true, help: Scripts executed after 'Apply'. Edit manually in YAML for safety.]
+    # [label: Deployment Commands, type: list_string, readonly: false, help: Scripts executed after 'Apply'. Edit manually in YAML for safety.]
     deploy_commands:
       - "echo 'Deploying to {{.Name}}'"
       
-    # [label: Deletion Commands, type: list_string, readonly: true, help: Scripts executed on deletion. Edit manually in YAML for safety.]
+    # [label: Deletion Commands, type: list_string, readonly: false, help: Scripts executed on deletion. Edit manually in YAML for safety.]
     delete_commands:
       - "echo 'Deleting from {{.Name}}'"
       

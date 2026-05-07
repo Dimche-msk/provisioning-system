@@ -102,18 +102,25 @@
             if (!tagContent.includes("label:")) continue;
 
             const parts: Record<string, string> = {};
-            tagContent.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).forEach(part => {
-                const [k, ...v] = part.split(":");
-                if (k && v.length > 0) {
-                    parts[k.trim().toLowerCase()] = v.join(":").trim().replace(/^"(.*)"$/, '$1');
+            // Improved parsing: find all key:value pairs
+            // This regex looks for word: followed by either a quoted string or text until the next key: or end of string
+            const pairRegex = /(\w+):\s*("(?:[^"\\]|\\.)*"|.+?)(?=\s*,\s*\w+:|$)/g;
+            let match;
+            while ((match = pairRegex.exec(tagContent)) !== null) {
+                const k = match[1].toLowerCase().trim();
+                let v = match[2].trim();
+                // Remove quotes if present
+                if (v.startsWith('"') && v.endsWith('"')) {
+                    v = v.substring(1, v.length - 1);
                 }
-            });
+                parts[k] = v;
+            }
 
             // Find the key this metadata belongs to (look at current line, then next few lines)
             let key = "";
             for (let j = i; j < Math.min(i + 4, lines.length); j++) {
                 const searchLine = lines[j];
-                const keyMatch = searchLine.match(/^\s*([\w_]+):/);
+                const keyMatch = searchLine.match(/^\s*(?:-\s+)?([\w_]+):/);
                 if (keyMatch) {
                     key = keyMatch[1];
                     break;
@@ -478,8 +485,13 @@
                 <!-- Domains Section -->
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold">Domains Management</h2>
-                        <Button variant="outline" size="sm" on:click={addDomain}>
+                        <div class="space-y-1">
+                            <h2 class="text-2xl font-bold">{metadata.domains?.label || "Domains Management"}</h2>
+                            {#if metadata.domains?.help}
+                                <p class="text-sm text-muted-foreground">{metadata.domains?.help}</p>
+                            {/if}
+                        </div>
+                        <Button variant="outline" size="sm" disabled={metadata.domains?.readonly} on:click={addDomain}>
                             <Plus class="mr-2 h-4 w-4" />
                             {$t("templates.add_domain")}
                         </Button>
@@ -489,19 +501,37 @@
                         <Card.Root>
                             <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <Card.Title class="text-sm font-medium">Domain: {domain.name}</Card.Title>
-                                <Button variant="ghost" size="sm" class="text-destructive" on:click={() => removeDomain(i)}>
+                                <Button variant="ghost" size="sm" class="text-destructive" disabled={metadata.domains?.readonly} on:click={() => removeDomain(i)}>
                                     <Trash2 class="h-4 w-4" />
                                 </Button>
                             </Card.Header>
                             <Card.Content class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="space-y-2">
-                                        <Label>Domain Name</Label>
-                                        <Input bind:value={domain.name} />
+                                        <Label class="flex items-center gap-2">
+                                            {metadata.name?.label || "Domain Name"}
+                                            {#if metadata.name?.readonly}
+                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                            {/if}
+                                        </Label>
+                                        <Input bind:value={domain.name} disabled={metadata.name?.readonly} placeholder={metadata.name?.help} />
+                                        {#if metadata.name?.help}
+                                            <p class="text-xs text-muted-foreground italic">{metadata.name?.help}</p>
+                                        {/if}
                                     </div>
-                                    <div class="flex items-center space-x-2 pt-8">
-                                        <Checkbox id={"rand-pass-" + i} bind:checked={domain.generate_random_password} />
-                                        <Label for={"rand-pass-" + i}>Auto-generate Passwords</Label>
+                                    <div class="flex flex-col justify-end space-y-2 pb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <Checkbox id={"rand-pass-" + i} bind:checked={domain.generate_random_password} disabled={metadata.generate_random_password?.readonly} />
+                                            <Label for={"rand-pass-" + i} class="flex items-center gap-2">
+                                                {metadata.generate_random_password?.label || "Auto-generate Passwords"}
+                                                {#if metadata.generate_random_password?.readonly}
+                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                                {/if}
+                                            </Label>
+                                        </div>
+                                        {#if metadata.generate_random_password?.help}
+                                            <p class="text-xs text-muted-foreground italic">{metadata.generate_random_password?.help}</p>
+                                        {/if}
                                     </div>
                                 </div>
 
@@ -510,60 +540,100 @@
                                     <div class="space-y-2">
                                         <div class="flex justify-between items-center">
                                             <Label class="flex items-center gap-2">
-                                                Deploy Commands
-                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                                {metadata.deploy_commands?.label || "Deploy Commands"}
+                                                {#if metadata.deploy_commands?.readonly}
+                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                                {/if}
                                             </Label>
-                                            <Button variant="ghost" size="sm" disabled on:click={() => addCommand(i, 'deploy_commands')}>
+                                            <Button variant="ghost" size="sm" disabled={metadata.deploy_commands?.readonly} on:click={() => addCommand(i, 'deploy_commands')}>
                                                 <Plus class="h-3 w-3" />
                                             </Button>
                                         </div>
                                         <div class="space-y-2">
                                             {#each domain.deploy_commands || [] as cmd, ci}
-                                                <div class="flex gap-2">
-                                                    <Input value={cmd} readonly class="bg-muted text-xs font-mono" />
+                                                <div class="flex flex-col gap-1 border rounded-md p-2 bg-muted/20 relative group/cmd">
+                                                    <textarea 
+                                                        bind:value={domain.deploy_commands[ci]} 
+                                                        readonly={metadata.deploy_commands?.readonly} 
+                                                        rows="3"
+                                                        class="w-full bg-transparent text-xs font-mono resize-y focus:outline-none {metadata.deploy_commands?.readonly ? 'opacity-70' : ''}"
+                                                        placeholder="Enter command..."
+                                                    ></textarea>
+                                                    {#if !metadata.deploy_commands?.readonly}
+                                                        <Button variant="ghost" size="sm" class="absolute top-1 right-1 opacity-0 group-hover/cmd:opacity-100 h-6 w-6 p-0" on:click={() => removeCommand(i, 'deploy_commands', ci)}>
+                                                            <Trash2 class="h-3 w-3" />
+                                                        </Button>
+                                                    {/if}
                                                 </div>
                                             {/each}
                                             {#if !domain.deploy_commands || domain.deploy_commands.length === 0}
                                                 <p class="text-xs text-muted-foreground italic">No commands defined.</p>
                                             {/if}
                                         </div>
+                                        {#if metadata.deploy_commands?.help}
+                                            <p class="text-xs text-muted-foreground italic">{metadata.deploy_commands?.help}</p>
+                                        {/if}
                                     </div>
 
                                     <div class="space-y-2">
                                         <div class="flex justify-between items-center">
                                             <Label class="flex items-center gap-2">
-                                                Delete Commands
-                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                                {metadata.delete_commands?.label || "Delete Commands"}
+                                                {#if metadata.delete_commands?.readonly}
+                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                                {/if}
                                             </Label>
-                                            <Button variant="ghost" size="sm" disabled on:click={() => addCommand(i, 'delete_commands')}>
+                                            <Button variant="ghost" size="sm" disabled={metadata.delete_commands?.readonly} on:click={() => addCommand(i, 'delete_commands')}>
                                                 <Plus class="h-3 w-3" />
                                             </Button>
                                         </div>
                                         <div class="space-y-2">
                                             {#each domain.delete_commands || [] as cmd, ci}
-                                                <div class="flex gap-2">
-                                                    <Input value={cmd} readonly class="bg-muted text-xs font-mono" />
+                                                <div class="flex flex-col gap-1 border rounded-md p-2 bg-muted/20 relative group/cmd">
+                                                    <textarea 
+                                                        bind:value={domain.delete_commands[ci]} 
+                                                        readonly={metadata.delete_commands?.readonly} 
+                                                        rows="3"
+                                                        class="w-full bg-transparent text-xs font-mono resize-y focus:outline-none {metadata.delete_commands?.readonly ? 'opacity-70' : ''}"
+                                                        placeholder="Enter command..."
+                                                    ></textarea>
+                                                    {#if !metadata.delete_commands?.readonly}
+                                                        <Button variant="ghost" size="sm" class="absolute top-1 right-1 opacity-0 group-hover/cmd:opacity-100 h-6 w-6 p-0" on:click={() => removeCommand(i, 'delete_commands', ci)}>
+                                                            <Trash2 class="h-3 w-3" />
+                                                        </Button>
+                                                    {/if}
                                                 </div>
                                             {/each}
                                             {#if !domain.delete_commands || domain.delete_commands.length === 0}
                                                 <p class="text-xs text-muted-foreground italic">No commands defined.</p>
                                             {/if}
                                         </div>
+                                        {#if metadata.delete_commands?.help}
+                                            <p class="text-xs text-muted-foreground italic">{metadata.delete_commands?.help}</p>
+                                        {/if}
                                     </div>
                                 </div>
 
                                 <!-- Variables -->
                                 <div class="space-y-2 border-t pt-4">
                                     <div class="flex justify-between items-center">
-                                        <Label>Variables</Label>
-                                        <Button variant="outline" size="sm" on:click={() => addVariable(i)}>
+                                        <Label class="flex items-center gap-2">
+                                            {metadata.variables?.label || "Variables"}
+                                            {#if metadata.variables?.readonly}
+                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
+                                            {/if}
+                                        </Label>
+                                        <Button variant="outline" size="sm" disabled={metadata.variables?.readonly} on:click={() => addVariable(i)}>
                                             <Plus class="h-3 w-3 mr-1" /> Add Var
                                         </Button>
                                     </div>
+                                    {#if metadata.variables?.help}
+                                        <p class="text-xs text-muted-foreground italic mb-2">{metadata.variables?.help}</p>
+                                    {/if}
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {#each Object.keys(domain.variables || {}) as key}
                                             <div class="flex flex-col gap-1 p-2 border rounded-md relative group">
-                                                <span class="text-[10px] font-bold opacity-60 uppercase">{key}</span>
+                                                <span class="text-[10px] font-bold text-amber-600 dark:text-amber-500">{key}</span>
                                                 <Input bind:value={domain.variables[key]} class="h-8 text-sm" />
                                                 <button 
                                                     class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-destructive p-1 hover:bg-destructive/10 rounded"
@@ -616,78 +686,111 @@
                             <div class="space-y-3">
                                 {#each selectedVendor.features || [] as feature, fi}
                                     <Card.Root>
-                                        <Card.Header class="p-4 pb-2">
-                                            <div class="flex justify-between items-start">
-                                                <div class="grid grid-cols-2 gap-2 flex-1">
-                                                    <Input bind:value={feature.id} placeholder="ID (e.g. blf)" class="h-8 font-mono text-xs" />
-                                                    <Input bind:value={feature.name} placeholder="Display Name" class="h-8 text-xs" />
+                                        <Card.Header class="p-4 pb-2 border-b bg-muted/10">
+                                            <div class="flex justify-between items-center">
+                                                <div class="space-y-1">
+                                                    <h4 class="text-sm font-bold text-primary">{feature.name || "Unnamed Feature"}</h4>
+                                                    <p class="text-[10px] font-mono opacity-60">ID: {feature.id}</p>
                                                 </div>
-                                                <Button variant="ghost" size="sm" class="text-destructive h-8 w-8 p-0 ml-2" on:click={() => removeFeature('features', fi)}>
+                                                <Button variant="ghost" size="sm" class="text-destructive h-8 w-8 p-0" on:click={() => removeFeature('features', fi)}>
                                                     <Trash2 class="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                            <div class="flex gap-4 mt-2">
+                                        </Card.Header>
+                                        <Card.Content class="p-4 space-y-4">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <div class="space-y-1">
+                                                    <Label class="text-[10px] uppercase opacity-70">Feature ID</Label>
+                                                    <Input bind:value={feature.id} placeholder="e.g. blf" class="h-8 font-mono text-xs" />
+                                                </div>
+                                                <div class="space-y-1">
+                                                    <Label class="text-[10px] uppercase opacity-70">Display Name</Label>
+                                                    <Input bind:value={feature.name} placeholder="Feature Name" class="h-8 text-xs" />
+                                                </div>
+                                            </div>
+
+                                            <div class="flex gap-4">
                                                 <div class="flex items-center space-x-2">
                                                     <Checkbox id={"feat-acc-"+fi} bind:checked={feature.associated_with_account} />
-                                                    <Label for={"feat-acc-"+fi} class="text-[10px] uppercase">Account</Label>
+                                                    <Label for={"feat-acc-"+fi} class="text-[10px] uppercase cursor-pointer">Account Linked</Label>
                                                 </div>
                                                 <div class="flex items-center space-x-2">
                                                     <Checkbox id={"feat-btn-"+fi} bind:checked={feature.associated_with_button} />
-                                                    <Label for={"feat-btn-"+fi} class="text-[10px] uppercase">Button</Label>
+                                                    <Label for={"feat-btn-"+fi} class="text-[10px] uppercase cursor-pointer">Button Linked</Label>
                                                 </div>
                                             </div>
-                                        </Card.Header>
-                                        <Card.Content class="p-4 pt-0 space-y-2">
-                                            <div class="border-t pt-2 mt-2">
-                                                <div class="flex justify-between items-center mb-2">
-                                                    <span class="text-[10px] font-bold uppercase opacity-50">Parameters</span>
-                                                    <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px]" on:click={() => addParam('features', fi)}>
+
+                                            <div class="border-t pt-3 mt-2">
+                                                <div class="flex justify-between items-center mb-3">
+                                                    <span class="text-xs font-bold uppercase text-muted-foreground">Parameters</span>
+                                                    <Button variant="outline" size="sm" class="h-7 px-2 text-[10px]" on:click={() => addParam('features', fi)}>
                                                         <Plus class="w-3 h-3 mr-1" /> Add Param
                                                     </Button>
                                                 </div>
-                                                {#each feature.params || [] as param, pi}
-                                                    <div class="bg-muted/30 p-2 rounded border space-y-2 mb-2 relative group">
-                                                        <div class="grid grid-cols-3 gap-2">
-                                                            <Input bind:value={param.id} placeholder="Param ID" class="h-7 text-[10px] font-mono" />
-                                                            <Input bind:value={param.label} placeholder="Label" class="h-7 text-[10px]" />
-                                                            <select bind:value={param.type} class="h-7 text-[10px] rounded border bg-background">
-                                                                <option value="string">String</option>
-                                                                <option value="number">Number</option>
-                                                                <option value="boolean">Boolean</option>
-                                                                <option value="select">Select</option>
-                                                                <option value="password">Password</option>
-                                                                <option value="hidden">Hidden</option>
-                                                            </select>
-                                                        </div>
-                                                        
-                                                        {#if param.type === 'select'}
-                                                            <div class="grid grid-cols-2 gap-2">
-                                                                <Input bind:value={param.source} placeholder="Source (e.g. accounts)" class="h-7 text-[10px]" />
-                                                                <Input 
-                                                                    value={param.options?.map(o => `${o.value}:${o.label}`).join(', ') || ''} 
-                                                                    on:input={(e) => {
-                                                                        const val = e.currentTarget.value;
-                                                                        param.options = val.split(',').filter(s => s.includes(':')).map(s => {
-                                                                            const [v, l] = s.split(':');
-                                                                            return { value: v.trim(), label: l.trim() };
-                                                                        });
-                                                                        vendors = [...vendors];
-                                                                    }}
-                                                                    placeholder="Static Options (val1:lab1, val2:lab2)" 
-                                                                    class="h-7 text-[10px]" 
-                                                                />
+                                                <div class="space-y-3">
+                                                    {#each feature.params || [] as param, pi}
+                                                        <div class="bg-muted/30 p-3 rounded-md border border-dashed space-y-3 relative group">
+                                                            <div class="grid grid-cols-3 gap-2">
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Param ID</Label>
+                                                                    <Input bind:value={param.id} class="h-7 text-[10px] font-mono" />
+                                                                </div>
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Label</Label>
+                                                                    <Input bind:value={param.label} class="h-7 text-[10px]" />
+                                                                </div>
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Type</Label>
+                                                                    <select bind:value={param.type} class="w-full h-7 text-[10px] rounded border bg-background px-1">
+                                                                        <option value="string">String</option>
+                                                                        <option value="number">Number</option>
+                                                                        <option value="boolean">Boolean</option>
+                                                                        <option value="select">Select</option>
+                                                                        <option value="password">Password</option>
+                                                                        <option value="hidden">Hidden</option>
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        {/if}
+                                                            
+                                                            {#if param.type === 'select'}
+                                                                <div class="grid grid-cols-2 gap-2">
+                                                                    <div class="space-y-1">
+                                                                        <Label class="text-[9px] uppercase opacity-60">Source</Label>
+                                                                        <Input bind:value={param.source} placeholder="e.g. accounts" class="h-7 text-[10px]" />
+                                                                    </div>
+                                                                    <div class="space-y-1">
+                                                                        <Label class="text-[9px] uppercase opacity-60">Static Options</Label>
+                                                                        <Input 
+                                                                            value={param.options?.map(o => `${o.value}:${o.label}`).join(', ') || ''} 
+                                                                            on:input={(e) => {
+                                                                                const val = e.currentTarget.value;
+                                                                                param.options = val.split(',').filter(s => s.includes(':')).map(s => {
+                                                                                    const [v, l] = s.split(':');
+                                                                                    return { value: v.trim(), label: l.trim() };
+                                                                                });
+                                                                                vendors = [...vendors];
+                                                                            }}
+                                                                            placeholder="v1:l1, v2:l2" 
+                                                                            class="h-7 text-[10px]" 
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            {/if}
 
-                                                        <Input bind:value={param.config_template} placeholder="Config Template (e.g. key[[key_index]]: [[value]])" class="h-7 text-[10px] font-mono" />
-                                                        <button 
-                                                            class="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 bg-destructive text-white rounded-full p-1"
-                                                            on:click={() => removeParam('features', fi, pi)}
-                                                        >
-                                                            <X class="w-3 h-3" />
-                                                        </button>
-                                                    </div>
-                                                {/each}
+                                                            <div class="space-y-1">
+                                                                <Label class="text-[9px] uppercase opacity-60">Config Template</Label>
+                                                                <Input bind:value={param.config_template} placeholder="e.g. key[[key_index]]: [[value]]" class="h-7 text-[10px] font-mono" />
+                                                            </div>
+
+                                                            <button 
+                                                                class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 bg-destructive text-white rounded-full p-1 shadow-sm transition-opacity"
+                                                                on:click={() => removeParam('features', fi, pi)}
+                                                            >
+                                                                <X class="w-3 h-3" />
+                                                            </button>
+                                                        </div>
+                                                    {/each}
+                                                </div>
                                             </div>
                                         </Card.Content>
                                     </Card.Root>
@@ -715,68 +818,100 @@
                             <div class="space-y-3">
                                 {#each selectedVendor.accounts || [] as feature, fi}
                                     <Card.Root>
-                                        <Card.Header class="p-4 pb-2">
-                                            <div class="flex justify-between items-start">
-                                                <div class="grid grid-cols-2 gap-2 flex-1">
-                                                    <Input bind:value={feature.id} placeholder="ID" class="h-8 font-mono text-xs" />
-                                                    <Input bind:value={feature.name} placeholder="Display Name" class="h-8 text-xs" />
+                                        <Card.Header class="p-4 pb-2 border-b bg-muted/10">
+                                            <div class="flex justify-between items-center">
+                                                <div class="space-y-1">
+                                                    <h4 class="text-sm font-bold text-primary">{feature.name || "Unnamed Group"}</h4>
+                                                    <p class="text-[10px] font-mono opacity-60">ID: {feature.id}</p>
                                                 </div>
-                                                <Button variant="ghost" size="sm" class="text-destructive h-8 w-8 p-0 ml-2" on:click={() => removeFeature('accounts', fi)}>
+                                                <Button variant="ghost" size="sm" class="text-destructive h-8 w-8 p-0" on:click={() => removeFeature('accounts', fi)}>
                                                     <Trash2 class="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </Card.Header>
-                                        <Card.Content class="p-4 pt-0 space-y-2">
-                                            <div class="border-t pt-2 mt-2">
-                                                <div class="flex justify-between items-center mb-2">
-                                                    <span class="text-[10px] font-bold uppercase opacity-50">Parameters</span>
-                                                    <Button variant="ghost" size="sm" class="h-6 px-2 text-[10px]" on:click={() => addParam('accounts', fi)}>
+                                        <Card.Content class="p-4 space-y-4">
+                                            <div class="grid grid-cols-2 gap-3">
+                                                <div class="space-y-1">
+                                                    <Label class="text-[10px] uppercase opacity-70">Group ID</Label>
+                                                    <Input bind:value={feature.id} placeholder="e.g. basic" class="h-8 font-mono text-xs" />
+                                                </div>
+                                                <div class="space-y-1">
+                                                    <Label class="text-[10px] uppercase opacity-70">Display Name</Label>
+                                                    <Input bind:value={feature.name} placeholder="Group Name" class="h-8 text-xs" />
+                                                </div>
+                                            </div>
+
+                                            <div class="border-t pt-3 mt-2">
+                                                <div class="flex justify-between items-center mb-3">
+                                                    <span class="text-xs font-bold uppercase text-muted-foreground">Parameters</span>
+                                                    <Button variant="outline" size="sm" class="h-7 px-2 text-[10px]" on:click={() => addParam('accounts', fi)}>
                                                         <Plus class="w-3 h-3 mr-1" /> Add Param
                                                     </Button>
                                                 </div>
-                                                {#each feature.params || [] as param, pi}
-                                                    <div class="bg-muted/30 p-2 rounded border space-y-2 mb-2 relative group">
-                                                        <div class="grid grid-cols-3 gap-2">
-                                                            <Input bind:value={param.id} placeholder="Param ID" class="h-7 text-[10px] font-mono" />
-                                                            <Input bind:value={param.label} placeholder="Label" class="h-7 text-[10px]" />
-                                                            <select bind:value={param.type} class="h-7 text-[10px] rounded border bg-background">
-                                                                <option value="string">String</option>
-                                                                <option value="number">Number</option>
-                                                                <option value="boolean">Boolean</option>
-                                                                <option value="select">Select</option>
-                                                                <option value="password">Password</option>
-                                                                <option value="hidden">Hidden</option>
-                                                            </select>
-                                                        </div>
-
-                                                        {#if param.type === 'select'}
-                                                            <div class="grid grid-cols-2 gap-2">
-                                                                <Input bind:value={param.source} placeholder="Source" class="h-7 text-[10px]" />
-                                                                <Input 
-                                                                    value={param.options?.map(o => `${o.value}:${o.label}`).join(', ') || ''} 
-                                                                    on:input={(e) => {
-                                                                        const val = e.currentTarget.value;
-                                                                        param.options = val.split(',').filter(s => s.includes(':')).map(s => {
-                                                                            const [v, l] = s.split(':');
-                                                                            return { value: v.trim(), label: l.trim() };
-                                                                        });
-                                                                        vendors = [...vendors];
-                                                                    }}
-                                                                    placeholder="Static Options (val1:lab1, val2:lab2)" 
-                                                                    class="h-7 text-[10px]" 
-                                                                />
+                                                <div class="space-y-3">
+                                                    {#each feature.params || [] as param, pi}
+                                                        <div class="bg-muted/30 p-3 rounded-md border border-dashed space-y-3 relative group">
+                                                            <div class="grid grid-cols-3 gap-2">
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Param ID</Label>
+                                                                    <Input bind:value={param.id} class="h-7 text-[10px] font-mono" />
+                                                                </div>
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Label</Label>
+                                                                    <Input bind:value={param.label} class="h-7 text-[10px]" />
+                                                                </div>
+                                                                <div class="space-y-1">
+                                                                    <Label class="text-[9px] uppercase opacity-60">Type</Label>
+                                                                    <select bind:value={param.type} class="w-full h-7 text-[10px] rounded border bg-background px-1">
+                                                                        <option value="string">String</option>
+                                                                        <option value="number">Number</option>
+                                                                        <option value="boolean">Boolean</option>
+                                                                        <option value="select">Select</option>
+                                                                        <option value="password">Password</option>
+                                                                        <option value="hidden">Hidden</option>
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        {/if}
+                                                            
+                                                            {#if param.type === 'select'}
+                                                                <div class="grid grid-cols-2 gap-2">
+                                                                    <div class="space-y-1">
+                                                                        <Label class="text-[9px] uppercase opacity-60">Source</Label>
+                                                                        <Input bind:value={param.source} placeholder="Source" class="h-7 text-[10px]" />
+                                                                    </div>
+                                                                    <div class="space-y-1">
+                                                                        <Label class="text-[9px] uppercase opacity-60">Static Options</Label>
+                                                                        <Input 
+                                                                            value={param.options?.map(o => `${o.value}:${o.label}`).join(', ') || ''} 
+                                                                            on:input={(e) => {
+                                                                                const val = e.currentTarget.value;
+                                                                                param.options = val.split(',').filter(s => s.includes(':')).map(s => {
+                                                                                    const [v, l] = s.split(':');
+                                                                                    return { value: v.trim(), label: l.trim() };
+                                                                                });
+                                                                                vendors = [...vendors];
+                                                                            }}
+                                                                            placeholder="v1:l1, v2:l2" 
+                                                                            class="h-7 text-[10px]" 
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            {/if}
 
-                                                        <Input bind:value={param.config_template} placeholder="Config Template" class="h-7 text-[10px] font-mono" />
-                                                        <button 
-                                                            class="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 bg-destructive text-white rounded-full p-1"
-                                                            on:click={() => removeParam('accounts', fi, pi)}
-                                                        >
-                                                            <X class="w-3 h-3" />
-                                                        </button>
-                                                    </div>
-                                                {/each}
+                                                            <div class="space-y-1">
+                                                                <Label class="text-[9px] uppercase opacity-60">Config Template</Label>
+                                                                <Input bind:value={param.config_template} placeholder="Config Template" class="h-7 text-[10px] font-mono" />
+                                                            </div>
+
+                                                            <button 
+                                                                class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 bg-destructive text-white rounded-full p-1 shadow-sm transition-opacity"
+                                                                on:click={() => removeParam('accounts', fi, pi)}
+                                                            >
+                                                                <X class="w-3 h-3" />
+                                                            </button>
+                                                        </div>
+                                                    {/each}
+                                                </div>
                                             </div>
                                         </Card.Content>
                                     </Card.Root>

@@ -1,139 +1,135 @@
-# Mitel Features Definition
-# Context variables available:
-# {{account_number}} - Account index (1-N)
-# {{key_index}} - Button index on the specific panel (1-N)
-# {{key_number}} - Raw key number
-# {{expansion_module_number}} - Expansion module index (0 for phone)
-# {{tag}} - Feature tag from model (e.g. prgkey, softkey, topsoftkey)
-# {{value}} - User input value
-# {{label}} - User input label
-# {{name}} - Feature name
-
-
 - id: speeddial
   name: Speed Dial
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: speeddial
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
     - id: value
       label: Number
       type: string
-      config_template: "{{tag}}{{key_index}} value: {{value}}"
+      config_template: '{{tag}}{{key_index}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}{{key_index}} label: {{value}}"
+      config_template: '{{tag}}{{key_index}} label: {{value}}'
     - id: line
       label: Line
       type: select
+      config_template: '{{tag}}{{key_index}} line: {{value}}'
       source: accounts
-      config_template: "{{tag}}{{key_index}} line: {{value}}"
-
 - id: blf
   name: BLF
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: blf
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
     - id: value
       label: Extension
       type: string
-      config_template: "{{tag}}{{key_index}} value: {{value}}"
+      config_template: '{{tag}}{{key_index}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}{{key_index}} label: {{value}}"
+      config_template: '{{tag}}{{key_index}} label: {{value}}'
     - id: line
       label: Line
       type: select
+      config_template: '{{tag}}{{key_index}} line: {{value}}'
       source: accounts
-      config_template: "{{tag}}{{key_index}} line: {{value}}"
-
 - id: dnd
   name: Do Not Disturb
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: dnd
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}{{key_index}} label: {{value}}"
-
+      config_template: '{{tag}}{{key_index}} label: {{value}}'
 - id: cfwd
   name: Call Forward
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: cfwd
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
     - id: value
       label: Target
       type: string
-      config_template: "{{tag}}{{key_index}} value: {{value}}"
+      config_template: '{{tag}}{{key_index}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}{{key_index}} label: {{value}}"
-
+      config_template: '{{tag}}{{key_index}} label: {{value}}'
 - id: xml
   name: XML Application
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: xml
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
     - id: value
       label: URL
       type: string
-      config_template: "{{tag}}{{key_index}} value: {{value}}"
+      config_template: '{{tag}}{{key_index}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: "{{tag}}{{key_index}} label: {{value}}"
-
+      config_template: '{{tag}}{{key_index}} label: {{value}}'
 - id: empty
   name: Empty
+  associated_with_account: false
   associated_with_button: true
   params:
     - id: type
       label: Type
       type: hidden
       value: empty
-      config_template: "{{tag}}{{key_index}} type: {{value}}"
-
+      config_template: '{{tag}}{{key_index}} type: {{value}}'
 - id: RingTon
   name: Ring Tone
   associated_with_account: true
+  associated_with_button: false
   params:
     - id: type
       label: Type
       type: hidden
-      value: "ring_tone"
+      value: ring_tone
+      config_template: ""
     - id: file
       label: Ring Tone File
       type: string
+      config_template: ""
     - id: volume
       label: Volume
       type: number
+      config_template: ""
     - id: repeat
       label: Repeat
       type: number
-      config_template: |
+      config_template: |-
         # Функция {{name}}: {{file}}, громкость={{volume}}, повтор={{repeat}}
         sip line{{account_number}} ringtone: {{file}}
         # Note: custom ringtone volume/repeat are often set globally or via specific params
+    - id: new_param
+      label: Label
+      type: string
+      config_template: config_template

@@ -54,46 +54,50 @@ echo "--- Обработка абонента $NUMBER (CSP: $CSP) ---"
 [ -n "$FULL_NAME" ] && echo "Данные имени -> Имя1: [$NAME1], Имя2: [$NAME2]"
 
 # 1. Проверка и создание Extension
-EXT_PRINT=$(/opt/eri_sn/bin/extension -p -d "$NUMBER" 2>/dev/null)
-if echo "$EXT_PRINT" | grep -q "^$NUMBER "; then
-    echo "[OK] Extension $NUMBER уже существует."
-    
-    # Сверяем CSP (4-я колонка в выводе extension -p)
-    CURRENT_CSP=$(echo "$EXT_PRINT" | grep "^$NUMBER " | awk '{print $4}')
-    if [ "$CURRENT_CSP" != "$CSP" ]; then
-        echo "[..] Текущий CSP ($CURRENT_CSP) отличается от целевого ($CSP). Обновление..."
-        /opt/eri_sn/bin/extension -e -d "$NUMBER" --csp "$CSP"
-        echo "[OK] CSP обновлен до $CSP."
-    fi
-else
-    echo "[..] Extension $NUMBER не найден. Создание с CSP $CSP..."
-    /opt/eri_sn/bin/extension -i -d "$NUMBER" -l 1 --csp "$CSP" --max-terminals 1 --video yes --third-party-client yes --security-exception no
-    
-    if /opt/eri_sn/bin/extension -p -d "$NUMBER" 2>/dev/null | grep -q "^$NUMBER "; then
-        echo "[OK] Extension $NUMBER успешно создан."
+if [ -n "$NUMBER" ]; then
+    EXT_PRINT=$(/opt/eri_sn/bin/extension -p -d "$NUMBER" 2>/dev/null)
+    if echo "$EXT_PRINT" | grep -q "^$NUMBER "; then
+        echo "[OK] Extension $NUMBER уже существует."
+        
+        # Сверяем CSP (4-я колонка в выводе extension -p)
+        CURRENT_CSP=$(echo "$EXT_PRINT" | grep "^$NUMBER " | awk '{print $4}')
+        if [ -n "$CURRENT_CSP" ] && [ "$CURRENT_CSP" != "$CSP" ]; then
+            echo "[..] Текущий CSP ($CURRENT_CSP) отличается от целевого ($CSP). Обновление..."
+            /opt/eri_sn/bin/extension -e -d "$NUMBER" --csp "$CSP"
+            echo "[OK] CSP обновлен до $CSP."
+        fi
     else
-        echo "[ERROR] Не удалось создать Extension $NUMBER."
-        exit 1
+        echo "[..] Extension $NUMBER не найден. Создание с CSP $CSP..."
+        /opt/eri_sn/bin/extension -i -d "$NUMBER" -l 1 --csp "$CSP" --max-terminals 1 --video yes --third-party-client yes --security-exception no
+        
+        if /opt/eri_sn/bin/extension -p -d "$NUMBER" 2>/dev/null | grep -q "^$NUMBER "; then
+            echo "[OK] Extension $NUMBER успешно создан."
+        else
+            echo "[ERROR] Не удалось создать Extension $NUMBER."
+            exit 1
+        fi
     fi
 fi
 
 # 2. Проверка и создание IP Extension
-IP_PRINT=$(/opt/eri_sn/bin/ip_extension -p -d "$NUMBER" 2>/dev/null)
-if echo "$IP_PRINT" | grep -q "^$NUMBER "; then
-    echo "[OK] IP Extension $NUMBER уже существует."
-else
-    echo "[..] IP Extension $NUMBER не найден. Создание..."
-    /opt/eri_sn/bin/ip_extension -i -d "$NUMBER"
-    if /opt/eri_sn/bin/ip_extension -p -d "$NUMBER" 2>/dev/null | grep -q "^$NUMBER "; then
-        echo "[OK] IP Extension $NUMBER успешно создан."
+if [ -n "$NUMBER" ]; then
+    IP_PRINT=$(/opt/eri_sn/bin/ip_extension -p -d "$NUMBER" 2>/dev/null)
+    if echo "$IP_PRINT" | grep -q "^$NUMBER "; then
+        echo "[OK] IP Extension $NUMBER уже существует."
     else
-        echo "[ERROR] Не удалось создать IP Extension $NUMBER."
+        echo "[..] IP Extension $NUMBER не найден. Создание..."
+        /opt/eri_sn/bin/ip_extension -i -d "$NUMBER"
+        if /opt/eri_sn/bin/ip_extension -p -d "$NUMBER" 2>/dev/null | grep -q "^$NUMBER "; then
+            echo "[OK] IP Extension $NUMBER успешно создан."
+        else
+            echo "[ERROR] Не удалось создать IP Extension $NUMBER."
+        fi
     fi
 fi
 
 # 3. Установка пароля (auth_code)
-if [ -n "$PASSWORD" ]; then
-    AUTH_PRINT=$(auth_code -p -d "$NUMBER" 2>/dev/null)
+if [ -n "$NUMBER" ] && [ -n "$PASSWORD" ]; then
+    AUTH_PRINT=$(/opt/eri_sn/bin/auth_code -p -d "$NUMBER" 2>/dev/null)
     if echo "$AUTH_PRINT" | grep -q " $NUMBER "; then
         # Пароль в auth_code -p находится в 3-й колонке
         CURRENT_AUTH=$(echo "$AUTH_PRINT" | grep " $NUMBER " | awk '{print $3}')
@@ -113,21 +117,33 @@ if [ -n "$PASSWORD" ]; then
 fi
 
 # 4. Проверка и создание/обновление Имени
-if [ -n "$NAME1" ]; then
-    NAME_PRINT=$(name -p --dir "$NUMBER" 2>/dev/null)
-    CURRENT_NAME1=$(echo "$NAME_PRINT" | grep "^$NUMBER " | awk '{print $5}' | tr -d '"')
-    CURRENT_NAME2=$(echo "$NAME_PRINT" | grep "^$NUMBER " | awk '{print $6}' | tr -d '"')
+if [ -n "$NUMBER" ] && [ -n "$NAME1" ]; then
+    NAME_PRINT=$(/opt/eri_sn/bin/name -p --dir "$NUMBER" 2>/dev/null)
+    # Проверяем, что вывод не пустой и содержит номер
+    if echo "$NAME_PRINT" | grep -q "^$NUMBER "; then
+        CURRENT_NAME1=$(echo "$NAME_PRINT" | grep "^$NUMBER " | awk '{print $5}' | tr -d '"')
+        CURRENT_NAME2=$(echo "$NAME_PRINT" | grep "^$NUMBER " | awk '{print $6}' | tr -d '"')
 
-    if [ "$CURRENT_NAME1" == "$NAME1" ] && [ "$CURRENT_NAME2" == "$NAME2" ]; then
-        echo "[OK] Имя для $NUMBER уже корректно."
-    else
-        echo "[..] Обновление имени: '$CURRENT_NAME1 $CURRENT_NAME2' -> '$NAME1 $NAME2'..."
-        if [ -n "$NAME2" ]; then
-            name -i -d "$NUMBER" --name1 "$NAME1" --name2 "$NAME2" --number-type dir
+        if [ "$CURRENT_NAME1" == "$NAME1" ] && [ "$CURRENT_NAME2" == "$NAME2" ]; then
+            echo "[OK] Имя для $NUMBER уже корректно."
         else
-            name -i -d "$NUMBER" --name1 "$NAME1" --number-type dir
+            echo "[..] Обновление имени: '$CURRENT_NAME1 $CURRENT_NAME2' -> '$NAME1 $NAME2'..."
+            /opt/eri_sn/bin/name -e -d "$NUMBER" --number-type dir 2>/dev/null # Пытаемся удалить старое на всякий случай
+            if [ -n "$NAME2" ]; then
+                /opt/eri_sn/bin/name -i -d "$NUMBER" --name1 "$NAME1" --name2 "$NAME2" --number-type dir
+            else
+                /opt/eri_sn/bin/name -i -d "$NUMBER" --name1 "$NAME1" --number-type dir
+            fi
+            echo "[OK] Имя успешно обновлено."
         fi
-        echo "[OK] Имя успешно обновлено."
+    else
+        echo "[..] Установка имени: '$NAME1 $NAME2'..."
+        if [ -n "$NAME2" ]; then
+            /opt/eri_sn/bin/name -i -d "$NUMBER" --name1 "$NAME1" --name2 "$NAME2" --number-type dir
+        else
+            /opt/eri_sn/bin/name -i -d "$NUMBER" --name1 "$NAME1" --number-type dir
+        fi
+        echo "[OK] Имя успешно установлено."
     fi
 fi
 
