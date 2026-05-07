@@ -20,6 +20,7 @@
     import * as XLSX from "xlsx";
     import { toast } from "svelte-sonner";
     import { Switch } from "$lib/components/ui/switch";
+    import * as Dialog from "$lib/components/ui/dialog";
     import type { Phone, PhoneLine, DeviceModel, ModelKey } from "$lib/types";
 
     export let lines: PhoneLine[] = [];
@@ -61,6 +62,19 @@
     // Editing state
     let editForm: PhoneLine | null = null;
     let additionalInfo: Record<string, any> = {}; // Parsed JSON
+    let showEditDialog = false;
+
+    $: if (editForm) {
+        showEditDialog = true;
+    } else {
+        showEditDialog = false;
+    }
+
+    function handleDialogChange(open: boolean) {
+        if (!open) {
+            cancelEdit();
+        }
+    }
 
     // Filtered lines
     $: filteredLines = workingLines.filter((l) => {
@@ -664,478 +678,218 @@
                                 disabled={!!editForm}
                             >
                                 <Plus class="mr-2 h-4 w-4" />
-                                {$t("common.add_key") || "Add Key"}
+                                {phone?.type === 'gateway' 
+                                    ? ($t("add") || "Add Line") 
+                                    : ($t("common.add_key") || "Add Key")}
                             </Button>
-                            <Button
-                                on:click={addFunction}
-                                variant="outline"
-                                disabled={!!editForm}
-                            >
-                                <Plus class="mr-2 h-4 w-4" />
-                                {$t("common.add_function") || "Add Function"}
-                            </Button>
+                            {#if phone?.type !== 'gateway'}
+                                <Button
+                                    on:click={addFunction}
+                                    variant="outline"
+                                    disabled={!!editForm}
+                                >
+                                    <Plus class="mr-2 h-4 w-4" />
+                                    {$t("common.add_function") || "Add Function"}
+                                </Button>
+                            {/if}
                         </div>
                     </div>
 
                     <!-- Editor Form -->
-                    {#if editForm}
-                        <div
-                            class="border-2 rounded-lg p-6 bg-slate-50 dark:bg-slate-800/50 border-primary shadow-2xl ring-4 ring-primary/10 space-y-4"
-                        >
-                            <h3
-                                class="font-semibold text-lg border-b pb-2 mb-4"
-                            >
-                                {originalLine
-                                    ? $t("lines.edit_item") || "Edit Item"
-                                    : $t("lines.new_item") || "New Item"}
-                            </h3>
-                            <div
-                                class="grid {phone?.expansion_modules_count &&
-                                phone.expansion_modules_count > 0
-                                    ? 'grid-cols-4'
-                                    : 'grid-cols-3'} gap-4"
-                            >
-                                <div class="space-y-2">
-                                    <Label>Тип</Label>
-                                    <select
-                                        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        bind:value={editForm.type}
-                                    >
-                                        {#if editForm.panel_number !== null}
-                                            <option value="Line">Линия</option>
-                                            {#each currentVendorFeatures.filter((f) => f.associated_with_button) as f}
-                                                <option value={f.id}
-                                                    >{f.name}</option
+                    <!-- Editor Dialog -->
+                    <Dialog.Root open={showEditDialog} onOpenChange={handleDialogChange}>
+                        <Dialog.Content class="max-w-4xl max-h-[90vh] overflow-y-auto">
+                            {#if editForm}
+                                <Dialog.Header>
+                                    <Dialog.Title>
+                                        {originalLine
+                                            ? $t("lines.edit_item") || "Edit Item"
+                                            : $t("lines.new_item") || "New Item"}
+                                    </Dialog.Title>
+                                </Dialog.Header>
+
+                                <div class="space-y-6 py-4">
+                                    <div class="grid grid-cols-4 gap-4 items-end">
+                                        {#if phone?.type !== 'gateway'}
+                                            <div class="space-y-1.5">
+                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Тип</Label>
+                                                <select
+                                                    class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                    bind:value={editForm.type}
                                                 >
-                                            {/each}
-                                        {:else}
-                                            <!-- General Features -->
-                                            {#each currentVendorFeatures.filter( (f) => {
-                                                    if (f.associated_with_button || f.id === "Line") return false;
-
-                                                    // If it's a "Global" feature (not associated with account), check if it already exists
-                                                    if (!f.associated_with_account) {
-                                                        const alreadyExists = phone?.lines?.some((l) => l.type === f.id && l.panel_number === null);
-                                                        // Allow if it doesn't exist, OR if we are currently editing it
-                                                        return !alreadyExists || (originalLine && originalLine.type === f.id);
-                                                    }
-
-                                                    return true;
-                                                }, ) as f}
-                                                <option value={f.id}
-                                                    >{f.name}</option
-                                                >
-                                            {/each}
-                                        {/if}
-                                        <option value="custom">Другое</option>
-                                    </select>
-                                </div>
-                                {#if editForm.panel_number !== null || currentEditFeature?.associated_with_button}
-                                    <div class="space-y-2">
-                                        <Label>Аккаунт #</Label>
-                                        <Input
-                                            type="number"
-                                            bind:value={editForm.account_number}
-                                        />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label>Кнопка #</Label>
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            bind:value={editForm.key_number}
-                                        />
-                                    </div>
-                                    {#if phone?.expansion_modules_count && phone.expansion_modules_count > 0}
-                                        <div class="space-y-2">
-                                            <Label>Панель #</Label>
-                                            <Input
-                                                type="number"
-                                                min="0"
-                                                max={phone.expansion_modules_count ||
-                                                    0}
-                                                bind:value={
-                                                    editForm.panel_number
-                                                }
-                                            />
-                                        </div>
-                                    {/if}
-                                {:else if currentEditFeature?.associated_with_account}
-                                    <div class="space-y-2 col-span-2">
-                                        <Label>Аккаунт #</Label>
-                                        <Input
-                                            type="number"
-                                            bind:value={editForm.account_number}
-                                        />
-                                    </div>
-                                {/if}
-                            </div>
-
-                            <!-- Dynamic Fields based on Type -->
-                            {#if editForm.type === "Line"}
-                                <div class="grid grid-cols-3 gap-4">
-                                    {#if currentVendorAccounts && currentVendorAccounts.length > 0}
-                                        {#each currentVendorAccounts.find((a) => a.id === "account")?.params || [] as param}
-                                            {#if param.type !== "hidden"}
-                                                <div class="space-y-2">
-                                                    <Label>{param.label}</Label>
-                                                    {#if param.type === "boolean"}
-                                                        <div
-                                                            class="flex h-10 items-center"
-                                                        >
-                                                            <Switch
-                                                                checked={!!additionalInfo[
-                                                                    param.id
-                                                                ]}
-                                                                on:change={(
-                                                                    e,
-                                                                ) => {
-                                                                    const checked =
-                                                                        e.detail;
-                                                                    if (
-                                                                        checked
-                                                                    ) {
-                                                                        if (
-                                                                            !additionalInfo[
-                                                                                param
-                                                                                    .id
-                                                                            ] ||
-                                                                            typeof additionalInfo[
-                                                                                param
-                                                                                    .id
-                                                                            ] !==
-                                                                                "object"
-                                                                        ) {
-                                                                            additionalInfo[
-                                                                                param.id
-                                                                            ] =
-                                                                                {};
-                                                                        }
-                                                                    } else {
-                                                                        additionalInfo[
-                                                                            param.id
-                                                                        ] =
-                                                                            false;
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                        {#if additionalInfo[param.id] && typeof additionalInfo[param.id] === "object" && param.params}
-                                                            <div
-                                                                class="pl-4 border-l-2 border-primary/20 space-y-4 pt-2 col-span-full"
-                                                            >
-                                                                {#each param.params as subParam}
-                                                                    <div
-                                                                        class="space-y-2"
-                                                                    >
-                                                                        <Label
-                                                                            >{subParam.label}</Label
-                                                                        >
-                                                                        <Input
-                                                                            bind:value={
-                                                                                additionalInfo[
-                                                                                    param
-                                                                                        .id
-                                                                                ][
-                                                                                    subParam
-                                                                                        .id
-                                                                                ]
-                                                                            }
-                                                                        />
-                                                                    </div>
-                                                                {/each}
-                                                            </div>
-                                                        {/if}
+                                                    {#if editForm.panel_number !== null}
+                                                        <option value="Line">Линия</option>
+                                                        {#each currentVendorFeatures.filter((f) => f.associated_with_button) as f}
+                                                            <option value={f.id}>{f.name}</option>
+                                                        {/each}
                                                     {:else}
-                                                        <Input
-                                                            type={param.type ===
-                                                            "password"
-                                                                ? "password"
-                                                                : "text"}
-                                                            bind:value={
-                                                                additionalInfo[
-                                                                    param.id
-                                                                ]
-                                                            }
-                                                        />
+                                                        {#each currentVendorFeatures.filter( (f) => {
+                                                                if (f.associated_with_button || f.id === "Line") return false;
+                                                                if (!f.associated_with_account) {
+                                                                    const alreadyExists = phone?.lines?.some((l) => l.type === f.id && l.panel_number === null);
+                                                                    return !alreadyExists || (originalLine && originalLine.type === f.id);
+                                                                }
+                                                                return true;
+                                                            }, ) as f}
+                                                            <option value={f.id}>{f.name}</option>
+                                                        {/each}
                                                     {/if}
+                                                    <option value="custom">Другое</option>
+                                                </select>
+                                            </div>
+                                        {/if}
+
+                                        {#if editForm.panel_number !== null || currentEditFeature?.associated_with_button}
+                                            <div class="space-y-1.5">
+                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Аккаунт #</Label>
+                                                <Input class="h-9" type="number" bind:value={editForm.account_number} />
+                                            </div>
+                                            <div class="space-y-1.5">
+                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Кнопка #</Label>
+                                                <Input class="h-9" type="number" min="1" bind:value={editForm.key_number} />
+                                            </div>
+                                            {#if phone?.expansion_modules_count && phone.expansion_modules_count > 0}
+                                                <div class="space-y-1.5">
+                                                    <Label class="text-xs text-muted-foreground uppercase font-bold">Панель #</Label>
+                                                    <Input class="h-9" type="number" min="0" max={phone.expansion_modules_count || 0} bind:value={editForm.panel_number} />
                                                 </div>
                                             {/if}
-                                        {/each}
-                                    {:else}
-                                        <!-- Fallback for legacy or missing config -->
-                                        <div class="space-y-2">
-                                            <Label>Номер линии</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.line_number
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Отображаемое имя</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.display_name
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Имя пользователя</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.user_name
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Имя авторизации</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.auth_name
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Пароль</Label>
-                                            <Input
-                                                type="password"
-                                                bind:value={
-                                                    additionalInfo.password
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Имя на экране</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.screen_name
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>IP Регистратора 1</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.registrar1_ip
-                                                }
-                                            />
-                                        </div>
-                                        <div class="space-y-2">
-                                            <Label>Порт Регистратора 1</Label>
-                                            <Input
-                                                bind:value={
-                                                    additionalInfo.registrar1_port
-                                                }
-                                            />
-                                        </div>
-                                    {/if}
-                                </div>
-                            {:else}
-                                <!-- Features -->
-                                <div class="col-span-3 space-y-4">
-                                    {#if currentEditFeature}
-                                        <div class="grid grid-cols-3 gap-4">
-                                            {#each currentEditFeature.params || [] as param}
-                                                {#if param.type !== "hidden"}
-                                                    <div class="space-y-2">
-                                                        <Label
-                                                            >{param.label}</Label
-                                                        >
-                                                        {#if param.type === "select"}
-                                                            {#if param.source === "lines"}
-                                                                <select
-                                                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                                    bind:value={
-                                                                        additionalInfo[
-                                                                            param
-                                                                                .id
-                                                                        ]
-                                                                    }
-                                                                >
-                                                                    <option
-                                                                        value=""
-                                                                        >Выберите
-                                                                        линию</option
-                                                                    >
-                                                                    {#each workingLines.filter((l) => l.type === "Line") as line}
-                                                                        <option
-                                                                            value={line.account_number}
-                                                                            >Линия
-                                                                            {line.account_number}</option
-                                                                        >
-                                                                    {/each}
-                                                                </select>
-                                                            {:else if param.options}
-                                                                <select
-                                                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                                                    bind:value={
-                                                                        additionalInfo[
-                                                                            param
-                                                                                .id
-                                                                        ]
-                                                                    }
-                                                                >
-                                                                    <option
-                                                                        value=""
-                                                                        >Выберите...</option
-                                                                    >
-                                                                    {#each param.options as opt}
-                                                                        <option
-                                                                            value={opt.value}
-                                                                            >{opt.label}</option
-                                                                        >
-                                                                    {/each}
-                                                                </select>
-                                                            {/if}
-                                                        {:else if param.type === "boolean"}
-                                                            <div
-                                                                class="flex h-10 items-center"
-                                                            >
-                                                                <Switch
-                                                                    checked={!!additionalInfo[
-                                                                        param.id
-                                                                    ]}
-                                                                    on:change={(
-                                                                        e,
-                                                                    ) => {
-                                                                        const checked =
-                                                                            e.detail;
-                                                                        if (
-                                                                            checked
-                                                                        ) {
-                                                                            if (
-                                                                                param.params &&
-                                                                                param
-                                                                                    .params
-                                                                                    .length >
-                                                                                    0
-                                                                            ) {
-                                                                                if (
-                                                                                    !additionalInfo[
-                                                                                        param
-                                                                                            .id
-                                                                                    ] ||
-                                                                                    typeof additionalInfo[
-                                                                                        param
-                                                                                            .id
-                                                                                    ] !==
-                                                                                        "object"
-                                                                                ) {
-                                                                                    additionalInfo[
-                                                                                        param.id
-                                                                                    ] =
-                                                                                        {};
+                                        {:else if currentEditFeature?.associated_with_account}
+                                            <div class="space-y-1.5 {phone?.type === 'gateway' ? 'col-span-3' : 'col-span-1'}">
+                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Аккаунт #</Label>
+                                                <Input class="h-9" type="number" bind:value={editForm.account_number} />
+                                            </div>
+                                        {/if}
+                                    </div>
+
+                                    <!-- Dynamic Fields -->
+                                    {#if editForm.type === "Line"}
+                                        <div class="grid grid-cols-2 gap-4">
+                                            {#if currentVendorAccounts && currentVendorAccounts.length > 0}
+                                                {#each currentVendorAccounts.find((a) => a.id === "account")?.params || [] as param}
+                                                    {#if param.type !== "hidden"}
+                                                        <div class="space-y-2">
+                                                            <Label>{param.label}</Label>
+                                                            {#if param.type === "boolean"}
+                                                                <div class="flex h-10 items-center">
+                                                                    <Switch checked={!!additionalInfo[param.id]} on:change={(e) => {
+                                                                        const checked = e.detail;
+                                                                        if (checked) {
+                                                                            if (param.params && param.params.length > 0) {
+                                                                                if (!additionalInfo[param.id] || typeof additionalInfo[param.id] !== "object") {
+                                                                                    additionalInfo[param.id] = {};
                                                                                 }
                                                                             } else {
-                                                                                additionalInfo[
-                                                                                    param.id
-                                                                                ] =
-                                                                                    true;
+                                                                                additionalInfo[param.id] = true;
                                                                             }
                                                                         } else {
-                                                                            additionalInfo[
-                                                                                param.id
-                                                                            ] =
-                                                                                false;
+                                                                            additionalInfo[param.id] = false;
                                                                         }
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                            {#if additionalInfo[param.id] && typeof additionalInfo[param.id] === "object" && param.params}
-                                                                <div
-                                                                    class="pl-4 border-l-2 border-primary/20 space-y-4 pt-2 col-span-full"
-                                                                >
-                                                                    {#each param.params as subParam}
-                                                                        <div
-                                                                            class="space-y-2"
-                                                                        >
-                                                                            <Label
-                                                                                >{subParam.label}</Label
-                                                                            >
-                                                                            <Input
-                                                                                bind:value={
-                                                                                    additionalInfo[
-                                                                                        param
-                                                                                            .id
-                                                                                    ][
-                                                                                        subParam
-                                                                                            .id
-                                                                                    ]
-                                                                                }
-                                                                            />
-                                                                        </div>
-                                                                    {/each}
+                                                                    }} />
                                                                 </div>
+                                                                {#if additionalInfo[param.id] && typeof additionalInfo[param.id] === "object" && param.params}
+                                                                    <div class="pl-4 border-l-2 border-primary/20 space-y-4 pt-2 col-span-full">
+                                                                        {#each param.params as subParam}
+                                                                            <div class="space-y-2">
+                                                                                <Label>{subParam.label}</Label>
+                                                                                <Input bind:value={additionalInfo[param.id][subParam.id]} />
+                                                                            </div>
+                                                                        {/each}
+                                                                    </div>
+                                                                {/if}
+                                                            {:else}
+                                                                <Input type={param.type === "password" ? "password" : "text"} bind:value={additionalInfo[param.id]} />
                                                             {/if}
-                                                        {:else}
-                                                            <Input
-                                                                bind:value={
-                                                                    additionalInfo[
-                                                                        param.id
-                                                                    ]
-                                                                }
-                                                            />
-                                                        {/if}
-                                                    </div>
-                                                {/if}
-                                            {/each}
+                                                        </div>
+                                                    {/if}
+                                                {/each}
+                                            {/if}
                                         </div>
-                                    {:else if editForm?.type === "custom"}
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="space-y-2">
-                                                <Label>Метка</Label>
-                                                <Input
-                                                    bind:value={
-                                                        additionalInfo.label
-                                                    }
-                                                />
-                                            </div>
-                                            <div class="space-y-2">
-                                                <Label>Значение</Label>
-                                                <Input
-                                                    bind:value={
-                                                        additionalInfo.value
-                                                    }
-                                                />
-                                            </div>
-                                            <div class="space-y-2">
-                                                <Label>Тип</Label>
-                                                <Input
-                                                    bind:value={
-                                                        additionalInfo.custom_type
-                                                    }
-                                                    placeholder="например: blf"
-                                                />
-                                            </div>
+                                    {:else}
+                                        <!-- Features -->
+                                        <div class="space-y-4">
+                                            {#if currentEditFeature}
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    {#each currentEditFeature.params || [] as param}
+                                                        {#if param.type !== "hidden"}
+                                                            <div class="space-y-2">
+                                                                <Label>{param.label}</Label>
+                                                                {#if param.type === "select"}
+                                                                    <select class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" bind:value={additionalInfo[param.id]}>
+                                                                        <option value="">Выберите...</option>
+                                                                        {#if param.source === "lines"}
+                                                                            {#each workingLines.filter((l) => l.type === "Line") as line}
+                                                                                <option value={line.account_number}>Линия {line.account_number}</option>
+                                                                            {/each}
+                                                                        {:else if param.options}
+                                                                            {#each param.options as opt}
+                                                                                <option value={opt.value}>{opt.label}</option>
+                                                                            {/each}
+                                                                        {/if}
+                                                                    </select>
+                                                                {:else if param.type === "boolean"}
+                                                                    <div class="flex h-10 items-center">
+                                                                        <Switch checked={!!additionalInfo[param.id]} on:change={(e) => {
+                                                                            const checked = e.detail;
+                                                                            if (checked) {
+                                                                                if (param.params && param.params.length > 0) {
+                                                                                    if (!additionalInfo[param.id] || typeof additionalInfo[param.id] !== "object") {
+                                                                                        additionalInfo[param.id] = {};
+                                                                                    }
+                                                                                } else {
+                                                                                    additionalInfo[param.id] = true;
+                                                                                }
+                                                                            } else {
+                                                                                additionalInfo[param.id] = false;
+                                                                            }
+                                                                        }} />
+                                                                    </div>
+                                                                    {#if additionalInfo[param.id] && typeof additionalInfo[param.id] === "object" && param.params}
+                                                                        <div class="pl-4 border-l-2 border-primary/20 space-y-4 pt-2 col-span-full">
+                                                                            {#each param.params as subParam}
+                                                                                <div class="space-y-2">
+                                                                                    <Label>{subParam.label}</Label>
+                                                                                    <Input bind:value={additionalInfo[param.id][subParam.id]} />
+                                                                                </div>
+                                                                            {/each}
+                                                                        </div>
+                                                                    {/if}
+                                                                {:else}
+                                                                    <Input bind:value={additionalInfo[param.id]} />
+                                                                {/if}
+                                                            </div>
+                                                        {/if}
+                                                    {/each}
+                                                </div>
+                                            {:else if editForm?.type === "custom"}
+                                                <div class="grid grid-cols-2 gap-4">
+                                                    <div class="space-y-2"><Label>Метка</Label><Input bind:value={additionalInfo.label} /></div>
+                                                    <div class="space-y-2"><Label>Значение</Label><Input bind:value={additionalInfo.value} /></div>
+                                                    <div class="space-y-2"><Label>Тип</Label><Input bind:value={additionalInfo.custom_type} placeholder="например: blf" /></div>
+                                                </div>
+                                            {/if}
                                         </div>
                                     {/if}
+
+                                    <div class="space-y-2">
+                                        <Label>Описание</Label>
+                                        <Input bind:value={additionalInfo.description} />
+                                    </div>
                                 </div>
+
+                                <Dialog.Footer>
+                                    <Button variant="outline" on:click={cancelEdit}>
+                                        <X class="mr-2 h-4 w-4" />
+                                        {$t("common.cancel") || "Cancel"}
+                                    </Button>
+                                    <Button on:click={save}>
+                                        <Check class="mr-2 h-4 w-4" />
+                                        OK
+                                    </Button>
+                                </Dialog.Footer>
                             {/if}
-
-                            <div class="space-y-2">
-                                <Label>Описание</Label>
-                                <Input
-                                    bind:value={additionalInfo.description}
-                                />
-                            </div>
-
-                            <div class="flex justify-end gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    on:click={cancelEdit}
-                                >
-                                    <X class="mr-2 h-4 w-4" />
-                                    {$t("common.cancel") || "Cancel"}
-                                </Button>
-                                <Button size="sm" on:click={save}>
-                                    <Check class="mr-2 h-4 w-4" />
-                                    OK
-                                </Button>
-                            </div>
-                        </div>
-                    {/if}
+                        </Dialog.Content>
+                    </Dialog.Root>
 
                     <!-- Table -->
                     <div class="border rounded-md overflow-hidden">
