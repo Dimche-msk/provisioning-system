@@ -4,6 +4,7 @@
     - id: user_name
       label: Extension
       type: string
+      is_phone_number: true
       config_template: "user_name idx=\"{{key_index}}\" = {{value}}"
     - id: auth_name
       label: Auth Name

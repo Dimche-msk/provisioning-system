@@ -16,6 +16,7 @@
     - id: user_name
       label: Extension
       type: string
+      is_phone_number: true
       config_template: "account.{{account_number}}.user_name = {{value}}"
     - id: password
       label: Password

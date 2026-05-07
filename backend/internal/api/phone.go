@@ -153,6 +153,36 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 	// Generate Random Password if enabled
 	cfg := h.ProvManager.Config
 	domainCfg := cfg.GetEffectiveDomainConfig(phone.Domain)
+
+	// --- NEW: Phone Number Uniqueness Check ---
+	pnField := h.getPhoneNumberField(phone.Vendor)
+	if pnField == "" {
+		http.Error(w, fmt.Sprintf("Vendor %s does not have a field marked as phone number (is_phone_number: true) in accounts.yaml", phone.Vendor), http.StatusBadRequest)
+		return
+	}
+
+	// Collect all numbers from new lines
+	for _, l := range phone.Lines {
+		if l.Type == "Line" {
+			var info map[string]interface{}
+			json.Unmarshal([]byte(l.AdditionalInfo), &info)
+			if num, ok := info[pnField].(string); ok && num != "" {
+				if err := h.checkPhoneNumberUniqueness(phone.Domain, num, 0); err != nil {
+					http.Error(w, err.Error(), http.StatusConflict)
+					return
+				}
+			}
+		}
+	}
+	// Also check the primary phone_number field if it's set and differs from lines (unlikely but possible)
+	if !isGateway && phone.PhoneNumber != nil && *phone.PhoneNumber != "" {
+		if err := h.checkPhoneNumberUniqueness(phone.Domain, *phone.PhoneNumber, 0); err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+	}
+	// ------------------------------------------
+
 	if domainCfg.GenerateRandomPassword {
 		for i := range phone.Lines {
 			if phone.Lines[i].Type == "Line" {
@@ -416,6 +446,35 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// --- NEW: Phone Number Uniqueness Check ---
+	pnField := h.getPhoneNumberField(reqPhone.Vendor)
+	if pnField == "" {
+		http.Error(w, fmt.Sprintf("Vendor %s does not have a field marked as phone number (is_phone_number: true) in accounts.yaml", reqPhone.Vendor), http.StatusBadRequest)
+		return
+	}
+
+	// Collect all numbers from new lines
+	for _, l := range reqPhone.Lines {
+		if l.Type == "Line" {
+			var info map[string]interface{}
+			json.Unmarshal([]byte(l.AdditionalInfo), &info)
+			if num, ok := info[pnField].(string); ok && num != "" {
+				if err := h.checkPhoneNumberUniqueness(reqPhone.Domain, num, existingPhone.ID); err != nil {
+					http.Error(w, err.Error(), http.StatusConflict)
+					return
+				}
+			}
+		}
+	}
+	// Also check the primary phone_number field
+	if !isGateway && reqPhone.PhoneNumber != nil && *reqPhone.PhoneNumber != "" {
+		if err := h.checkPhoneNumberUniqueness(reqPhone.Domain, *reqPhone.PhoneNumber, existingPhone.ID); err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+	}
+	// ------------------------------------------
 
 	// Update fields in memory to test config generation
 	tempPhone := existingPhone
@@ -711,4 +770,88 @@ func generateRandomPassword(length int) string {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+func (h *PhoneHandler) getPhoneNumberField(vendorID string) string {
+	var vendor *provisioner.VendorConfig
+	for i := range h.ProvManager.Vendors {
+		if h.ProvManager.Vendors[i].ID == vendorID {
+			vendor = &h.ProvManager.Vendors[i]
+			break
+		}
+	}
+	if vendor == nil {
+		return ""
+	}
+	for _, account := range vendor.Accounts {
+		for _, param := range account.Params {
+			if param.IsPhoneNumber {
+				return param.ID
+			}
+		}
+	}
+	return ""
+}
+
+func (h *PhoneHandler) checkPhoneNumberUniqueness(domain string, number string, excludePhoneID uint) error {
+	if number == "" {
+		return nil
+	}
+
+	// 1. Check phones table (primary numbers)
+	var count int64
+	query := h.DB.Model(&models.Phone{}).Where("domain = ? AND phone_number = ?", domain, number)
+	if excludePhoneID > 0 {
+		query = query.Where("id != ?", excludePhoneID)
+	}
+	query.Count(&count)
+	if count > 0 {
+		// Find which device uses it
+		var p models.Phone
+		h.DB.Where("domain = ? AND phone_number = ?", domain, number).First(&p)
+		mac := ""
+		if p.MacAddress != nil {
+			mac = *p.MacAddress
+		}
+		return fmt.Errorf("phone number %s is already used as primary number by device %s (%s)", number, p.Description, mac)
+	}
+
+	// 2. Check phone_lines table (additional lines)
+	var lines []models.PhoneLine
+	// Search in JSON. Using LIKE is simple and cross-db compatible.
+	searchPattern := "%\"" + number + "\"%"
+	h.DB.Joins("JOIN phones ON phones.id = phone_lines.phone_id").
+		Where("phones.domain = ? AND phone_lines.additional_info LIKE ?", domain, searchPattern).
+		Find(&lines)
+
+	for _, l := range lines {
+		if excludePhoneID > 0 && l.PhoneID == excludePhoneID {
+			continue
+		}
+
+		// Verify precisely in JSON
+		var info map[string]interface{}
+		if err := json.Unmarshal([]byte(l.AdditionalInfo), &info); err != nil {
+			continue
+		}
+
+		// Get vendor of the phone this line belongs to
+		var p models.Phone
+		if err := h.DB.First(&p, l.PhoneID).Error; err != nil {
+			continue
+		}
+
+		pnField := h.getPhoneNumberField(p.Vendor)
+		if pnField != "" {
+			if val, ok := info[pnField].(string); ok && val == number {
+				mac := ""
+				if p.MacAddress != nil {
+					mac = *p.MacAddress
+				}
+				return fmt.Errorf("phone number %s is already used in lines of device %s (%s)", number, p.Description, mac)
+			}
+		}
+	}
+
+	return nil
 }

@@ -1,8 +1,8 @@
 - id: account
   name: SIP Account
   params:
-    - id: user_name
+    - id: auth_name
       label: Extension
       type: string
       is_phone_number: true
-      config_template: "sip.line.{{key_index}}.user = {{value}}"
+      config_template: ""

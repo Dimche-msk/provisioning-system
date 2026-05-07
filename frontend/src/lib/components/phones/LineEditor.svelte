@@ -64,25 +64,39 @@
 
     // Filtered lines
     $: filteredLines = workingLines.filter((l) => {
-        const q = searchQuery.toLowerCase();
+        const q = searchQuery.toLowerCase().trim();
+        if (!q) return true;
+
         let info: Record<string, any> = {};
         try {
-            info = JSON.parse(l.additional_info || "{}");
+            info = typeof l.additional_info === "string" 
+                ? JSON.parse(l.additional_info) 
+                : (l.additional_info || {});
         } catch (e) {}
 
-        const searchStr = [
-            l.account_number,
-            l.panel_number,
-            l.key_number,
-            l.type,
-            info.display_name,
-            info.user_name,
-            info.label,
-        ]
-            .join(" ")
-            .toLowerCase();
+        // 1. Check direct fields
+        if (String(l.account_number).includes(q)) return true;
+        if (l.panel_number !== null && String(l.panel_number).includes(q)) return true;
+        if (l.key_number !== null && String(l.key_number).includes(q)) return true;
+        if (l.type.toLowerCase().includes(q)) return true;
 
-        return searchStr.includes(q);
+        // 2. Check all additional info values
+        for (const val of Object.values(info)) {
+            if (String(val).toLowerCase().includes(q)) return true;
+        }
+
+        // 3. Check feature/type names
+        const feature = currentVendorFeatures.find(f => f.id === l.type);
+        if (feature?.name?.toLowerCase().includes(q)) return true;
+        
+        const keyType = model?.key_types?.find(kt => kt.id === l.type);
+        if (keyType?.verbose?.toLowerCase().includes(q)) return true;
+
+        // 4. Special case: search for "panel X key Y" without spaces if user types it
+        const pk = `${l.panel_number}${l.key_number}`;
+        if (l.panel_number !== null && pk.includes(q)) return true;
+
+        return false;
     });
 
     $: totalPages = Math.ceil(filteredLines.length / itemsPerPage);

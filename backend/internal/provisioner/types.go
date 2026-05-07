@@ -39,6 +39,7 @@ type FeatureParam struct {
 	Options        []ParamOption          `yaml:"options,omitempty" json:"options,omitempty"` // Static options
 	Params         []FeatureParam         `yaml:"params,omitempty" json:"params,omitempty"`   // Nested params
 	Extra          map[string]interface{} `yaml:",inline" json:"extra"`                       // Capture any other fields
+	IsPhoneNumber  bool                   `yaml:"is_phone_number" json:"is_phone_number"`     // Whether this field contains the phone number
 }
 
 type DeviceModel struct {
