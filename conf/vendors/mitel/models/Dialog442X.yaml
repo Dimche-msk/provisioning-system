@@ -1,0 +1,6 @@
+id: mitel-Dialog442X
+name: Legacy IP (Dialog 442X)
+vendor: mitel
+type: gateway
+max_account_lines: 10000
+keys: []

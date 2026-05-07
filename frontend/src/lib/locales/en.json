@@ -95,6 +95,7 @@
     "common.message": "Message",
     "common.size": "Size",
     "common.filters": "Filters",
+    "common.value": "Value",
     "lines.configure": "Configure Lines",
     "lines.title": "Line and Button Configuration",
     "lines.description": "Programmed lines:",
@@ -155,5 +156,11 @@
     "phone.line1_auto_updated": "Line 1 automatically updated with new number",
     "phone.line1_manual_edit_preserved": "Line 1 parameters preserved as they were manually edited",
     "phone.line1_auto_created": "Line 1 automatically created",
-    "phone.confirm_delete": "Are you sure you want to delete this phone?"
+    "phone.confirm_delete": "Are you sure you want to delete this phone?",
+    "lines.import_excel": "Import from Excel",
+    "lines.export_excel": "Export to Excel",
+    "lines.conflicts_found": "Conflicts Found",
+    "lines.conflicts_desc": "Found {count} conflicts (keys already occupied). Select action for conflicting entries:",
+    "common.overwrite": "Overwrite",
+    "common.skip": "Skip"
 }

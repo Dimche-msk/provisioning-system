@@ -277,6 +277,49 @@ Example `accounts.yaml`:
       type: string
 ```
 
+### Model Configuration
+
+Model files describe the physical characteristics of specific devices (number of buttons, lines, expansion module support). They are located in the `models/` folder within the vendor directory.
+
+#### Main Model Parameters:
+*   **`id`**: Unique model identifier (e.g., `yealink-T46U`).
+*   **`name`**: Display name of the model.
+*   **`type`**: Device type:
+    *   `phone`: Standard IP phone.
+    *   `gateway`: Multi-port gateway (FXS/FXO) or PBX.
+    *   `expansion-module`: Expansion module (sidecar).
+*   **`max_account_lines`**: Maximum number of SIP accounts or lines.
+    *   *For gateways*, this parameter defines the **number of physical ports**. The system will allow you to configure exactly as many accounts as specified here.
+*   **`maximum_expansion_modules`**: Maximum number of expansion modules that can be connected.
+*   **`supported_expansion_modules`**: List of model IDs for expansion modules compatible with this phone.
+*   **`own_hard_keys`**: Number of programmable buttons on the device itself.
+
+#### Key Description (`keys`):
+The `keys` section describes the physical buttons of the device for UI rendering and mapping to configuration parameters.
+*   **`index`**: Button number.
+*   **`type`**: Default button type (`line`, `memory`, etc.).
+*   **`label`**: Display label in the interface.
+*   **`settings`**: Mapping of abstract fields (value, label, type) to vendor-specific tags.
+    ```yaml
+    settings:
+      label: "linekey.1.label"
+      value: "linekey.1.value"
+      type: "linekey.1.type"
+    ```
+    This allows using universal templates in `features.yaml` that will substitute the correct tags for different models of the same vendor.
+
+### Configuring Gateways and Multi-port Devices
+When configuring gateways (e.g., Yeastar TA3200), use `type: gateway` and set `max_account_lines` equal to the number of ports. In the main template (`phone.tpl`), such devices are typically configured using a loop over all lines:
+```xml
+{% for line in account.lines %}
+  <!-- Port {{ line.number }} configuration -->
+  <Port{{ line.number }}>
+     <AuthName>{{ line.auth_name }}</AuthName>
+     <Password>{{ line.password }}</Password>
+  </Port{{ line.number }}>
+{% endfor %}
+```
+
 ### Advanced Feature Configuration (features.yaml)
 
 The `features_file` allows you to define complex programmable keys (BLF, Speed Dial, etc.) with custom UI fields and configuration templates. Templates are processed using **Pongo2** (Jinja2-like syntax), allowing for conditions, filters, and dynamic tag mapping.

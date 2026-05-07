@@ -81,6 +81,7 @@
     "common.message": "Сообщение",
     "common.size": "Размер",
     "common.filters": "Фильтры",
+    "common.value": "Значение",
     "menu.phones": "Телефоны",
     "menu.debug": "Отладка",
     "menu.migration": "Миграция",
@@ -158,5 +159,11 @@
     "system.license_uploaded": "Лицензия успешно загружена",
     "system.upload_error": "Ошибка загрузки",
     "common.creating": "Создание...",
-    "debug.no_log_received_yet": "Пока не было обращений к серверу"
+    "debug.no_log_received_yet": "Пока не было обращений к серверу",
+    "lines.import_excel": "Импорт из Excel",
+    "lines.export_excel": "Экспорт в Excel",
+    "lines.conflicts_found": "Обнаружены конфликты",
+    "lines.conflicts_desc": "Обнаружено {count} конфликтов (кнопки уже заняты). Выберите действие для конфликтующих записей:",
+    "common.overwrite": "Перезаписать",
+    "common.skip": "Пропустить"
 }

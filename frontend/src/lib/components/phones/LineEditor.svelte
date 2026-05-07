@@ -14,7 +14,10 @@
         X,
         Check,
         Target,
+        FileUp,
+        FileDown,
     } from "lucide-svelte";
+    import * as XLSX from "xlsx";
     import { toast } from "svelte-sonner";
     import { Switch } from "$lib/components/ui/switch";
     import type { Phone, PhoneLine, DeviceModel, ModelKey } from "$lib/types";
@@ -252,18 +255,18 @@
             if (originalLine && line === originalLine) continue;
 
             if (
-                editForm.panel_number !== null &&
-                line.type === editForm.type &&
-                line.panel_number === editForm.panel_number &&
-                line.key_number === editForm.key_number
+                editForm?.panel_number !== null &&
+                line.type === editForm?.type &&
+                line.panel_number === editForm?.panel_number &&
+                line.key_number === editForm?.key_number
             ) {
                 const typeName =
-                    model?.key_types?.find((kt) => kt.id === editForm.type)
-                        ?.verbose || editForm.type;
+                    model?.key_types?.find((kt) => kt.id === editForm?.type)
+                        ?.verbose || editForm?.type;
                 const panelText =
-                    editForm.panel_number === 0
+                    editForm?.panel_number === 0
                         ? "Основная"
-                        : `Панель ${editForm.panel_number}`;
+                        : `Панель ${editForm?.panel_number}`;
                 toast.error(
                     `Дубликат: ${typeName}, ${panelText}, Кнопка ${editForm.key_number} уже назначена.`,
                 );
@@ -306,6 +309,125 @@
         close();
     }
 
+    function exportToExcel() {
+        const data = workingLines.map((l) => {
+            let info: any = {};
+            try {
+                info = typeof l.additional_info === "string" 
+                    ? JSON.parse(l.additional_info) 
+                    : (l.additional_info || {});
+            } catch (e) {}
+
+            return {
+                Type: l.type,
+                Account: l.account_number,
+                Panel: l.panel_number,
+                Key: l.key_number,
+                ...info,
+            };
+        });
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Lines");
+        const filename = `lines_${phone.phone_number || phone.mac_address || "export"}.xlsx`;
+        XLSX.writeFile(wb, filename);
+        toast.success($t("lines.export_excel") + " OK");
+    }
+
+    let importConflicts: { existing: PhoneLine; new: PhoneLine }[] = [];
+    let pendingImport: PhoneLine[] = [];
+    let showConflictDialog = false;
+
+    async function importFromExcel(e: Event) {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const bstr = evt.target?.result;
+                const wb = XLSX.read(bstr, { type: "binary" });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json(ws);
+
+                const newLines: PhoneLine[] = data.map((row: any) => {
+                    const line: PhoneLine = {
+                        type: row.Type || "Line",
+                        account_number: parseInt(row.Account) || 1,
+                        panel_number: row.Panel === undefined || row.Panel === null || row.Panel === "" ? null : parseInt(row.Panel),
+                        key_number: row.Key === undefined || row.Key === null || row.Key === "" ? null : parseInt(row.Key),
+                        additional_info: "{}",
+                    } as PhoneLine;
+
+                    const info: any = {};
+                    const reserved = ["Type", "Account", "Panel", "Key"];
+                    for (const [k, v] of Object.entries(row)) {
+                        if (!reserved.includes(k)) {
+                            info[k] = v;
+                        }
+                    }
+                    line.additional_info = JSON.stringify(info);
+                    return line;
+                });
+
+                // Find conflicts
+                const conflicts: { existing: PhoneLine; new: PhoneLine }[] = [];
+                const nonConflicting: PhoneLine[] = [];
+
+                for (const nl of newLines) {
+                    const existing = workingLines.find(
+                        (el) =>
+                            el.panel_number === nl.panel_number &&
+                            el.key_number === nl.key_number &&
+                            el.panel_number !== null, // Only buttons can conflict
+                    );
+
+                    if (existing) {
+                        conflicts.push({ existing, new: nl });
+                    } else {
+                        nonConflicting.push(nl);
+                    }
+                }
+
+                if (conflicts.length > 0) {
+                    importConflicts = conflicts;
+                    pendingImport = nonConflicting;
+                    showConflictDialog = true;
+                } else {
+                    workingLines = [...workingLines, ...newLines];
+                    toast.success(`${$t("phones.import")} OK: ${newLines.length}`);
+                }
+            } catch (err: any) {
+                toast.error("Failed to parse Excel: " + err.message);
+            }
+            target.value = ""; // Reset input
+        };
+        reader.readAsBinaryString(file);
+    }
+
+    function resolveConflicts(resolution: "overwrite" | "skip") {
+        if (resolution === "overwrite") {
+            const updatedLines = [...workingLines];
+            for (const conflict of importConflicts) {
+                const idx = updatedLines.indexOf(conflict.existing);
+                if (idx !== -1) {
+                    updatedLines[idx] = conflict.new;
+                }
+            }
+            workingLines = [...updatedLines, ...pendingImport];
+            toast.success(`${$t("phones.import")} OK: ${importConflicts.length + pendingImport.length} (${$t("common.overwrite")})`);
+        } else {
+            workingLines = [...workingLines, ...pendingImport];
+            toast.success(`${$t("phones.import")} OK: ${pendingImport.length} (${$t("common.skip")})`);
+        }
+        showConflictDialog = false;
+        importConflicts = [];
+        pendingImport = [];
+    }
+
     function getLineDescription(line: PhoneLine) {
         let info: Record<string, any> = {};
         try {
@@ -320,6 +442,42 @@
             );
             return info.label || info.value || feature?.name || line.type;
         }
+    }
+
+    function getLineValue(line: PhoneLine) {
+        let info: Record<string, any> = {};
+        try {
+            info = typeof line.additional_info === "string" 
+                ? JSON.parse(line.additional_info) 
+                : (line.additional_info || {});
+        } catch (e) {}
+
+        const values: string[] = [];
+        // Common numeric fields to look for first
+        const priorityFields = ['user_name', 'auth_name', 'value', 'number', 'line_number', 'extension', 'directory_number'];
+        
+        for (const field of priorityFields) {
+            if (info[field] && /\d/.test(String(info[field]))) {
+                values.push(String(info[field]));
+            }
+        }
+
+        // If nothing found in priority fields, look at all fields
+        if (values.length === 0) {
+            for (const [key, val] of Object.entries(info)) {
+                if (priorityFields.includes(key)) continue;
+                if ((typeof val === 'string' || typeof val === 'number') && /\d/.test(String(val))) {
+                    const sVal = String(val);
+                    // Skip very long strings (likely not numbers/IDs) and potential passwords
+                    if (sVal.length < 24 && !key.toLowerCase().includes('pass')) {
+                        values.push(sVal);
+                    }
+                }
+            }
+        }
+
+        // Deduplicate and join
+        return [...new Set(values)].join(", ");
     }
 
     let vendors: any[] = [];
@@ -460,6 +618,32 @@
                             {/if}
                         </div>
                         <div class="flex gap-2">
+                            <Button
+                                on:click={exportToExcel}
+                                variant="outline"
+                                title={$t("lines.export_excel")}
+                            >
+                                <FileDown class="h-4 w-4" />
+                            </Button>
+                            <div class="relative">
+                                <Input
+                                    type="file"
+                                    accept=".xlsx, .xls"
+                                    class="hidden"
+                                    id="excel-import"
+                                    on:change={importFromExcel}
+                                />
+                                <Button
+                                    variant="outline"
+                                    on:click={() =>
+                                        document
+                                            .getElementById("excel-import")
+                                            ?.click()}
+                                    title={$t("lines.import_excel")}
+                                >
+                                    <FileUp class="h-4 w-4" />
+                                </Button>
+                            </div>
                             <Button
                                 on:click={add}
                                 variant="outline"
@@ -951,9 +1135,10 @@
                                         >Панель / Кнопка</Table.Head
                                     >
                                     <Table.Head class="w-[100px]"
-                                        >Тип</Table.Head
+                                        >{$t("lines.type") || "Тип"}</Table.Head
                                     >
-                                    <Table.Head>Описание</Table.Head>
+                                    <Table.Head>{$t("common.value") || "Значение"}</Table.Head>
+                                    <Table.Head>{$t("common.description") || "Описание"}</Table.Head>
                                     <Table.Head class="text-right"
                                         >Действия</Table.Head
                                     >
@@ -995,6 +1180,9 @@
                                                     line.type.replace("_", " ")}
                                             </span>
                                         </Table.Cell>
+                                        <Table.Cell
+                                            >{getLineValue(line)}</Table.Cell
+                                        >
                                         <Table.Cell
                                             >{getLineDescription(
                                                 line,
@@ -1105,6 +1293,34 @@
                     {$t("common.cancel") || "Cancel"}
                 </Button>
                 <Button on:click={saveAll} disabled={!!editForm}>OK</Button>
+            </div>
+        </div>
+    </div>
+{/if}
+
+{#if showConflictDialog}
+    <div
+        class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60"
+    >
+        <div class="bg-background dark:bg-slate-900 p-6 rounded-lg shadow-2xl border dark:border-slate-700 max-w-lg w-full">
+            <h3 class="text-lg font-semibold mb-2">{$t("lines.conflicts_found")}</h3>
+            <p class="text-sm text-muted-foreground mb-4">
+                {$t("lines.conflicts_desc", { values: { count: importConflicts.length } })}
+            </p>
+
+            <div class="max-h-48 overflow-y-auto mb-6 border rounded p-2 text-xs space-y-1">
+                {#each importConflicts as conflict}
+                    <div class="flex justify-between border-b pb-1">
+                        <span>{$t("phone.exp_count")} {conflict.existing.panel_number}, {$t("common.add_key")} {conflict.existing.key_number}</span>
+                        <span class="text-muted-foreground">→ {conflict.new.type}</span>
+                    </div>
+                {/each}
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <Button variant="outline" on:click={() => (showConflictDialog = false)}>{$t("common.cancel")}</Button>
+                <Button variant="secondary" on:click={() => resolveConflicts("skip")}>{$t("common.skip")}</Button>
+                <Button variant="destructive" on:click={() => resolveConflicts("overwrite")}>{$t("common.overwrite")}</Button>
             </div>
         </div>
     </div>

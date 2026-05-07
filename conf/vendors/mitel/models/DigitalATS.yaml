@@ -1,0 +1,6 @@
+id: mitel-DigitalATS
+name: Digital Phone (ATS/PBX)
+vendor: mitel
+type: gateway
+max_account_lines: 10000
+keys: []

@@ -1,3 +1,4 @@
+{% if phone.type != "gateway" %}
 # Mitel Phone-Specific Configuration ({{ account.mac_address|lower }}.cfg)
 # Phone: {{ phone.type }} (Model: {{ phone.model }})
 # User: {{ account.phone_number }}
@@ -30,3 +31,7 @@ sip line{{line.number}} registrar port: {{ line.registrar_port|default:domain.si
 {{ key }}: {{ val }}
 {%- endfor %}
 {%- endif %}
+{% else %}
+# This device ({{ account.mac_address }}) is a {{ phone.type }} and does not require an individual configuration file.
+# It is used for system number tracking and directory generation only.
+{% endif %}
