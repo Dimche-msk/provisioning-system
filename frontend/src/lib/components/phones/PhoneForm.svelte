@@ -162,6 +162,12 @@
     }
 
     async function save() {
+        if (mode === "edit" && originalPhoneNumber && phone.phone_number !== originalPhoneNumber && phone.type !== "gateway") {
+            const msg = `Вы изменяете номер абонента с ${originalPhoneNumber} на ${phone.phone_number}. Номер ${originalPhoneNumber} будет удален из АТС.`;
+            if (!confirm(msg)) {
+                return;
+            }
+        }
         // Validation for expansion modules count
         if (phone.expansion_module_model && selectedModel) {
             const count = parseInt(String(phone.expansion_modules_count), 10);
@@ -300,7 +306,6 @@
                     toast.warning($t("phone.line1_manual_edit_preserved") || "Line 1 was not updated because it contains manual edits");
                 }
             }
-            originalPhoneNumber = phone.phone_number;
         }
     }
 </script>

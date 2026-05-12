@@ -41,7 +41,17 @@ func (m *Manager) getVendorByID(id string) (VendorConfig, bool) {
 	return VendorConfig{}, false
 }
 
-// getModelByID ищет модель по ID
+// GetModel searches for a model by ID
+func (m *Manager) GetModel(vendor string, id string) (*DeviceModel, error) {
+	for _, model := range m.Models {
+		if model.ID == id && (vendor == "" || model.Vendor == vendor) {
+			return &model, nil
+		}
+	}
+	return nil, fmt.Errorf("model not found")
+}
+
+// getModelByID searches for a model by ID
 func (m *Manager) getModelByID(id string) (DeviceModel, bool) {
 	for _, model := range m.Models {
 		if model.ID == id {
@@ -456,6 +466,13 @@ func (m *Manager) GeneratePhoneConfigs(outputDir string, phones []models.Phone) 
 		if phone.MacAddress != nil {
 			mac = strings.ReplaceAll(*phone.MacAddress, ":", "")
 		}
+
+		devModel, modelErr := m.GetModel(phone.Vendor, phone.ModelID)
+		if modelErr == nil && devModel.FakeDeploy {
+			logger.Info("Skip generating config for phone %s: model %s is marked as fake_deploy", mac, phone.ModelID)
+			continue
+		}
+
 		// Log generation start
 		logger.Info("Generating config for phone %s (Vendor: %s, Model: %s, Domain: %s)", mac, phone.Vendor, phone.ModelID, phone.Domain)
 

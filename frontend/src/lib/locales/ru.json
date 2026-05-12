@@ -88,6 +88,8 @@
     "menu.templates": "Управление шаблонами",
     "templates.title": "Управление шаблонами",
     "templates.general_settings": "Основные настройки",
+    "templates.system_config": "Конфигурация системы",
+    "templates.yaml_disclaimer": "Конфигурация в формате YAML. Соблюдайте синтаксис. Некоторые изменения можно применить только с перезапуском сервиса.",
     "templates.function_settings": "Настройка функций",
     "templates.save_success": "Конфигурация успешно сохранена",
     "templates.save_error": "Ошибка при сохранении конфигурации",

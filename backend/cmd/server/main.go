@@ -29,6 +29,42 @@ import (
 //go:embed static/*
 var staticFS embed.FS
 
+// findFileCaseInsensitive searches for a file in baseDir ignoring case.
+// Returns the actual relative path with correct casing.
+func findFileCaseInsensitive(baseDir string, searchPath string) (string, error) {
+	searchPath = strings.Trim(searchPath, "/")
+	if searchPath == "" {
+		return "", os.ErrNotExist
+	}
+
+	parts := strings.Split(searchPath, "/")
+	currentDir := baseDir
+	var actualPath []string
+
+	for _, part := range parts {
+		if part == "" || part == "." || part == ".." {
+			return "", os.ErrNotExist
+		}
+		entries, err := os.ReadDir(currentDir)
+		if err != nil {
+			return "", err
+		}
+		found := false
+		for _, entry := range entries {
+			if strings.EqualFold(entry.Name(), part) {
+				actualPath = append(actualPath, entry.Name())
+				currentDir = filepath.Join(currentDir, entry.Name())
+				found = true
+				break
+			}
+		}
+		if !found {
+			return "", os.ErrNotExist
+		}
+	}
+	return strings.Join(actualPath, "/"), nil
+}
+
 func main() {
 	// 1. Парсинг аргументов CLI
 	configDir := flag.String("config-dir", ".", "Directory containing provisioning-system.yaml and vendors/")
@@ -65,8 +101,16 @@ func main() {
 		configsDir := filepath.Join(*configDir, "temp_configs")
 		configFs := http.FileServer(http.Dir(configsDir))
 
+		// Wrapper for case-insensitive lookup
+		caseInsensitiveFs := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if actualPath, err := findFileCaseInsensitive(configsDir, r.URL.Path); err == nil {
+				r.URL.Path = "/" + actualPath
+			}
+			configFs.ServeHTTP(w, r)
+		})
+
 		// Оборачиваем в логгер
-		loggingHandler := deviceLogger.Middleware(http.StripPrefix("/config/", configFs))
+		loggingHandler := deviceLogger.Middleware(http.StripPrefix("/config/", caseInsensitiveFs))
 
 		r.PathPrefix("/config/").Handler(loggingHandler)
 		fmt.Printf("Serving generated configs at http://.../ from %s\n", configsDir)
@@ -142,7 +186,7 @@ func main() {
 	protected.HandleFunc("/system/support/bundle", sysHandler.GenerateSupportBundle).Methods("POST")
 	protected.HandleFunc("/system/stats", sysHandler.GetSystemStats).Methods("GET")
 	protected.HandleFunc("/system/config", sysHandler.GetSystemConfig).Methods("GET")
-	protected.HandleFunc("/system/config/sample", sysHandler.GetSystemConfigSample).Methods("GET")
+	protected.HandleFunc("/system/config/raw", sysHandler.GetSystemConfigRaw).Methods("GET")
 	protected.HandleFunc("/system/config", sysHandler.UpdateSystemConfig).Methods("POST")
 	protected.HandleFunc("/vendors/{id}/features", sysHandler.UpdateVendorFeatures).Methods("POST")
 	protected.HandleFunc("/vendors/{id}/accounts", sysHandler.UpdateVendorAccounts).Methods("POST")
@@ -207,11 +251,14 @@ func main() {
 			var defaultDomain string
 			if len(cfg.Domains) > 0 {
 				defaultDomain = cfg.Domains[0].Name
-				configPath := filepath.Join(configsDir, defaultDomain, path)
-				if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
-					deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from default domain: %s", defaultDomain))
-					http.ServeFile(w, r, configPath)
-					return
+				domainDir := filepath.Join(configsDir, defaultDomain)
+				if actualPath, err := findFileCaseInsensitive(domainDir, path); err == nil {
+					configPath := filepath.Join(domainDir, actualPath)
+					if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
+						deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from default domain: %s", defaultDomain))
+						http.ServeFile(w, r, configPath)
+						return
+					}
 				}
 			}
 
@@ -226,11 +273,14 @@ func main() {
 							continue
 						}
 
-						configPath := filepath.Join(configsDir, domain, path)
-						if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
-							deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from domain: %s", domain))
-							http.ServeFile(w, r, configPath)
-							return
+						domainDir := filepath.Join(configsDir, domain)
+						if actualPath, err := findFileCaseInsensitive(domainDir, path); err == nil {
+							configPath := filepath.Join(domainDir, actualPath)
+							if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
+								deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from domain: %s", domain))
+								http.ServeFile(w, r, configPath)
+								return
+							}
 						}
 					}
 				}

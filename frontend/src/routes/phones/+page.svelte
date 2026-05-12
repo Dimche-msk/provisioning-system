@@ -162,7 +162,7 @@
 
     function editPhone(phone: Phone) {
         console.debug("Start Phone Editor", phone);
-        editingPhone = { ...phone }; // Clone
+        editingPhone = JSON.parse(JSON.stringify(phone)); // Deep Clone
         showEditDialog = true;
     }
 

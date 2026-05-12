@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -224,38 +223,52 @@ func (h *SystemHandler) Deploy(w http.ResponseWriter, r *http.Request) {
 	cfg := *h.Config
 	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
 
-	if domainCfg.DeployCmd == "" {
+	if len(domainCfg.DeployCommands) == 0 {
 		http.Error(w, fmt.Sprintf(`{"error": "No deploy command defined for domain '%s'"}`, domainName), http.StatusBadRequest)
 		return
 	}
 
-	// Execute command
-	// We pass the temp_configs/<domain> path as an environment variable PROVISIONING_SOURCE
-	// and also as a simple replacement {{ source }} if we want to support simple templating later.
-	// For now, just executing the command.
-
-	cmdParts := strings.Fields(domainCfg.DeployCmd)
-	if len(cmdParts) == 0 {
-		http.Error(w, "Empty deploy command", http.StatusBadRequest)
-		return
+	// Check if commands are per-phone or global
+	isPerPhone := false
+	for _, cmd := range domainCfg.DeployCommands {
+		if strings.Contains(cmd, ".Phone") {
+			isPerPhone = true
+			break
+		}
 	}
 
-	cmd := exec.Command(cmdParts[0], cmdParts[1:]...)
+	var executionErrors []string
 
-	// Set environment variables
-	sourceDir, _ := filepath.Abs(filepath.Join(h.ConfigDir, "temp_configs", domainName))
-	cmd.Env = append(os.Environ(),
-		fmt.Sprintf("PROVISIONING_DOMAIN=%s", domainName),
-		fmt.Sprintf("PROVISIONING_SOURCE=%s", sourceDir),
-	)
+	if isPerPhone {
+		var phones []models.Phone
+		if err := h.DB.Where("domain = ?", domainName).Preload("Lines").Find(&phones).Error; err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to fetch phones: %v"}`, err), http.StatusInternalServerError)
+			return
+		}
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Deploy failed for %s: %v. Output: %s", domainName, err, string(output))
+		for i := range phones {
+			if err := executeDeployOrDelete(h.ProvManager, h.ConfigDir, domainCfg.DeployCommands, domainName, &phones[i], domainCfg.Variables); err != nil {
+				log.Printf("Deploy failed for phone %v: %v", phones[i].MacAddress, err)
+				mac := ""
+				if phones[i].MacAddress != nil {
+					mac = *phones[i].MacAddress
+				}
+				executionErrors = append(executionErrors, fmt.Sprintf("Phone %s: %v", mac, err))
+			}
+		}
+	} else {
+		// Run globally (nil phone)
+		if err := executeDeployOrDelete(h.ProvManager, h.ConfigDir, domainCfg.DeployCommands, domainName, nil, domainCfg.Variables); err != nil {
+			log.Printf("Deploy failed for domain %s: %v", domainName, err)
+			executionErrors = append(executionErrors, err.Error())
+		}
+	}
+
+	if len(executionErrors) > 0 {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error":  fmt.Sprintf("Deploy failed: %v", err),
-			"output": string(output),
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error":   "Deploy failed for some elements",
+			"details": executionErrors,
 		})
 		return
 	}
@@ -264,7 +277,7 @@ func (h *SystemHandler) Deploy(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"status":  "ok",
 		"message": fmt.Sprintf("Deployed successfully to %s", domainName),
-		"output":  string(output),
+		"output":  "Deployment completed",
 	})
 }
 
@@ -617,12 +630,11 @@ func (h *SystemHandler) GetSystemConfig(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(*h.Config)
 }
 
-func (h *SystemHandler) GetSystemConfigSample(w http.ResponseWriter, r *http.Request) {
-	samplePath := filepath.Join(h.ConfigDir, "provisioning-system.sample.yaml")
-	data, err := os.ReadFile(samplePath)
+func (h *SystemHandler) GetSystemConfigRaw(w http.ResponseWriter, r *http.Request) {
+	configPath := filepath.Join(h.ConfigDir, "provisioning-system.yaml")
+	data, err := os.ReadFile(configPath)
 	if err != nil {
-		// If sample doesn't exist, return empty or error
-		http.Error(w, "Sample config not found", http.StatusNotFound)
+		http.Error(w, "Config not found", http.StatusNotFound)
 		return
 	}
 
@@ -630,15 +642,10 @@ func (h *SystemHandler) GetSystemConfigSample(w http.ResponseWriter, r *http.Req
 	w.Write(data)
 }
 
+
 func (h *SystemHandler) UpdateSystemConfig(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var newCfg config.SystemConfig
-	if err := json.NewDecoder(r.Body).Decode(&newCfg); err != nil {
-		http.Error(w, fmt.Sprintf("Invalid JSON: %v", err), http.StatusBadRequest)
 		return
 	}
 
@@ -648,20 +655,48 @@ func (h *SystemHandler) UpdateSystemConfig(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// 2. Save to file
 	configPath := filepath.Join(h.ConfigDir, "provisioning-system.yaml")
-	
-	// We use yaml.v3 to marshal the struct back to file.
-	// Note: this will lose original comments, but it's the safest way to ensure valid YAML.
-	data, err := yaml.Marshal(newCfg)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to marshal config: %v", err), http.StatusInternalServerError)
-		return
-	}
+	contentType := r.Header.Get("Content-Type")
 
-	if err := os.WriteFile(configPath, data, 0644); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to write config file: %v", err), http.StatusInternalServerError)
-		return
+	var newCfg config.SystemConfig
+
+	if strings.Contains(contentType, "yaml") || strings.Contains(contentType, "plain") {
+		// Raw YAML upload
+		data, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to read body: %v"}`, err), http.StatusBadRequest)
+			return
+		}
+		
+		// Validate YAML
+		if err := yaml.Unmarshal(data, &newCfg); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Invalid YAML: %v"}`, err), http.StatusBadRequest)
+			return
+		}
+		
+		if err := os.WriteFile(configPath, data, 0644); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to write config file: %v"}`, err), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		// Old JSON approach (from GUI)
+		if err := json.NewDecoder(r.Body).Decode(&newCfg); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Invalid JSON: %v"}`, err), http.StatusBadRequest)
+			return
+		}
+
+		// We use yaml.v3 to marshal the struct back to file.
+		// Note: this will lose original comments, but it's the safest way to ensure valid YAML.
+		data, err := yaml.Marshal(newCfg)
+		if err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to marshal config: %v"}`, err), http.StatusInternalServerError)
+			return
+		}
+
+		if err := os.WriteFile(configPath, data, 0644); err != nil {
+			http.Error(w, fmt.Sprintf(`{"error": "Failed to write config file: %v"}`, err), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// 3. Reload system state

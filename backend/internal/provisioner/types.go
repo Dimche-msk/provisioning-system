@@ -56,6 +56,7 @@ type DeviceModel struct {
 	MaxAccountLines           int                 `yaml:"max_account_lines" json:"max_account_lines"`
 	LineNameFormat            string              `yaml:"line_name_format" json:"line_name_format"` // Regex or format string
 	OtherFeatures             []string            `yaml:"other_features" json:"other_features"`
+	FakeDeploy                bool                `yaml:"fake_deploy" json:"fake_deploy"`
 	Keys                      []ModelKey          `yaml:"keys" json:"keys"`
 	KeyTypes                  []KeyType           `yaml:"key_types" json:"key_types"`
 	Settings                  []ModelSettingGroup `yaml:"settings" json:"settings"`

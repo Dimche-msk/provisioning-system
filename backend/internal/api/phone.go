@@ -161,12 +161,20 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	seenNumbers := make(map[string]bool)
+
 	// Collect all numbers from new lines
 	for _, l := range phone.Lines {
 		if l.Type == "Line" {
 			var info map[string]interface{}
 			json.Unmarshal([]byte(l.AdditionalInfo), &info)
 			if num, ok := info[pnField].(string); ok && num != "" {
+				if seenNumbers[num] {
+					http.Error(w, fmt.Sprintf("Duplicate phone number %s in lines", num), http.StatusConflict)
+					return
+				}
+				seenNumbers[num] = true
+
 				if err := h.checkPhoneNumberUniqueness(phone.Domain, num, 0); err != nil {
 					http.Error(w, err.Error(), http.StatusConflict)
 					return
@@ -174,8 +182,10 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	// Also check the primary phone_number field if it's set and differs from lines (unlikely but possible)
+
+	// Also check the primary phone_number field if it's set
 	if !isGateway && phone.PhoneNumber != nil && *phone.PhoneNumber != "" {
+		// Note: We ALLOW primary number to match one of the lines of the same phone.
 		if err := h.checkPhoneNumberUniqueness(phone.Domain, *phone.PhoneNumber, 0); err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
@@ -223,7 +233,7 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Deploy to domain
-	if err := h.deployDomain(phone.Domain, &phone); err != nil {
+	if err := h.deployDomain(phone.Domain, &phone, ""); err != nil {
 		logger.Warn("Failed to deploy domain %s: %v", phone.Domain, err)
 		// We don't fail the request if deployment fails, but we log it.
 		// Or should we? User might want to know.
@@ -454,12 +464,20 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	seenNumbers := make(map[string]bool)
+
 	// Collect all numbers from new lines
 	for _, l := range reqPhone.Lines {
 		if l.Type == "Line" {
 			var info map[string]interface{}
 			json.Unmarshal([]byte(l.AdditionalInfo), &info)
 			if num, ok := info[pnField].(string); ok && num != "" {
+				if seenNumbers[num] {
+					http.Error(w, fmt.Sprintf("Duplicate phone number %s in lines", num), http.StatusConflict)
+					return
+				}
+				seenNumbers[num] = true
+
 				if err := h.checkPhoneNumberUniqueness(reqPhone.Domain, num, existingPhone.ID); err != nil {
 					http.Error(w, err.Error(), http.StatusConflict)
 					return
@@ -467,14 +485,21 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+
 	// Also check the primary phone_number field
 	if !isGateway && reqPhone.PhoneNumber != nil && *reqPhone.PhoneNumber != "" {
+		// Note: We ALLOW primary number to match one of the lines of the same phone.
 		if err := h.checkPhoneNumberUniqueness(reqPhone.Domain, *reqPhone.PhoneNumber, existingPhone.ID); err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		}
 	}
 	// ------------------------------------------
+
+	oldPhoneNumber := ""
+	if existingPhone.PhoneNumber != nil {
+		oldPhoneNumber = *existingPhone.PhoneNumber
+	}
 
 	// Update fields in memory to test config generation
 	tempPhone := existingPhone
@@ -530,9 +555,27 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	newPhoneNumber := ""
+	if existingPhone.PhoneNumber != nil {
+		newPhoneNumber = *existingPhone.PhoneNumber
+	}
+	numberChanged := oldPhoneNumber != "" && newPhoneNumber != "" && oldPhoneNumber != newPhoneNumber
+
 	// Deploy to domain
-	if err := h.deployDomain(existingPhone.Domain, &existingPhone); err != nil {
-		fmt.Printf("Failed to deploy domain %s: %v\n", existingPhone.Domain, err)
+	if numberChanged {
+		if err := h.deployDomain(existingPhone.Domain, &existingPhone, oldPhoneNumber); err != nil {
+			fmt.Printf("Failed to deploy domain %s: %v\n", existingPhone.Domain, err)
+		}
+		
+		oldPhoneCopy := existingPhone
+		oldPhoneCopy.PhoneNumber = &oldPhoneNumber
+		if err := h.executeDeleteCmd(existingPhone.Domain, &oldPhoneCopy, ""); err != nil {
+			fmt.Printf("Failed to execute delete commands for old number %s: %v\n", oldPhoneNumber, err)
+		}
+	} else {
+		if err := h.deployDomain(existingPhone.Domain, &existingPhone, ""); err != nil {
+			fmt.Printf("Failed to deploy domain %s: %v\n", existingPhone.Domain, err)
+		}
 	}
 
 	// Regenerate directories
@@ -551,7 +594,7 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(existingPhone)
 }
 
-func (h *PhoneHandler) deployDomain(domainName string, phone *models.Phone) error {
+func (h *PhoneHandler) deployDomain(domainName string, phone *models.Phone, oldNumber string) error {
 	cfg := h.ProvManager.Config
 	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
 
@@ -559,7 +602,15 @@ func (h *PhoneHandler) deployDomain(domainName string, phone *models.Phone) erro
 		return nil // No deploy commands, nothing to do
 	}
 
-	return h.executeCommands(domainCfg.DeployCommands, domainName, phone, domainCfg.Variables)
+	domainVars := make(map[string]string)
+	for k, v := range domainCfg.Variables {
+		domainVars[k] = v
+	}
+	if oldNumber != "" {
+		domainVars["old_number"] = oldNumber
+	}
+
+	return executeDeployOrDelete(h.ProvManager, h.ConfigDir, domainCfg.DeployCommands, domainName, phone, domainVars)
 }
 
 // GetVendors handles GET /api/vendors
@@ -636,7 +687,7 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. Execute DeleteCmd (Deploy changes)
-	if err := h.executeDeleteCmd(phone.Domain, &phone); err != nil {
+	if err := h.executeDeleteCmd(phone.Domain, &phone, ""); err != nil {
 		logger.Warn("Failed to execute delete command for domain %s: %v", phone.Domain, err)
 		// We don't fail the request if the hook fails, but we log it.
 	}
@@ -658,7 +709,7 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"status": "ok", "message": "Phone deleted successfully"}`))
 }
 
-func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone) error {
+func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone, oldNumber string) error {
 	cfg := h.ProvManager.Config
 	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
 
@@ -666,57 +717,110 @@ func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone) 
 		return nil
 	}
 
-	return h.executeCommands(domainCfg.DeleteCommands, domainName, phone, domainCfg.Variables)
+	domainVars := make(map[string]string)
+	for k, v := range domainCfg.Variables {
+		domainVars[k] = v
+	}
+	if oldNumber != "" {
+		domainVars["old_number"] = oldNumber
+	}
+
+	return executeDeployOrDelete(h.ProvManager, h.ConfigDir, domainCfg.DeleteCommands, domainName, phone, domainVars)
 }
 
-func (h *PhoneHandler) executeCommands(commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
-	sourceDir, _ := filepath.Abs(filepath.Join(h.ConfigDir, "temp_configs", domainName))
-
-	// Data preparation: flatten the phone object to handle pointers and ensure all fields are available
-	// We use manual mapping to ensure keys match field names (PascalCase) used in templates
-	phoneMap := map[string]interface{}{
-		"ID":                    phone.ID,
-		"Domain":                phone.Domain,
-		"Vendor":                phone.Vendor,
-		"ModelID":               phone.ModelID,
-		"ExpansionModulesCount": phone.ExpansionModulesCount,
-		"ExpansionModuleModel":  phone.ExpansionModuleModel,
-		"Type":                  phone.Type,
-		"IPAddress":             phone.IPAddress,
-		"Description":           phone.Description,
-		"ModelName":             phone.ModelName,
-		"VendorName":            phone.VendorName,
-		"MacAddress":            "",
-		"PhoneNumber":           "",
-	}
-	if phone.MacAddress != nil {
-		phoneMap["MacAddress"] = *phone.MacAddress
-	}
-	if phone.PhoneNumber != nil {
-		phoneMap["PhoneNumber"] = *phone.PhoneNumber
+func executeDeployOrDelete(pm *provisioner.Manager, configDir string, commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
+	if phone == nil {
+		return executeProvisioningCommands(configDir, commands, domainName, nil, domainVars)
 	}
 
-	var lines []map[string]interface{}
-	for _, l := range phone.Lines {
-		lineMap := map[string]interface{}{
-			"ID":                   l.ID,
-			"PhoneID":              l.PhoneID,
-			"Type":                 l.Type,
-			"AccountNumber":        l.AccountNumber,
-			"AdditionalInfo":       l.AdditionalInfo,
-			"KeyNumber":            nil,
-			"PanelNumber":          nil,
-			"GetAdditionalInfoMap": l.GetAdditionalInfoMap(),
-		}
-		if l.KeyNumber != nil {
-			lineMap["KeyNumber"] = *l.KeyNumber
-		}
-		if l.PanelNumber != nil {
-			lineMap["PanelNumber"] = *l.PanelNumber
-		}
-		lines = append(lines, lineMap)
+	model, err := pm.GetModel(phone.Vendor, phone.ModelID)
+	isFakeDeploy := false
+	isGateway := false
+	if err == nil && model != nil {
+		isFakeDeploy = model.FakeDeploy
+		isGateway = model.Type == "gateway"
 	}
-	phoneMap["Lines"] = lines
+
+	if isFakeDeploy {
+		return nil
+	}
+
+	if isGateway {
+		var executionErrors []string
+		for _, line := range phone.Lines {
+			info := line.GetAdditionalInfoMap()
+			userName, ok := info["user_name"].(string)
+			if ok && userName != "" {
+				linePhone := *phone
+				linePhone.PhoneNumber = &userName
+				if desc, ok := info["Description"].(string); ok {
+					linePhone.Description = desc
+				}
+				if err := executeProvisioningCommands(configDir, commands, domainName, &linePhone, domainVars); err != nil {
+					executionErrors = append(executionErrors, fmt.Sprintf("Line %s: %v", userName, err))
+				}
+			}
+		}
+		if len(executionErrors) > 0 {
+			return fmt.Errorf("gateway deployment errors: %v", strings.Join(executionErrors, "; "))
+		}
+		return nil
+	}
+
+	return executeProvisioningCommands(configDir, commands, domainName, phone, domainVars)
+}
+
+func executeProvisioningCommands(configDir string, commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
+	sourceDir, _ := filepath.Abs(filepath.Join(configDir, "temp_configs", domainName))
+
+	// Data preparation
+	var phoneMap map[string]interface{}
+	
+	if phone != nil {
+		phoneMap = map[string]interface{}{
+			"ID":                    phone.ID,
+			"Domain":                phone.Domain,
+			"Vendor":                phone.Vendor,
+			"ModelID":               phone.ModelID,
+			"ExpansionModulesCount": phone.ExpansionModulesCount,
+			"ExpansionModuleModel":  phone.ExpansionModuleModel,
+			"Type":                  phone.Type,
+			"IPAddress":             phone.IPAddress,
+			"Description":           phone.Description,
+			"ModelName":             phone.ModelName,
+			"VendorName":            phone.VendorName,
+			"MacAddress":            "",
+			"PhoneNumber":           "",
+		}
+		if phone.MacAddress != nil {
+			phoneMap["MacAddress"] = *phone.MacAddress
+		}
+		if phone.PhoneNumber != nil {
+			phoneMap["PhoneNumber"] = *phone.PhoneNumber
+		}
+
+		var lines []map[string]interface{}
+		for _, l := range phone.Lines {
+			lineMap := map[string]interface{}{
+				"ID":                   l.ID,
+				"PhoneID":              l.PhoneID,
+				"Type":                 l.Type,
+				"AccountNumber":        l.AccountNumber,
+				"AdditionalInfo":       l.AdditionalInfo,
+				"KeyNumber":            nil,
+				"PanelNumber":          nil,
+				"GetAdditionalInfoMap": l.GetAdditionalInfoMap(),
+			}
+			if l.KeyNumber != nil {
+				lineMap["KeyNumber"] = *l.KeyNumber
+			}
+			if l.PanelNumber != nil {
+				lineMap["PanelNumber"] = *l.PanelNumber
+			}
+			lines = append(lines, lineMap)
+		}
+		phoneMap["Lines"] = lines
+	}
 
 	// Data for template
 	data := struct {

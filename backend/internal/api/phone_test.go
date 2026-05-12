@@ -41,9 +41,9 @@ func TestExecuteCommands(t *testing.T) {
 	}
 
 	// 5. Execute
-	err = h.executeCommands(commands, "test.local", phone, domainVars)
+	err = executeProvisioningCommands(h.ConfigDir, commands, "test.local", phone, domainVars)
 	if err != nil {
-		t.Fatalf("executeCommands failed: %v", err)
+		t.Fatalf("executeProvisioningCommands failed: %v", err)
 	}
 
 	// 6. Verify output

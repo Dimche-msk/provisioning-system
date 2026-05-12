@@ -10,18 +10,14 @@
     import { Save, AlertCircle, Info, Plus, Trash2, ChevronDown, ChevronRight, FileCode, X } from "lucide-svelte";
     import * as Tabs from "$lib/components/ui/tabs";
     import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+    import CodeMirror from "svelte-codemirror-editor";
+    import { yaml } from "@codemirror/lang-yaml";
+    import { oneDark } from "@codemirror/theme-one-dark";
 
-    let config: any = {
-        server: {},
-        auth: {},
-        database: {},
-        domains: []
-    };
-    let sample = "";
-    let metadata: Record<string, any> = {};
+    let rawYaml = "";
     let loading = true;
     let saving = false;
-    let activeTab = "general";
+    let activeTab = "raw";
     let vendors: any[] = [];
     let selectedVendorId = "";
     let templateContent = "";
@@ -42,18 +38,10 @@
     async function loadData() {
         loading = true;
         try {
-            const [configRes, sampleRes] = await Promise.all([
-                fetch("/api/system/config"),
-                fetch("/api/system/config/sample")
-            ]);
+            const rawRes = await fetch("/api/system/config/raw");
 
-            if (configRes.ok) {
-                config = await configRes.json();
-            }
-
-            if (sampleRes.ok) {
-                sample = await sampleRes.text();
-                parseMetadata(sample);
+            if (rawRes.ok) {
+                rawYaml = await rawRes.text();
             }
         } catch (e: any) {
             console.error("Failed to load config data", e);
@@ -79,85 +67,31 @@
         }
     }
 
-    function parseMetadata(yamlText: string) {
-        const lines = yamlText.split("\n");
-        let currentSection = "";
-        const newMetadata: Record<string, any> = {};
-        
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            
-            // Check for section
-            const sectionMatch = line.match(/#\s*\[section:\s*([^,\]]+)(?:,\s*help:\s*([^\]]+))?\]/i);
-            if (sectionMatch) {
-                currentSection = sectionMatch[1].trim();
-                continue;
-            }
 
-            // Check for metadata tag [...]
-            const tagMatch = line.match(/#\s*\[(.*?)\]/);
-            if (!tagMatch) continue;
 
-            const tagContent = tagMatch[1];
-            if (!tagContent.includes("label:")) continue;
-
-            const parts: Record<string, string> = {};
-            // Improved parsing: find all key:value pairs
-            // This regex looks for word: followed by either a quoted string or text until the next key: or end of string
-            const pairRegex = /(\w+):\s*("(?:[^"\\]|\\.)*"|.+?)(?=\s*,\s*\w+:|$)/g;
-            let match;
-            while ((match = pairRegex.exec(tagContent)) !== null) {
-                const k = match[1].toLowerCase().trim();
-                let v = match[2].trim();
-                // Remove quotes if present
-                if (v.startsWith('"') && v.endsWith('"')) {
-                    v = v.substring(1, v.length - 1);
-                }
-                parts[k] = v;
-            }
-
-            // Find the key this metadata belongs to (look at current line, then next few lines)
-            let key = "";
-            for (let j = i; j < Math.min(i + 4, lines.length); j++) {
-                const searchLine = lines[j];
-                const keyMatch = searchLine.match(/^\s*(?:-\s+)?([\w_]+):/);
-                if (keyMatch) {
-                    key = keyMatch[1];
-                    break;
-                }
-            }
-
-            if (key) {
-                newMetadata[key] = {
-                    label: parts.label,
-                    type: parts.type || "string",
-                    help: parts.help,
-                    options: parts.options ? parts.options.split(",").map(o => o.trim()) : [],
-                    readonly: parts.readonly === "true",
-                    section: currentSection
-                };
-            }
-        }
-        metadata = newMetadata;
-    }
-
-    async function saveConfig() {
-        if (!confirm($t("templates.confirm_save"))) return;
+    async function saveRawYaml() {
+        if (!confirm("Save raw YAML? This will apply your exact text and overwrite settings.")) return;
 
         saving = true;
         try {
             const res = await fetch("/api/system/config", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config)
+                headers: { "Content-Type": "text/yaml" },
+                body: rawYaml
             });
 
             if (res.ok) {
                 toast.success($t("templates.save_success"));
                 await loadData();
             } else {
-                const data = await res.json();
-                toast.error(data.error || $t("templates.save_error"));
+                let errorMsg = $t("templates.save_error");
+                try {
+                    const data = await res.json();
+                    errorMsg = data.error || errorMsg;
+                } catch {
+                    errorMsg = await res.text();
+                }
+                toast.error(errorMsg);
             }
         } catch (e: any) {
             toast.error($t("templates.save_error") + ": " + e.message);
@@ -166,47 +100,6 @@
         }
     }
 
-    function addDomain() {
-        if (!config.domains) config.domains = [];
-        config.domains = [...config.domains, {
-            name: "new-domain",
-            generate_random_password: true,
-            deploy_commands: [],
-            delete_commands: [],
-            variables: {}
-        }];
-    }
-
-    function removeDomain(index: number) {
-        config.domains = config.domains.filter((_: any, i: number) => i !== index);
-    }
-
-    function addVariable(domainIndex: number) {
-        const domain = config.domains[domainIndex];
-        if (!domain.variables) domain.variables = {};
-        const key = prompt("Variable name:");
-        if (key && !domain.variables[key]) {
-            domain.variables[key] = "";
-            config = { ...config };
-        }
-    }
-
-    function removeVariable(domainIndex: number, key: string) {
-        delete config.domains[domainIndex].variables[key];
-        config = { ...config };
-    }
-
-    function addCommand(domainIndex: number, type: string) {
-        const domain = config.domains[domainIndex];
-        if (!domain[type]) domain[type] = [];
-        domain[type] = [...domain[type], ""];
-        config = { ...config };
-    }
-
-    function removeCommand(domainIndex: number, type: string, cmdIndex: number) {
-        config.domains[domainIndex][type] = config.domains[domainIndex][type].filter((_: any, i: number) => i !== cmdIndex);
-        config = { ...config };
-    }
 
     async function saveVendorData(type: 'features' | 'accounts') {
         if (!selectedVendor) return;
@@ -341,10 +234,12 @@
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {$t("templates.title")}
         </h1>
-        <Button on:click={saveConfig} disabled={saving || loading}>
-            <Save class="mr-2 h-4 w-4" />
-            {saving ? $t("common.saving") : $t("templates.save_button")}
-        </Button>
+        {#if activeTab === "raw"}
+            <Button on:click={saveRawYaml} disabled={saving || loading}>
+                <Save class="mr-2 h-4 w-4" />
+                {saving ? $t("common.saving") : $t("templates.save_button")}
+            </Button>
+        {/if}
     </div>
 
     <Alert>
@@ -359,297 +254,30 @@
         <div class="flex justify-center p-12">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-    {:else if config}
-        <Tabs.Root value="general" class="w-full">
-            <Tabs.List class="grid w-full grid-cols-2 max-w-md">
-                <Tabs.Trigger value="general">{$t("templates.general_settings")}</Tabs.Trigger>
+    {:else}
+        <Tabs.Root bind:value={activeTab} class="w-full">
+            <Tabs.List class="grid w-full grid-cols-2 max-w-xl">
+                <Tabs.Trigger value="raw">{$t("templates.system_config")}</Tabs.Trigger>
                 <Tabs.Trigger value="functions">{$t("templates.function_settings")}</Tabs.Trigger>
             </Tabs.List>
 
-            <Tabs.Content value="general" class="space-y-6 pt-6">
-                <!-- Server Section -->
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>{metadata.listen_address?.section || "Server"}</Card.Title>
-                    </Card.Header>
-                    <Card.Content class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {#if config?.server}
-                            {#each Object.keys(config?.server || {}) as key}
-                                <div class="space-y-2">
-                                    <Label for={"server-" + key} class="flex items-center gap-2">
-                                        {metadata[key]?.label || key}
-                                        {#if metadata[key]?.readonly}
-                                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                        {/if}
-                                    </Label>
-                                    
-                                    {#if metadata[key]?.type === "boolean"}
-                                        <div class="flex items-center space-x-2 pt-2">
-                                            <Checkbox id={"server-" + key} bind:checked={config.server[key]} disabled={metadata[key]?.readonly} />
-                                            <p class="text-sm text-muted-foreground">{metadata[key]?.help || ""}</p>
-                                        </div>
-                                    {:else if metadata[key]?.type === "select"}
-                                        <select 
-                                            id={"server-" + key}
-                                            bind:value={config.server[key]}
-                                            disabled={metadata[key]?.readonly}
-                                            class="w-full h-10 px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                                        >
-                                            {#each metadata[key]?.options || [] as opt}
-                                                <option value={opt}>{opt}</option>
-                                            {/each}
-                                        </select>
-                                    {:else}
-                                        <Input 
-                                            id={"server-" + key} 
-                                            type={metadata[key]?.type === "number" ? "number" : "text"}
-                                            bind:value={config.server[key]} 
-                                            disabled={metadata[key]?.readonly}
-                                            placeholder={metadata[key]?.help}
-                                        />
-                                    {/if}
-                                    
-                                    {#if metadata[key]?.help && metadata[key]?.type !== "boolean"}
-                                        <p class="text-xs text-muted-foreground italic">{metadata[key]?.help}</p>
-                                    {/if}
-
-                                    {#if metadata[key]?.readonly}
-                                        <p class="text-[10px] text-amber-600">{$t("templates.readonly_notice")}</p>
-                                    {/if}
-                                </div>
-                            {/each}
-                        {/if}
-                    </Card.Content>
-                </Card.Root>
-
-                <!-- Auth Section -->
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>{metadata.admin_user?.section || "Authentication"}</Card.Title>
-                    </Card.Header>
-                    <Card.Content class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {#if config?.auth}
-                            {#each Object.keys(config?.auth || {}) as key}
-                                <div class="space-y-2">
-                                    <Label for={"auth-" + key} class="flex items-center gap-2">
-                                        {metadata[key]?.label || key}
-                                        {#if metadata[key]?.readonly}
-                                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                        {/if}
-                                    </Label>
-                                    <Input 
-                                        id={"auth-" + key} 
-                                        type={metadata[key]?.type === "password" ? "password" : "text"}
-                                        bind:value={config.auth[key]} 
-                                        disabled={metadata[key]?.readonly}
-                                        placeholder={metadata[key]?.type === "password" ? "********" : metadata[key]?.help}
-                                    />
-                                    {#if metadata[key]?.help}
-                                        <p class="text-xs text-muted-foreground italic">{metadata[key]?.help}</p>
-                                    {/if}
-                                </div>
-                            {/each}
-                        {/if}
-                    </Card.Content>
-                </Card.Root>
-
-                <!-- Database Section -->
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>{metadata.path?.section || "Database"}</Card.Title>
-                    </Card.Header>
-                    <Card.Content class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {#if config?.database}
-                            {#each Object.keys(config?.database || {}) as key}
-                                <div class="space-y-2">
-                                    <Label for={"db-" + key} class="flex items-center gap-2">
-                                        {metadata[key]?.label || key}
-                                        {#if metadata[key]?.readonly}
-                                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                        {/if}
-                                    </Label>
-                                    <Input 
-                                        id={"db-" + key} 
-                                        bind:value={config.database[key]} 
-                                        disabled={metadata[key]?.readonly}
-                                    />
-                                    {#if metadata[key]?.help}
-                                        <p class="text-xs text-muted-foreground italic">{metadata[key]?.help}</p>
-                                    {/if}
-                                </div>
-                            {/each}
-                        {/if}
-                    </Card.Content>
-                </Card.Root>
-
-                <!-- Domains Section -->
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div class="space-y-1">
-                            <h2 class="text-2xl font-bold">{metadata.domains?.label || "Domains Management"}</h2>
-                            {#if metadata.domains?.help}
-                                <p class="text-sm text-muted-foreground">{metadata.domains?.help}</p>
-                            {/if}
-                        </div>
-                        <Button variant="outline" size="sm" disabled={metadata.domains?.readonly} on:click={addDomain}>
-                            <Plus class="mr-2 h-4 w-4" />
-                            {$t("templates.add_domain")}
-                        </Button>
-                    </div>
-
-                    {#each config?.domains || [] as domain, i}
-                        <Card.Root>
-                            <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <Card.Title class="text-sm font-medium">Domain: {domain.name}</Card.Title>
-                                <Button variant="ghost" size="sm" class="text-destructive" disabled={metadata.domains?.readonly} on:click={() => removeDomain(i)}>
-                                    <Trash2 class="h-4 w-4" />
-                                </Button>
-                            </Card.Header>
-                            <Card.Content class="space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-2">
-                                        <Label class="flex items-center gap-2">
-                                            {metadata.name?.label || "Domain Name"}
-                                            {#if metadata.name?.readonly}
-                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                            {/if}
-                                        </Label>
-                                        <Input bind:value={domain.name} disabled={metadata.name?.readonly} placeholder={metadata.name?.help} />
-                                        {#if metadata.name?.help}
-                                            <p class="text-xs text-muted-foreground italic">{metadata.name?.help}</p>
-                                        {/if}
-                                    </div>
-                                    <div class="flex flex-col justify-end space-y-2 pb-2">
-                                        <div class="flex items-center space-x-2">
-                                            <Checkbox id={"rand-pass-" + i} bind:checked={domain.generate_random_password} disabled={metadata.generate_random_password?.readonly} />
-                                            <Label for={"rand-pass-" + i} class="flex items-center gap-2">
-                                                {metadata.generate_random_password?.label || "Auto-generate Passwords"}
-                                                {#if metadata.generate_random_password?.readonly}
-                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                                {/if}
-                                            </Label>
-                                        </div>
-                                        {#if metadata.generate_random_password?.help}
-                                            <p class="text-xs text-muted-foreground italic">{metadata.generate_random_password?.help}</p>
-                                        {/if}
-                                    </div>
-                                </div>
-
-                                <!-- Commands -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center">
-                                            <Label class="flex items-center gap-2">
-                                                {metadata.deploy_commands?.label || "Deploy Commands"}
-                                                {#if metadata.deploy_commands?.readonly}
-                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                                {/if}
-                                            </Label>
-                                            <Button variant="ghost" size="sm" disabled={metadata.deploy_commands?.readonly} on:click={() => addCommand(i, 'deploy_commands')}>
-                                                <Plus class="h-3 w-3" />
-                                            </Button>
-                                        </div>
-                                        <div class="space-y-2">
-                                            {#each domain.deploy_commands || [] as cmd, ci}
-                                                <div class="flex flex-col gap-1 border rounded-md p-2 bg-muted/20 relative group/cmd">
-                                                    <textarea 
-                                                        bind:value={domain.deploy_commands[ci]} 
-                                                        readonly={metadata.deploy_commands?.readonly} 
-                                                        rows="3"
-                                                        class="w-full bg-transparent text-xs font-mono resize-y focus:outline-none {metadata.deploy_commands?.readonly ? 'opacity-70' : ''}"
-                                                        placeholder="Enter command..."
-                                                    ></textarea>
-                                                    {#if !metadata.deploy_commands?.readonly}
-                                                        <Button variant="ghost" size="sm" class="absolute top-1 right-1 opacity-0 group-hover/cmd:opacity-100 h-6 w-6 p-0" on:click={() => removeCommand(i, 'deploy_commands', ci)}>
-                                                            <Trash2 class="h-3 w-3" />
-                                                        </Button>
-                                                    {/if}
-                                                </div>
-                                            {/each}
-                                            {#if !domain.deploy_commands || domain.deploy_commands.length === 0}
-                                                <p class="text-xs text-muted-foreground italic">No commands defined.</p>
-                                            {/if}
-                                        </div>
-                                        {#if metadata.deploy_commands?.help}
-                                            <p class="text-xs text-muted-foreground italic">{metadata.deploy_commands?.help}</p>
-                                        {/if}
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <div class="flex justify-between items-center">
-                                            <Label class="flex items-center gap-2">
-                                                {metadata.delete_commands?.label || "Delete Commands"}
-                                                {#if metadata.delete_commands?.readonly}
-                                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                                {/if}
-                                            </Label>
-                                            <Button variant="ghost" size="sm" disabled={metadata.delete_commands?.readonly} on:click={() => addCommand(i, 'delete_commands')}>
-                                                <Plus class="h-3 w-3" />
-                                            </Button>
-                                        </div>
-                                        <div class="space-y-2">
-                                            {#each domain.delete_commands || [] as cmd, ci}
-                                                <div class="flex flex-col gap-1 border rounded-md p-2 bg-muted/20 relative group/cmd">
-                                                    <textarea 
-                                                        bind:value={domain.delete_commands[ci]} 
-                                                        readonly={metadata.delete_commands?.readonly} 
-                                                        rows="3"
-                                                        class="w-full bg-transparent text-xs font-mono resize-y focus:outline-none {metadata.delete_commands?.readonly ? 'opacity-70' : ''}"
-                                                        placeholder="Enter command..."
-                                                    ></textarea>
-                                                    {#if !metadata.delete_commands?.readonly}
-                                                        <Button variant="ghost" size="sm" class="absolute top-1 right-1 opacity-0 group-hover/cmd:opacity-100 h-6 w-6 p-0" on:click={() => removeCommand(i, 'delete_commands', ci)}>
-                                                            <Trash2 class="h-3 w-3" />
-                                                        </Button>
-                                                    {/if}
-                                                </div>
-                                            {/each}
-                                            {#if !domain.delete_commands || domain.delete_commands.length === 0}
-                                                <p class="text-xs text-muted-foreground italic">No commands defined.</p>
-                                            {/if}
-                                        </div>
-                                        {#if metadata.delete_commands?.help}
-                                            <p class="text-xs text-muted-foreground italic">{metadata.delete_commands?.help}</p>
-                                        {/if}
-                                    </div>
-                                </div>
-
-                                <!-- Variables -->
-                                <div class="space-y-2 border-t pt-4">
-                                    <div class="flex justify-between items-center">
-                                        <Label class="flex items-center gap-2">
-                                            {metadata.variables?.label || "Variables"}
-                                            {#if metadata.variables?.readonly}
-                                                <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded uppercase font-bold">Readonly</span>
-                                            {/if}
-                                        </Label>
-                                        <Button variant="outline" size="sm" disabled={metadata.variables?.readonly} on:click={() => addVariable(i)}>
-                                            <Plus class="h-3 w-3 mr-1" /> Add Var
-                                        </Button>
-                                    </div>
-                                    {#if metadata.variables?.help}
-                                        <p class="text-xs text-muted-foreground italic mb-2">{metadata.variables?.help}</p>
-                                    {/if}
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {#each Object.keys(domain.variables || {}) as key}
-                                            <div class="flex flex-col gap-1 p-2 border rounded-md relative group">
-                                                <span class="text-[10px] font-bold text-amber-600 dark:text-amber-500">{key}</span>
-                                                <Input bind:value={domain.variables[key]} class="h-8 text-sm" />
-                                                <button 
-                                                    class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 text-destructive p-1 hover:bg-destructive/10 rounded"
-                                                    on:click={() => removeVariable(i, key)}
-                                                >
-                                                    <Trash2 class="h-3 w-3" />
-                                                </button>
-                                            </div>
-                                        {/each}
-                                    </div>
-                                </div>
-                            </Card.Content>
-                        </Card.Root>
-                    {/each}
+            <Tabs.Content value="raw" class="pt-6 space-y-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-2xl font-bold">{$t("templates.system_config")}</h2>
+                </div>
+                <Alert variant="destructive">
+                    <AlertCircle class="h-4 w-4" />
+                    <AlertTitle>{$t("common.notice") || "Notice"}</AlertTitle>
+                    <AlertDescription>
+                        {$t("templates.yaml_disclaimer")}
+                    </AlertDescription>
+                </Alert>
+                <div class="border rounded-md overflow-hidden bg-[#282c34]">
+                    <CodeMirror bind:value={rawYaml} lang={yaml()} theme={oneDark} styles={{ "&": { minHeight: "600px", fontSize: "14px", backgroundColor: "#282c34" } }} />
                 </div>
             </Tabs.Content>
+
+
 
             <Tabs.Content value="functions" class="pt-6 space-y-6">
                 <div class="flex gap-4 items-center bg-muted/30 p-4 rounded-lg">

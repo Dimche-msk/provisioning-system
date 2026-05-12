@@ -20,6 +20,8 @@
     "menu.templates": "Templates",
     "templates.title": "Template Management",
     "templates.general_settings": "General Settings",
+    "templates.system_config": "System Configuration",
+    "templates.yaml_disclaimer": "The configuration is in YAML format. Please follow the syntax carefully. Some changes can only be applied by restarting the service.",
     "templates.function_settings": "Function Settings",
     "templates.save_success": "Configuration saved successfully",
     "templates.save_error": "Failed to save configuration",

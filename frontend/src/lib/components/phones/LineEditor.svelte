@@ -459,8 +459,14 @@
     function getLineDescription(line: PhoneLine) {
         let info: Record<string, any> = {};
         try {
-            info = JSON.parse(line.additional_info || "{}");
+            info = typeof line.additional_info === "string" 
+                ? JSON.parse(line.additional_info) 
+                : (line.additional_info || {});
         } catch (e) {}
+
+        if (info.description) {
+            return info.description;
+        }
 
         if (line.type === "Line") {
             return info.display_name || info.label || "";
@@ -562,9 +568,12 @@
             <div class="flex justify-between items-center mb-4 shrink-0">
                 <div>
                     <h2 class="text-lg font-semibold">
-                        {$t("lines.title") || "Line Configuration"}. {$t(
-                            "phone.number",
-                        )}: {phone.phone_number}
+                        {$t("lines.title") || "Line Configuration"}. 
+                        {#if phone?.type === 'gateway'}
+                            IP: {phone.ip_address || '-'}, Модель: {model?.name || phone.model_id || '-'}
+                        {:else}
+                            {$t("phone.number")}: {phone.phone_number || '-'}
+                        {/if}
                     </h2>
                     <p class="text-sm text-muted-foreground">
                         {$t("lines.description") ||
