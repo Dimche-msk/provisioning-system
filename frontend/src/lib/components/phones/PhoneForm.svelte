@@ -247,7 +247,7 @@
                     type: "Line",
                     account_number: 1,
                     panel_number: 0,
-                    key_number: 1,
+                    key_number: selectedModel?.keys?.[0]?.index || 1,
                     additional_info: JSON.stringify({
                         line_number: "1",
                         display_name: phone.phone_number,

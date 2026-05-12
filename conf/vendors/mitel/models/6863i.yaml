@@ -2,27 +2,29 @@ id: mitel-6863
 name: Mitel 6863i
 image: mitel6863i.png
 type: phone
-own_hard_keys: 3
+own_soft_keys: 3
+own_hard_keys: 0
 max_account_lines: 2
 keys:
-  - index: 1
-    type: prgkey
-    label: "Key 1"
-    x: 240
-    y: 125
-  - index: 2
-    type: prgkey
-    label: "Key 2"
-    x: 240
-    y: 148
-  - index: 3
-    type: prgkey
-    label: "Key 3"
-    x: 240
-    y: 168
+  # Soft Keys (offset 100)
+  - index: 101
+    type: softkey
+    label: "Softkey 1"
+    x: 50
+    y: 340
+  - index: 102
+    type: softkey
+    label: "Softkey 2"
+    x: 150
+    y: 340
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 250
+    y: 340
 
 key_types:
-  - id: prgkey
-    verbose: "Programmable Key"
+  - id: softkey
+    verbose: "Soft Key"
     polygon: ""
     image: "mitel6863i.png"

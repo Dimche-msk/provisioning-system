@@ -6,11 +6,11 @@
       label: Type
       type: hidden
       value: 16
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}linekey.{{key_index}}.type = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.type = {{value}}{% endif %}"
     - id: line_association
       type: hidden
       value: "1" # Значение заглушка, чтобы сработал рендеринг шаблона
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{account.number}}{% else %}linekey.{{key_index}}.line = {{account.number}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{account.number}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.line = {{account.number}}{% endif %}"
     - id: ringtype
       label: Ring Type
       type: select
@@ -35,15 +35,15 @@
           label: "Ring 8"        
         - value: "Splash.wav"
           label: "Splash"
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.ring_type = {{value}}{% else %}linekey.{{key_index}}.ring_type = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.ring_type = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.ring_type = {{value}}{% endif %}"
     - id: label
       label: Label
       type: string
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}linekey.{{key_index}}.label = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.label = {{value}}{% endif %}"
     - id: value
       label: Value
       type: string
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}linekey.{{key_index}}.value = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.value = {{value}}{% endif %}"
 
 - id: sd
   name: Speed Dial
@@ -53,20 +53,20 @@
       label: Type
       type: hidden
       value: 13
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}linekey.{{key_index}}.type = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.type = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.type = {{value}}{% endif %}"
     - id: line
       label: Line
       type: select
       source: lines
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{value}}{% else %}linekey.{{key_index}}.line = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.line = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.line = {{value}}{% endif %}"
     - id: label
       label: Label
       type: string
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}linekey.{{key_index}}.label = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.label = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.label = {{value}}{% endif %}"
     - id: value
       label: Value
       type: string
-      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}linekey.{{key_index}}.value = {{value}}{% endif %}"
+      config_template: "{% if expansion_module > 0 %}expansion_module.{{expansion_module}}.key.{{key_index}}.value = {{value}}{% else %}{{tag|default:'linekey'}}.{{key_index}}.value = {{value}}{% endif %}"
 
 - id: pc_port
   name: PC Port

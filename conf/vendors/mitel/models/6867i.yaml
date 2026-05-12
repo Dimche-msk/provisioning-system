@@ -1,0 +1,164 @@
+id: mitel-6867
+name: Mitel 6867i
+image: mitel6867i.png
+type: phone
+own_soft_keys: 10
+own_hard_keys: 6
+max_account_lines: 24
+keys:
+  # hardware Line Keys (Hard Keys) - 2 total
+  - index: 1 # default line
+    type: linekey
+    label: "Line Key 1"
+    x: 420
+    y: 80
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 2
+    type: linekey
+    label: "Line Key 2"
+    x: 420
+    y: 110
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+
+  # Programmable Keys (Hard Keys) - 6 total
+  - index: 10
+    type: prgkey
+    label: "Programmable Key 1"
+    x: 420
+    y: 150
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 11
+    type: prgkey
+    label: "Programmable Key 2"
+    x: 420
+    y: 180
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 12
+    type: prgkey
+    label: "Programmable Key 3"
+    x: 420
+    y: 210
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 13
+    type: prgkey
+    label: "Programmable Key 4"
+    x: 420
+    y: 240
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 14
+    type: prgkey
+    label: "Programmable Key 5"
+    x: 420
+    y: 270
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+  - index: 15
+    type: prgkey
+    label: "Programmable Key 6"
+    x: 420
+    y: 300
+    settings: { type: "prgkey", label: "prgkey", value: "prgkey", line: "prgkey" }
+
+  # Soft Keys (Lower) - 4 total (offset 100)
+  - index: 101 # default line
+    type: softkey
+    label: "Softkey 1"
+    x: 50
+    y: 340
+    settings: { type: "softkey", label: "softkey", value: "softkey", line: "softkey" }
+  - index: 102
+    type: softkey
+    label: "Softkey 2"
+    x: 120
+    y: 340
+    settings: { type: "softkey", label: "softkey", value: "softkey", line: "softkey" }
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 190
+    y: 340
+    settings: { type: "softkey", label: "softkey", value: "softkey", line: "softkey" }
+  - index: 104
+    type: softkey
+    label: "Softkey 4"
+    x: 260
+    y: 340
+    settings: { type: "softkey", label: "softkey", value: "softkey", line: "softkey" }
+
+  # Top Soft Keys - 20 total (offset 200)
+  - index: 201
+    type: topsoftkey
+    label: "Top Softkey 1"
+    x: 40
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 202
+    type: topsoftkey
+    label: "Top Softkey 2"
+    x: 100
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 203
+    type: topsoftkey
+    label: "Top Softkey 3"
+    x: 160
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 204
+    type: topsoftkey
+    label: "Top Softkey 4"
+    x: 220
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 205
+    type: topsoftkey
+    label: "Top Softkey 5"
+    x: 280
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 206
+    type: topsoftkey
+    label: "Top Softkey 6"
+    x: 340
+    y: 40
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 207
+    type: topsoftkey
+    label: "Top Softkey 7"
+    x: 40
+    y: 60
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 208
+    type: topsoftkey
+    label: "Top Softkey 8"
+    x: 100
+    y: 60
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 209
+    type: topsoftkey
+    label: "Top Softkey 9"
+    x: 160
+    y: 60
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+  - index: 210
+    type: topsoftkey
+    label: "Top Softkey 10"
+    x: 220
+    y: 60
+    settings: { type: "topsoftkey", label: "topsoftkey", value: "topsoftkey", line: "topsoftkey" }
+
+key_types:
+  - id: linekey
+    verbose: "Line Key"
+    polygon: ""
+  - id: softkey
+    verbose: "Soft Key"
+    polygon: ""
+    image: "mitel6869i.png"
+  - id: topsoftkey
+    verbose: "Top Soft Key"
+    polygon: ""
+    image: "mitel6869i.png"
+  - id: prgkey
+    verbose: "Programmable Key"
+    polygon: ""
+    image: "mitel6869i.png"

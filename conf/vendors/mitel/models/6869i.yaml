@@ -10,16 +10,67 @@ supported_expansion_modules:
   - M685
 maximum_expansion_modules: 3
 keys:
-  - index: 1
+  # Soft Keys (offset 100)
+  - index: 101 # default line
     type: softkey
-    label: "L1"
+    label: "Softkey 1"
     x: 10
     y: 50
-  - index: 2
+  - index: 102
     type: softkey
-    label: "L2"
+    label: "Softkey 2"
     x: 10
     y: 100
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 10
+    y: 150
+  - index: 104
+    type: softkey
+    label: "Softkey 4"
+    x: 10
+    y: 200
+  - index: 105
+    type: softkey
+    label: "Softkey 5"
+    x: 10
+    y: 250
+  - index: 106
+    type: softkey
+    label: "Softkey 6"
+    x: 10
+    y: 300
+  - index: 107
+    type: softkey
+    label: "Softkey 7"
+    x: 400
+    y: 50
+  - index: 108
+    type: softkey
+    label: "Softkey 8"
+    x: 400
+    y: 100
+  - index: 109
+    type: softkey
+    label: "Softkey 9"
+    x: 400
+    y: 150
+  - index: 110
+    type: softkey
+    label: "Softkey 10"
+    x: 400
+    y: 200
+  - index: 111
+    type: softkey
+    label: "Softkey 11"
+    x: 400
+    y: 250
+  - index: 112
+    type: softkey
+    label: "Softkey 12"
+    x: 400
+    y: 300
 
 key_types:
   - id: softkey

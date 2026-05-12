@@ -12,41 +12,81 @@ maximum_expansion_modules: 3
 other_features:
   - RingTon
 key_types:
-  - id: Line
-    verbose: "Линия"
-    polygon: "10,10,50,10,50,50,10,50"
-    image: "mitel6873i.png"
-
   - id: softkey
-    verbose: "Программная кнопка (экран)"
-    polygon: "10,10,50,10,50,50,10,50"
+    verbose: "Soft Key"
+    polygon: ""
     image: "mitel6873i.png"
-
   - id: topsoftkey
-    verbose: "Верхняя  (экран)"
-    polygon: "60,10,100,10,100,50,60,50"
+    verbose: "Top Soft Key"
+    polygon: ""
     image: "mitel6873i.png"
-
   - id: prgkey
-    verbose: "Программируемая клавиша"
+    verbose: "Programmable Key"
     polygon: ""
     image: "mitel6873i.png"
 keys:
+  # Line Keys (PrgKeys)
   - index: 1
-    type: Line
-    account: 1
-    label: "L1"
-    x: 40
-    y: 55
-  - index: 2
-    type: Line
-    account: 2
-    label: "L2"
+    type: prgkey
+    label: "Key 1"
     x: 440
-    y: 325
+    y: 100
+  - index: 2
+    type: prgkey
+    label: "Key 2"
+    x: 440
+    y: 130
+  - index: 3
+    type: prgkey
+    label: "Key 3"
+    x: 440
+    y: 160
+  - index: 4
+    type: prgkey
+    label: "Key 4"
+    x: 440
+    y: 190
 
-  - index: 1
+  # Softkeys (offset 100)
+  - index: 101
+    type: softkey
+    label: "Softkey 1"
+    x: 100
+    y: 350
+  - index: 102
+    type: softkey
+    label: "Softkey 2"
+    x: 200
+    y: 350
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 300
+    y: 350
+  - index: 104
+    type: softkey
+    label: "Softkey 4"
+    x: 400
+    y: 350
+
+  # Top Softkeys (offset 200)
+  - index: 201
     type: topsoftkey
-    label: "Верхняя строка"
-    x: 40
-    y: 55
+    label: "Top Softkey 1"
+    x: 0
+    y: 0
+  - index: 202
+    type: topsoftkey
+    label: "Top Softkey 2"
+    x: 0
+    y: 0
+  - index: 203
+    type: topsoftkey
+    label: "Top Softkey 3"
+    x: 0
+    y: 0
+  - index: 204
+    type: topsoftkey
+    label: "Top Softkey 4"
+    x: 0
+    y: 0

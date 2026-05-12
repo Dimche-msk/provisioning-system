@@ -4,11 +4,26 @@ type: expansion-module
 own_hard_keys: 0
 own_soft_keys: 84
 key_types:
-  - id: ExpMod1SoftKey
-    verbose: "Expansion Module 1 Key"
-  - id: ExpMod2SoftKey
-    verbose: "Expansion Module 2 Key"
-  - id: ExpMod3SoftKey
-    verbose: "Expansion Module 3 Key"
-keys: []
-settings: []
+  - id: softkey
+    verbose: "Expansion Key"
+keys:
+  - index: 1
+    type: softkey
+    label: "Key 1"
+    x: 10
+    y: 50
+  - index: 2
+    type: softkey
+    label: "Key 2"
+    x: 10
+    y: 80
+  - index: 3
+    type: softkey
+    label: "Key 3"
+    x: 10
+    y: 110
+  - index: 4
+    type: softkey
+    label: "Key 4"
+    x: 10
+    y: 140

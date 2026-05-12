@@ -682,7 +682,7 @@
                                     ? ($t("add") || "Add Line") 
                                     : ($t("common.add_key") || "Add Key")}
                             </Button>
-                            {#if phone?.type !== 'gateway'}
+                            {#if phone?.type === 'phone'}
                                 <Button
                                     on:click={addFunction}
                                     variant="outline"
@@ -710,7 +710,7 @@
 
                                 <div class="space-y-6 py-4">
                                     <div class="grid grid-cols-4 gap-4 items-end">
-                                        {#if phone?.type !== 'gateway'}
+                                        {#if phone?.type === 'phone'}
                                             <div class="space-y-1.5">
                                                 <Label class="text-xs text-muted-foreground uppercase font-bold">Тип</Label>
                                                 <select
@@ -745,13 +745,33 @@
                                                 <Input class="h-9" type="number" bind:value={editForm.account_number} />
                                             </div>
                                             <div class="space-y-1.5">
-                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Кнопка #</Label>
-                                                <Input class="h-9" type="number" min="1" bind:value={editForm.key_number} />
+                                                <Label class="text-xs text-muted-foreground uppercase font-bold">Кнопка</Label>
+                                                {#if model && model.keys && model.keys.length > 0 && Number(editForm.panel_number) === 0}
+                                                    <select
+                                                        class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                        bind:value={editForm.key_number}
+                                                    >
+                                                        <option value={0}>-- Выберите кнопку --</option>
+                                                        {#each model.keys as mk}
+                                                            <option value={mk.index}>{mk.label} ({mk.type})</option>
+                                                        {/each}
+                                                    </select>
+                                                {:else}
+                                                    <Input class="h-9" type="number" min="1" bind:value={editForm.key_number} />
+                                                {/if}
                                             </div>
                                             {#if phone?.expansion_modules_count && phone.expansion_modules_count > 0}
                                                 <div class="space-y-1.5">
-                                                    <Label class="text-xs text-muted-foreground uppercase font-bold">Панель #</Label>
-                                                    <Input class="h-9" type="number" min="0" max={phone.expansion_modules_count || 0} bind:value={editForm.panel_number} />
+                                                    <Label class="text-xs text-muted-foreground uppercase font-bold">Устройство</Label>
+                                                    <select
+                                                        class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                        bind:value={editForm.panel_number}
+                                                    >
+                                                        <option value={0}>Телефон</option>
+                                                        {#each Array.from({ length: phone.expansion_modules_count }, (_, i) => i + 1) as i}
+                                                            <option value={i}>Панель {i}</option>
+                                                        {/each}
+                                                    </select>
                                                 </div>
                                             {/if}
                                         {:else if currentEditFeature?.associated_with_account}

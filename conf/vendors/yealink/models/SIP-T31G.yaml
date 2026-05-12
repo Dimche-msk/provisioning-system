@@ -7,25 +7,46 @@ max_account_lines: 2
 maximum_expansion_modules: 0
 keys:
   - index: 1
-    type: line
+    type: linekey
     label: "Line 1"
     x: 418
     y: 86
-    settings:
-      label: "linekey.1.label"
-      value: "linekey.1.value"
-      type: "linekey.1.type"
-      line: "linekey.1.line"
   - index: 2
-    type: line
+    type: linekey
     label: "Line 2"
     x: 418
-    y: 100
-    settings:
-      label: "linekey.2.label"
-      value: "linekey.2.value"
-      type: "linekey.2.type"
-      line: "linekey.2.line"
+    y: 110
+
+  - index: 101
+    type: softkey
+    label: "Softkey 1"
+    x: 50
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 102
+    type: softkey
+    label: "Softkey 2"
+    x: 150
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 250
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 104
+    type: softkey
+    label: "Softkey 4"
+    x: 350
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+
+key_types:
+  - id: linekey
+    verbose: "Line Key"
+  - id: softkey
+    verbose: "Soft Key"
 
 settings:
   - group: "Pickup Features"

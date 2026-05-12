@@ -6,46 +6,59 @@ own_hard_keys: 4
 max_account_lines: 4
 maximum_expansion_modules: 0
 keys:
+  # Line Keys
   - index: 1
-    type: line
+    type: linekey
     label: "Line 1"
     x: 418
     y: 86
-    settings:
-      label: "linekey.1.label"
-      value: "linekey.1.value"
-      type: "linekey.1.type"
-      line: "linekey.1.line"
   - index: 2
-    type: line
+    type: linekey
     label: "Line 2"
     x: 418
-    y: 100
-    settings:
-      label: "linekey.2.label"
-      value: "linekey.2.value"
-      type: "linekey.2.type"
-      line: "linekey.2.line"
+    y: 110
   - index: 3
-    type: line
+    type: linekey
     label: "Line 3"
     x: 418
-    y: 114
-    settings:
-      label: "linekey.3.label"
-      value: "linekey.3.value"
-      type: "linekey.3.type"
-      line: "linekey.3.line"
+    y: 134
   - index: 4
-    type: line
+    type: linekey
     label: "Line 4"
     x: 418
-    y: 128
-    settings:
-      label: "linekey.4.label"
-      value: "linekey.4.value"
-      type: "linekey.4.type"
-      line: "linekey.4.line"
+    y: 158
+
+  # Softkeys (offset 100)
+  - index: 101
+    type: softkey
+    label: "Softkey 1"
+    x: 50
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 102
+    type: softkey
+    label: "Softkey 2"
+    x: 150
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 103
+    type: softkey
+    label: "Softkey 3"
+    x: 250
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+  - index: 104
+    type: softkey
+    label: "Softkey 4"
+    x: 350
+    y: 200
+    settings: { type: "programablekey", label: "programablekey", value: "programablekey" }
+
+key_types:
+  - id: linekey
+    verbose: "Line Key"
+  - id: softkey
+    verbose: "Soft Key"
 
 settings:
   - group: "Pickup Features"

@@ -7,19 +7,19 @@
       label: Type
       type: hidden
       value: speeddial
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
     - id: value
       label: Number
       type: string
-      config_template: '{{tag}}{{key_index}} value: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: '{{tag}}{{key_index}} label: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} label: {{value}}'
     - id: line
       label: Line
       type: select
-      config_template: '{{tag}}{{key_index}} line: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} line: {{value}}'
       source: accounts
 - id: blf
   name: BLF
@@ -30,19 +30,19 @@
       label: Type
       type: hidden
       value: blf
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
     - id: value
       label: Extension
       type: string
-      config_template: '{{tag}}{{key_index}} value: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: '{{tag}}{{key_index}} label: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} label: {{value}}'
     - id: line
       label: Line
       type: select
-      config_template: '{{tag}}{{key_index}} line: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} line: {{value}}'
       source: accounts
 - id: dnd
   name: Do Not Disturb
@@ -53,11 +53,11 @@
       label: Type
       type: hidden
       value: dnd
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: '{{tag}}{{key_index}} label: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} label: {{value}}'
 - id: cfwd
   name: Call Forward
   associated_with_account: false
@@ -67,15 +67,15 @@
       label: Type
       type: hidden
       value: cfwd
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
     - id: value
       label: Target
       type: string
-      config_template: '{{tag}}{{key_index}} value: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: '{{tag}}{{key_index}} label: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} label: {{value}}'
 - id: xml
   name: XML Application
   associated_with_account: false
@@ -85,15 +85,15 @@
       label: Type
       type: hidden
       value: xml
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
     - id: value
       label: URL
       type: string
-      config_template: '{{tag}}{{key_index}} value: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} value: {{value}}'
     - id: label
       label: Label
       type: string
-      config_template: '{{tag}}{{key_index}} label: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} label: {{value}}'
 - id: empty
   name: Empty
   associated_with_account: false
@@ -103,7 +103,7 @@
       label: Type
       type: hidden
       value: empty
-      config_template: '{{tag}}{{key_index}} type: {{value}}'
+      config_template: '{{tag|default:key_type}}{{key_index % 100}} type: {{value}}'
 - id: RingTon
   name: Ring Tone
   associated_with_account: true

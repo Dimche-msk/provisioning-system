@@ -118,6 +118,43 @@
 
 4.  Готовый бинарный файл `provisioning-system` (или `.exe`) появится в папке `backend`.
 
+5. Модуль systemd
+Установка на SLES12  (на другом Linux нужно изменить путь к папку системных модулей)
+
+```shell
+sudo touch /usr//lib/systemd/system/provisyoning-system.service
+sudo chmod 664 /usr/lib/systemd/system/provisyoning-system.service
+
+sudo echo /usr/lib/systemd/system/provisyoning-system.service <<
+[Unit]
+Description=Phones Provisioning system
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/sbin/provisioning-system
+ExecStart=/usr/local/sbin/provisioning-system/provisioning-system-linux-amd64 -config-dir /usr/local/sbin/provisioning-system/conf -log-file /var/log/provisionyng-system.log -log-level DEBUG
+User=mxone_admin
+
+# Always restart
+Restart=always
+
+# Slow  2 seconds before restart
+RestartSec=2
+StartLimitIntervalSec=0
+
+[Install]
+# system wide service
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl start provisyoning-system.service
+sudo systemctl status provisyoning-system.service
+
+```
+
+
 ## 3. Конфигурация системы
 
 Основной файл конфигурации `conf/provisioning-system.yaml` управляет параметрами сервера, базы данных, авторизации и настройками доменов.
