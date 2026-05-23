@@ -39,7 +39,7 @@
     <registerauthname>{{ line.auth_name }}</registerauthname>
     <registerfromuser>{{ line.auth_name }}</registerfromuser>
     <registeronlinenumber></registeronlinenumber>
-    <registerauthpassword>{{ variables.PasswdPre }}{{ line.account_number }}{{ variables.PasswdPost }}</registerauthpassword>
+    <registerauthpassword>{% if line.password -%}{{ line.password }}{%- elif variables.PasswdPre and variables.PasswdPost and (line.account_number or account.phone_number) -%}{{ variables.PasswdPre }}{{ line.account_number|default:account.phone_number }}{{ variables.PasswdPost }}{%- else -%}{{ variables.sip_password }}{%- endif %}</registerauthpassword>
     <isfax>yes</isfax>
     <forwardmoh>none</forwardmoh>
     <dialpatternidx>1</dialpatternidx>

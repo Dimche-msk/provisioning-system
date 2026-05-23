@@ -10,12 +10,12 @@
 {%- if line.type == "line" %}
 <!-- line {{line.number}} -->
 <User_ID_{{line.number}}_>{{ line.auth_name|default:line.phone_number }}</User_ID_{{line.number}}_>
-<Password_{{line.number}}_>{{ line.password|default:domain.sip_password }}</Password_{{line.number}}_>
+<Password_{{line.number}}_>{% if line.password -%}{{ line.password }}{%- elif variables.PasswdPre and variables.PasswdPost and ( line.auth_name or line.phone_number) -%}{{ variables.PasswdPre }}{{  line.auth_name|default:line.phone_number }}{{ variables.PasswdPost }}{%- else -%}{{ variables.sip_password }}{%- endif %}</Password_{{line.number}}_>
 <Register_Expires_{{line.number}}_> 120 </Register_Expires_{{line.number}}_>
 <Line_Enable_{{line.number}}_> Yes </Line_Enable_{{line.number}}_>
-<SIP_Port_{{line.number}}_>{{ line.registrar1_port|default:domain.sip_server_port|default:5060 }}</SIP_Port_{{line.number}}_>
+<SIP_Port_{{line.number}}_>{{ line.registrar1_port|default:variables.sip_server_port|default:5060 }}</SIP_Port_{{line.number}}_>
 <Default_Ring_{{line.number}}_>7</Default_Ring_{{line.number}}_>
-<Proxy_{{line.number}}_>{{ line.registrar1_ip|default:domain.sip_server_ip }}</Proxy_{{line.number}}_>
+<Proxy_{{line.number}}_>{{ line.registrar1_ip|default:variables.sip_server_ip }}</Proxy_{{line.number}}_>
 <Use_Outbound_Proxy_{{line.number}}_> No </Use_Outbound_Proxy_{{line.number}}_>
 <Register_{{line.number}}_> Yes </Register_{{line.number}}_>
 <Extension_{{line.number}}_>{{line.number}}</Extension_{{line.number}}_>
@@ -63,14 +63,14 @@
 
 <!-- Optional Network Configuration -->
 
-<Primary_DNS>      {{domain.dns_server|default:"8.8.8.8"}}  </Primary_DNS>
-<Secondary_DNS>    {{domain.dns_server2|default:"8.8.4.4"}}  </Secondary_DNS>
+<Primary_DNS>      {{variables.dns_server|default:"8.8.8.8"}}  </Primary_DNS>
+<Secondary_DNS>    {{variables.dns_server2|default:"8.8.4.4"}}  </Secondary_DNS>
 <DNS_Server_Order> Manual         </DNS_Server_Order>
 <DNS_Query_Mode>   Parallel       </DNS_Query_Mode>
 
-<Primary_NTP_Server>{{domain.ntp_server|default:ru.pool.ntp.org}}</Primary_NTP_Server>
-{%- if domain.ntp_server2 %}
-<Secondary_NTP_Server>{{domain.ntp_server2|default:ru.pool.ntp.org}}</Secondary_NTP_Server>
+<Primary_NTP_Server>{{variables.ntp_server|default:ru.pool.ntp.org}}</Primary_NTP_Server>
+{%- if variables.ntp_server2 %}
+<Secondary_NTP_Server>{{variables.ntp_server2|default:ru.pool.ntp.org}}</Secondary_NTP_Server>
 {%- endif %}
 <Idle_Key_List>em_login|1;acd_login|1;acd_logout|1;avail|3;unavail|3;redial|5;dir|6;cfwd|7;|8;lcr|9;pickup|10;gpickup|11;unpark|12;em_logout</Idle_Key_List>
 <Group_Paging_Script group="Phone/Multiple_Paging_Group_Parameters"></Group_Paging_Script>

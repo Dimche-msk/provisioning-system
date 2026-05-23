@@ -9,15 +9,7 @@ account.{{line.number}}.label = {{ line.screen_name|default:line.display_name|de
 account.{{line.number}}.display_name = {{ line.display_name|default:line.screen_name|default:line.number }}
 account.{{line.number}}.auth_name = {{ line.auth_name|default:line.number }}
 account.{{line.number}}.user_name = {{ line.user_name|default:line.number }}
-{%- if line.password -%}
-
-account.{{line.number}}.password = {{ line.password }}
-{%- elif variables.PasswdPre and variables.PasswdPost -%}
-
-account.{{line.number}}.password = {{ variables.PasswdPre }}{{ account.phone_number }}{{ variables.PasswdPost }}
-{%- else -%}
-account.{{line.number}}.password = {{ variables.sip_password }}
-{%- endif %}
+account.{{line.number}}.password = {% if line.password -%}{{ line.password }}{%- elif variables.PasswdPre and variables.PasswdPost and (line.auth_name or line.phone_number) -%}{{ variables.PasswdPre }}{{ line.auth_name|default:line.phone_number }}{{ variables.PasswdPost }}{%- else -%}{{ variables.sip_password }}{%- endif %}
 {%- if line.custom_sip_server %}
 account.{{line.number}}.sip_server.1.address = {{line.custom_sip_server.registrar_ip}}
 account.{{line.number}}.sip_server.1.port = {{line.custom_sip_server.registrar_port}}

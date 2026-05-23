@@ -381,11 +381,12 @@ accounts_file: accounts.yaml                          # [Опционально]
 
 2.  **`domain`** — Объект текущего домена:
     *   `name`: Имя домена.
-    *   Любые переменные, заданные в `provisioning-system.yaml` в секции `variables` (например, `domain.sip_server_ip`, `domain.ntp_server`).
 
-3.  **`phones`** — Список всех телефонов в текущем домене (полезно для генерации справочников).
+3.  **`variables.`** Любые переменные, заданные в `provisioning-system.yaml` в секции `variables` (например, `variables.sip_server_ip`, `variables.ntp_server`).
 
-4.  **`all_domains`** — Список всех доменов и их телефонов (для глобальных справочников).
+4.  **`phones`** — Список всех телефонов в текущем домене (полезно для генерации справочников).
+
+5  **`all_domains`** — Список всех доменов и их телефонов (для глобальных справочников).
 
 #### Пример шаблона (Cisco)
 
@@ -402,8 +403,8 @@ accounts_file: accounts.yaml                          # [Опционально]
     {%- if line.type == "line" %}
     <!-- Линия {{line.number}} -->
     <User_ID_{{line.number}}_>{{ line.auth_name|default:line.phone_number }}</User_ID_{{line.number}}_>
-    <Password_{{line.number}}_>{{ line.password|default:domain.sip_password }}</Password_{{line.number}}_>
-    <Proxy_{{line.number}}_>{{ line.registrar1_ip|default:domain.sip_server_ip }}</Proxy_{{line.number}}_>
+    <Password_{{line.number}}_>{{ line.password|default:variables.sip_password }}</Password_{{line.number}}_>
+    <Proxy_{{line.number}}_>{{ line.registrar1_ip|default:variables.sip_server_ip }}</Proxy_{{line.number}}_>
     {%- endif %}
     {%- endfor %}
 

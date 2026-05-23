@@ -107,7 +107,7 @@ domains:
     deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
     variables:
       ntp_server: "pool.ntp.org"
-      sip_server_ip: "192.168.88.150"
+      sip_registrar1_address: "192.168.88.150"
       sip_server_port: "5060"
       vlan_voip: "100"
       vlan_pc: "1"
@@ -115,21 +115,21 @@ domains:
     deploy_cmd: "echo 'Deploying {{.FilePath}} to branch-1'"
     variables:
       ntp_server: "pool.ntp.org"
-      sip_server_ip: "192.168.88.150"
+      sip_registrar1_address: "192.168.88.150"
       sip_server_port: "5060"
       sip_password: "SipPasswd$"
   - name: "New_Domain"
     generate_random_password: True
     variables:
       ntp_server: "pool.ntp.org"
-      sip_server_ip: "172.16.00.150"
+      sip_registrar1_address: "172.16.00.150"
       sip_server_port: "5060"
       sip_password: "SipPasswd$"
   - name: "Tower"
     generate_random_password: False
     variables:
       ntp_server: "pool.ntp.org"
-      sip_server_ip: "10.0.0.4"
+      sip_registrar1_address: "10.0.0.4"
       sip_server_port: "5060"
       sip_password: "SipPasswd$"
 

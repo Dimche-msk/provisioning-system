@@ -242,26 +242,41 @@
     function onPhoneNumberChange() {
         if (!phone.phone_number) return;
 
+        const vendor = vendors.find((v) => v.id === phone.vendor);
+        const accountSchema = vendor?.accounts?.find((a) => a.id === "account");
+
         // Auto-create Line 1 on creation
         if (
             mode === "create" &&
             phone.phone_number &&
             (!phone.lines || phone.lines.length === 0)
         ) {
+            const info: Record<string, any> = {};
+            if (accountSchema && accountSchema.params) {
+                for (const param of accountSchema.params) {
+                    if (param.is_phone_number) {
+                        info[param.id] = phone.phone_number;
+                    } else if (param.type === "hidden" && param.value !== undefined) {
+                        info[param.id] = param.value;
+                    } else if (param.type === "boolean") {
+                        info[param.id] = false;
+                    } else {
+                        info[param.id] = "";
+                    }
+                }
+            } else {
+                info.user_name = phone.phone_number;
+                info.auth_name = phone.phone_number;
+                info.password = "";
+            }
+
             phone.lines = [
                 {
                     type: "Line",
                     account_number: 1,
                     panel_number: 0,
                     key_number: selectedModel?.keys?.[0]?.index || 1,
-                    additional_info: JSON.stringify({
-                        line_number: "1",
-                        display_name: phone.phone_number,
-                        user_name: phone.phone_number,
-                        auth_name: phone.phone_number,
-                        password: "",
-                        screen_name: phone.phone_number,
-                    }),
+                    additional_info: JSON.stringify(info),
                 },
             ];
             toast.info($t("phone.line1_auto_created") || "Line 1 automatically created");
@@ -269,8 +284,8 @@
             return;
         }
 
-        // Auto-update Line 1 on edit if pristine
-        if (mode === "edit" && originalPhoneNumber && phone.phone_number !== originalPhoneNumber) {
+        // Auto-update Line 1 if pristine
+        if (originalPhoneNumber && phone.phone_number !== originalPhoneNumber) {
             const line1Index = phone.lines.findIndex(l => l.account_number === 1 && l.type === "Line");
             if (line1Index !== -1) {
                 const line1 = phone.lines[line1Index];
@@ -285,18 +300,49 @@
                 }
 
                 // Check if it's "pristine" (matches old number and no password)
-                const isPristine = 
-                    info.user_name === originalPhoneNumber &&
-                    info.auth_name === originalPhoneNumber &&
-                    (info.display_name === originalPhoneNumber || !info.display_name) &&
-                    (info.screen_name === originalPhoneNumber || !info.screen_name) &&
-                    (!info.password);
+                let isPristine = true;
+                if (accountSchema && accountSchema.params) {
+                    for (const param of accountSchema.params) {
+                        const val = info[param.id];
+                        if (param.is_phone_number) {
+                            if (val !== originalPhoneNumber) {
+                                isPristine = false;
+                                break;
+                            }
+                        } else if (param.id === "password") {
+                            if (val) {
+                                isPristine = false;
+                                break;
+                            }
+                        } else if (param.id === "auth_name" || param.id === "display_name" || param.id === "screen_name") {
+                            if (val && val !== originalPhoneNumber) {
+                                isPristine = false;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    isPristine = 
+                        info.user_name === originalPhoneNumber &&
+                        info.auth_name === originalPhoneNumber &&
+                        (!info.password);
+                }
 
                 if (isPristine) {
-                    info.user_name = phone.phone_number;
-                    info.auth_name = phone.phone_number;
-                    info.display_name = phone.phone_number;
-                    info.screen_name = phone.phone_number;
+                    if (accountSchema && accountSchema.params) {
+                        for (const param of accountSchema.params) {
+                            if (param.is_phone_number) {
+                                info[param.id] = phone.phone_number;
+                            } else if (param.id === "auth_name" || param.id === "display_name" || param.id === "screen_name") {
+                                if (info[param.id] === originalPhoneNumber || !info[param.id]) {
+                                    info[param.id] = phone.phone_number;
+                                }
+                            }
+                        }
+                    } else {
+                        info.user_name = phone.phone_number;
+                        info.auth_name = phone.phone_number;
+                    }
                     
                     line1.additional_info = JSON.stringify(info);
                     phone.lines[line1Index] = line1;
@@ -306,6 +352,7 @@
                     toast.warning($t("phone.line1_manual_edit_preserved") || "Line 1 was not updated because it contains manual edits");
                 }
             }
+            originalPhoneNumber = phone.phone_number;
         }
     }
 </script>

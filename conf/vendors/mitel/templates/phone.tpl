@@ -9,13 +9,13 @@
 # ------------- line {{line.number}} --------------
 sip line{{line.number}} user name: {{ line.user_name|default:line.number }}
 sip line{{line.number}} auth name: {{ line.auth_name|default:line.number }}
-sip line{{line.number}} password: {{ line.password|default:domain.sip_password }}
+sip line{{line.number}} password: {% if line.password -%}{{ line.password }}{%- elif variables.PasswdPre and variables.PasswdPost and (line.auth_name or line.phone_number) -%}{{ variables.PasswdPre }}{{ auth_name|default:line.phone_number }}{{ variables.PasswdPost }}{%- else -%}{{ variables.sip_password }}{%- endif %}
 sip line{{line.number}} display name: {{ line.display_name|default:line.screen_name|default:line.number }}
 sip line{{line.number}} screen name: {{ line.screen_name|default:line.display_name|default:line.number }}
-sip line{{line.number}} proxy: {{ line.registrar_ip|default:domain.sip_server_ip }}
-sip line{{line.number}} proxy port: {{ line.registrar_port|default:domain.sip_server_port|default:5060 }}
-sip line{{line.number}} registrar: {{ line.registrar_ip|default:domain.sip_server_ip }}
-sip line{{line.number}} registrar port: {{ line.registrar_port|default:domain.sip_server_port|default:5060 }}
+sip line{{line.number}} proxy: {{ line.registrar_ip|default:variables.sip_server_ip }}
+sip line{{line.number}} proxy port: {{ line.registrar_port|default:variables.sip_server_port|default:5060 }}
+sip line{{line.number}} registrar: {{ line.registrar_ip|default:variables.sip_server_ip }}
+sip line{{line.number}} registrar port: {{ line.registrar_port|default:variables.sip_server_port|default:5060 }}
 {%- endif %}
 {%- endfor %}
 
