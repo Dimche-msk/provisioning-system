@@ -5,7 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"provisioning-system/internal/config"
 	"provisioning-system/internal/models"
+	"provisioning-system/internal/provisioner"
 )
 
 func TestExecuteCommands(t *testing.T) {
@@ -53,6 +55,51 @@ func TestExecuteCommands(t *testing.T) {
 	}
 
 	expected := "Domain: test.local\nMAC: 00:11:22:33:44:55\nServer: 192.168.1.100\n"
+	if string(content) != expected {
+		t.Errorf("Unexpected content.\nExpected:\n%s\nGot:\n%s", expected, string(content))
+	}
+}
+
+func TestExecuteDeployOrDeleteWithStaticIP(t *testing.T) {
+	// 1. Setup temp dir
+	tmpDir, err := os.MkdirTemp("", "provisioning-test-deploy")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// 2. Setup mock config
+	cfg := &config.SystemConfig{}
+	domain1 := config.DomainSettings{
+		Name:              "main_PBX",
+		StaticIPAddresses: true,
+		DeployCommands: []string{
+			"echo 'IP: {{.Vars.static_ip_addresses}}' > " + filepath.Join(tmpDir, "deploy_out.txt"),
+		},
+	}
+	cfg.Domains = append(cfg.Domains, domain1)
+
+	pm := provisioner.NewManager(cfg)
+
+	// 3. Prepare phone data
+	phone := &models.Phone{
+		Domain:    "main_PBX",
+		IPAddress: "192.168.1.55",
+	}
+
+	// 4. Execute deploy
+	err = executeDeployOrDelete(pm, tmpDir, domain1.DeployCommands, "main_PBX", phone, nil)
+	if err != nil {
+		t.Fatalf("executeDeployOrDelete failed: %v", err)
+	}
+
+	// 5. Verify output
+	content, err := os.ReadFile(filepath.Join(tmpDir, "deploy_out.txt"))
+	if err != nil {
+		t.Fatalf("Failed to read output file: %v", err)
+	}
+
+	expected := "IP: yes\n"
 	if string(content) != expected {
 		t.Errorf("Unexpected content.\nExpected:\n%s\nGot:\n%s", expected, string(content))
 	}

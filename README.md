@@ -196,6 +196,8 @@ The main configuration file `conf/provisioning-system.yaml` controls server para
     *   `deploy_commands`: List of commands executed after configuration generation (e.g., copying files to TFTP server, reloading PBX). Supports templating.
     *   `delete_commands`: List of commands executed when deleting a phone.
     *   `generate_random_password`: If `True`, the system automatically generates a password for new phones if one is not set.
+    *   `static_ip_addresses`: If `True` (or `yes`), specifies that this domain uses static IP addresses. When enabled, deployment commands can access this flag (via `.Vars.static_ip_addresses`) and use the phone's IP address from the database directly, bypassing dynamic lookups (like `mx_one_get_extension_ip.sh`).
+    *   `track_phone_ips` (alias `отслеживать_ип_телефонов`): If `True` (or `yes`), the system dynamically tracks the phone's IP address. Every time a phone requests its configuration file (via HTTP or TFTP), the system checks if the request's client IP matches the IP address stored in the database. If they differ, the database is updated automatically with the new IP address.
     *   `variables`: Arbitrary variables (key-value) available in configuration templates (e.g., SIP server IP, NTP server, VLAN, etc.).
 
 ### Configuration Example
@@ -219,6 +221,8 @@ database:
 domains:
   - name: "MainOffice"
     generate_random_password: True
+    static_ip_addresses: True
+    track_phone_ips: True
     deploy_commands:
       - "scp {{.FilePath}} user@tftp-server:/tftpboot/"
       - "ssh user@asterisk 'asterisk -rx \"sip reload\"'"

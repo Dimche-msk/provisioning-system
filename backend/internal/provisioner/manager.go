@@ -12,23 +12,34 @@ import (
 
 	"github.com/flosch/pongo2/v6"
 	"gopkg.in/yaml.v3"
+	"gorm.io/gorm"
 )
 
 type Manager struct {
 	Config  *config.SystemConfig
 	Vendors []VendorConfig
 	Models  []DeviceModel
+	Tracker *PhoneTracker
 }
 
 func NewManager(cfg *config.SystemConfig) *Manager {
 	// Disable Pongo2 caching to allow hot-reloading of templates
 	pongo2.DefaultSet.Debug = true
 
-	return &Manager{
+	m := &Manager{
 		Config:  cfg,
 		Vendors: []VendorConfig{},
 		Models:  []DeviceModel{},
 	}
+	m.Tracker = NewPhoneTracker(m)
+	return m
+}
+
+func (m *Manager) InitTracker(db *gorm.DB) error {
+	if m.Tracker != nil {
+		return m.Tracker.Initialize(db)
+	}
+	return nil
 }
 
 // getVendorByID ищет вендора по ID

@@ -22,6 +22,8 @@ database:
 # При скачивании файла, сначала файл ищется в первом домене, а потом в других. Т.е. Общие файлы конфигурации будут из первого домена
 domains:
   - name: "main_PBX"
+    static_ip_addresses: no # yes
+    track_phone_ips: True
     deploy_commands:
       - >
         {{- $pass := .Vars.sip_password -}}
@@ -35,17 +37,38 @@ domains:
           {{- $pass = print .Vars.PasswdPre .Phone.PhoneNumber .Vars.PasswdPost -}}
         {{- end -}}
         ./provision_subscriber.sh -n "{{if .Phone.PhoneNumber}}{{.Phone.PhoneNumber}}{{end}}" -f "{{.Phone.Description}}" -c {{.Vars.default_csp}} -p "{{$pass}}" 
-      - >
-      - >
+      - |
         {{- /* Объявляем переменную заранее */ -}}
         {{- $current_number := .Phone.PhoneNumber -}}
         {{- if .Vars.old_number -}}
           {{- $current_number = .Vars.old_number -}}
         {{- end -}}
-        {{- if eq .Phone.Vendor "mitel" -}}
-          PHONE_IP=$(./scripts/mx_one_get_extension_ip.sh "{{ $current_number }}" 2>/dev/null); if [ -n "$PHONE_IP" ]; then sleep 5 && ./scripts/sip_notify_check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}" &; fi || true
+        {{- $phone_ip := "" -}}
+        {{- if and (eq .Vars.static_ip_addresses "yes") .Phone.IPAddress -}}
+          {{- $phone_ip = .Phone.IPAddress -}}
         {{- else -}}
-          PHONE_IP=$(./scripts/mx_one_get_extension_ip.sh "{{ $current_number }}" 2>/dev/null); if [ -n "$PHONE_IP" ]; then sleep 5 && ./scripts/sip_notify_check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}" &; fi || true
+          {{- if .Phone.IPAddress -}}
+            {{- $phone_ip = .Phone.IPAddress -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if eq .Phone.Vendor "mitel" -}}
+          {{- if $phone_ip -}}
+            PHONE_IP="{{ $phone_ip }}"
+          {{- else -}}
+            PHONE_IP=$(./scripts/mx_one_get_extension_ip.sh "{{ $current_number }}" 2>/dev/null)
+          {{- end }}
+          if [ -n "$PHONE_IP" ]; then
+            sleep 5 && ./scripts/sip_notify_check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}" &
+          fi || true
+        {{- else -}}
+          {{- if $phone_ip -}}
+            PHONE_IP="{{ $phone_ip }}"
+          {{- else -}}
+            PHONE_IP=$(./scripts/mx_one_get_extension_ip.sh "{{ $current_number }}" 2>/dev/null)
+          {{- end }}
+          if [ -n "$PHONE_IP" ]; then
+            sleep 5 && ./scripts/sip_notify_check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}" &
+          fi || true
         {{- end -}}
       
     # delete_cmd: "echo 'Deleting {{.FileName}} from default server'" # Legacy

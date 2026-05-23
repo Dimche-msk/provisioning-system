@@ -223,6 +223,10 @@ func (h *PhoneHandler) CreatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if h.ProvManager != nil && h.ProvManager.Tracker != nil {
+		h.ProvManager.Tracker.Rebuild()
+	}
+
 	// Generate config for new phone
 	outputDir := strings.TrimSuffix(h.ConfigDir, "/") + "/temp_configs"
 	if _, err := h.ProvManager.GeneratePhoneConfigs(outputDir, []models.Phone{phone}); err != nil {
@@ -555,6 +559,10 @@ func (h *PhoneHandler) UpdatePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if h.ProvManager != nil && h.ProvManager.Tracker != nil {
+		h.ProvManager.Tracker.Rebuild()
+	}
+
 	newPhoneNumber := ""
 	if existingPhone.PhoneNumber != nil {
 		newPhoneNumber = *existingPhone.PhoneNumber
@@ -686,6 +694,10 @@ func (h *PhoneHandler) DeletePhone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if h.ProvManager != nil && h.ProvManager.Tracker != nil {
+		h.ProvManager.Tracker.Rebuild()
+	}
+
 	// 3. Execute DeleteCmd (Deploy changes)
 	if err := h.executeDeleteCmd(phone.Domain, &phone, ""); err != nil {
 		logger.Warn("Failed to execute delete command for domain %s: %v", phone.Domain, err)
@@ -729,8 +741,20 @@ func (h *PhoneHandler) executeDeleteCmd(domainName string, phone *models.Phone, 
 }
 
 func executeDeployOrDelete(pm *provisioner.Manager, configDir string, commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {
+	// Create a copy of domainVars to avoid modifying the configuration state
+	varsCopy := make(map[string]string)
+	for k, v := range domainVars {
+		varsCopy[k] = v
+	}
+
+	cfg := pm.Config
+	domainCfg := cfg.GetEffectiveDomainConfig(domainName)
+	if domainCfg.StaticIPAddresses {
+		varsCopy["static_ip_addresses"] = "yes"
+	}
+
 	if phone == nil {
-		return executeProvisioningCommands(configDir, commands, domainName, nil, domainVars)
+		return executeProvisioningCommands(configDir, commands, domainName, nil, varsCopy)
 	}
 
 	model, err := pm.GetModel(phone.Vendor, phone.ModelID)
@@ -756,7 +780,7 @@ func executeDeployOrDelete(pm *provisioner.Manager, configDir string, commands [
 				if desc, ok := info["Description"].(string); ok {
 					linePhone.Description = desc
 				}
-				if err := executeProvisioningCommands(configDir, commands, domainName, &linePhone, domainVars); err != nil {
+				if err := executeProvisioningCommands(configDir, commands, domainName, &linePhone, varsCopy); err != nil {
 					executionErrors = append(executionErrors, fmt.Sprintf("Line %s: %v", userName, err))
 				}
 			}
@@ -767,7 +791,7 @@ func executeDeployOrDelete(pm *provisioner.Manager, configDir string, commands [
 		return nil
 	}
 
-	return executeProvisioningCommands(configDir, commands, domainName, phone, domainVars)
+	return executeProvisioningCommands(configDir, commands, domainName, phone, varsCopy)
 }
 
 func executeProvisioningCommands(configDir string, commands []string, domainName string, phone *models.Phone, domainVars map[string]string) error {

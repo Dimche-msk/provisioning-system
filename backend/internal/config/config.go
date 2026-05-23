@@ -15,6 +15,9 @@ type DomainSettings struct {
 	DeployCommands         []string          `yaml:"deploy_commands" json:"deploy_commands"`                // New: list of commands
 	DeleteCommands         []string          `yaml:"delete_commands" json:"delete_commands"`                // New: list of commands
 	GenerateRandomPassword bool              `yaml:"generate_random_password" json:"generate_random_password"` // If true, generate random password for new phones
+	StaticIPAddresses      bool              `yaml:"static_ip_addresses" json:"static_ip_addresses"`
+	TrackPhoneIPs          bool              `yaml:"track_phone_ips" json:"track_phone_ips"`
+	TrackPhoneIPsRU        bool              `yaml:"отслеживать_ип_телефонов" json:"отслеживать_ип_телефонов"`
 	Variables              map[string]string `yaml:"variables" json:"variables"`
 }
 
@@ -110,6 +113,9 @@ func (cfg *SystemConfig) GetEffectiveDomainConfig(domainName string) DomainSetti
 		DeployCommands:         make([]string, len(targetDomain.DeployCommands)),
 		DeleteCommands:         make([]string, len(targetDomain.DeleteCommands)),
 		GenerateRandomPassword: targetDomain.GenerateRandomPassword,
+		StaticIPAddresses:      targetDomain.StaticIPAddresses,
+		TrackPhoneIPs:          targetDomain.TrackPhoneIPs || targetDomain.TrackPhoneIPsRU,
+		TrackPhoneIPsRU:        targetDomain.TrackPhoneIPsRU,
 		Variables:              make(map[string]string),
 	}
 	copy(effective.DeployCommands, targetDomain.DeployCommands)

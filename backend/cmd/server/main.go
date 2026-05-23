@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -92,6 +93,15 @@ func main() {
 	deviceLogger := devicelogger.NewDeviceLogger(cfg, b)
 	authHandler := api.NewAuthHandler(cfg)
 
+	// 5. Инициализация Provisioner Manager
+	provManager := provisioner.NewManager(cfg)
+	if err := provManager.LoadVendors(filepath.Join(*configDir, "vendors")); err != nil {
+		log.Printf("Warning: Failed to load vendors: %v", err)
+	}
+	if err := provManager.LoadModels(); err != nil {
+		log.Printf("Warning: Failed to load models: %v", err)
+	}
+
 	// 4. Настройка роутинга
 	r := mux.NewRouter()
 	r.SkipClean(true)
@@ -106,6 +116,11 @@ func main() {
 			if actualPath, err := findFileCaseInsensitive(configsDir, r.URL.Path); err == nil {
 				r.URL.Path = "/" + actualPath
 			}
+			clientIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+			if clientIP == "" {
+				clientIP = r.RemoteAddr
+			}
+			provManager.Tracker.UpdateIP(filepath.Base(r.URL.Path), clientIP)
 			configFs.ServeHTTP(w, r)
 		})
 
@@ -116,19 +131,15 @@ func main() {
 		fmt.Printf("Serving generated configs at http://.../ from %s\n", configsDir)
 	}
 
-	// 5. Инициализация Provisioner Manager
-	provManager := provisioner.NewManager(cfg)
-	if err := provManager.LoadVendors(filepath.Join(*configDir, "vendors")); err != nil {
-		log.Printf("Warning: Failed to load vendors: %v", err)
-	}
-	if err := provManager.LoadModels(); err != nil {
-		log.Printf("Warning: Failed to load models: %v", err)
-	}
-
 	// 6. Инициализация Database
 	database, err := db.Init(cfg.Database.Path)
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
+	}
+
+	// Инициализация Phone IP Tracker
+	if err := provManager.InitTracker(database); err != nil {
+		log.Printf("Warning: Failed to initialize Phone IP Tracker: %v", err)
 	}
 
 	// 7. Инициализация License Manager
@@ -140,7 +151,7 @@ func main() {
 	// 10. Start TFTP Server (if enabled)
 	var tftpSrv *tftp.Server
 	if cfg.Server.TFTPServer {
-		tftpSrv = tftp.NewServer(*configDir, cfg, deviceLogger)
+		tftpSrv = tftp.NewServer(*configDir, cfg, deviceLogger, provManager)
 		go func() {
 			if err := tftpSrv.Start(); err != nil {
 				log.Printf("TFTP Server error: %v", err)
@@ -256,6 +267,11 @@ func main() {
 					configPath := filepath.Join(domainDir, actualPath)
 					if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
 						deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from default domain: %s", defaultDomain))
+						clientIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+						if clientIP == "" {
+							clientIP = r.RemoteAddr
+						}
+						provManager.Tracker.UpdateIP(filepath.Base(configPath), clientIP)
 						http.ServeFile(w, r, configPath)
 						return
 					}
@@ -278,6 +294,11 @@ func main() {
 							configPath := filepath.Join(domainDir, actualPath)
 							if info, err := os.Stat(configPath); err == nil && !info.IsDir() {
 								deviceLogger.LogCustom(r, http.StatusOK, fmt.Sprintf("Served from domain: %s", domain))
+								clientIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+								if clientIP == "" {
+									clientIP = r.RemoteAddr
+								}
+								provManager.Tracker.UpdateIP(filepath.Base(configPath), clientIP)
 								http.ServeFile(w, r, configPath)
 								return
 							}

@@ -11,6 +11,7 @@ import (
 
 	"provisioning-system/internal/config"
 	"provisioning-system/internal/devicelogger"
+	"provisioning-system/internal/provisioner"
 
 	"github.com/pin/tftp/v3"
 )
@@ -19,15 +20,17 @@ type Server struct {
 	ConfigDir    string
 	Config       *config.SystemConfig
 	DeviceLogger *devicelogger.DeviceLogger
+	ProvManager  *provisioner.Manager
 	isRunning    bool
 	lastError    error
 }
 
-func NewServer(configDir string, cfg *config.SystemConfig, dl *devicelogger.DeviceLogger) *Server {
+func NewServer(configDir string, cfg *config.SystemConfig, dl *devicelogger.DeviceLogger, pm *provisioner.Manager) *Server {
 	return &Server{
 		ConfigDir:    configDir,
 		Config:       cfg,
 		DeviceLogger: dl,
+		ProvManager:  pm,
 	}
 }
 
@@ -127,6 +130,10 @@ func (s *Server) readHandler(filename string, rf io.ReaderFrom) error {
 
 	s.DeviceLogger.LogAccess(clientIP, 200, "TFTP", "/"+cleanPath, "TFTP Client", fmt.Sprintf("Served from domain: %s", foundDomain))
 	
+	if s.ProvManager != nil && s.ProvManager.Tracker != nil {
+		s.ProvManager.Tracker.UpdateIP(filepath.Base(cleanPath), clientIP)
+	}
+
 	_, err = rf.ReadFrom(file)
 	return err
 }

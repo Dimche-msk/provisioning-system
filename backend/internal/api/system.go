@@ -70,6 +70,10 @@ func (h *SystemHandler) Reload(w http.ResponseWriter, r *http.Request) {
 	*h.Config = newCfg
 	h.ProvManager.Config = newCfg
 
+	if h.ProvManager.Tracker != nil {
+		h.ProvManager.Tracker.Rebuild()
+	}
+
 	// 2. Reload vendor configs
 	vendorsDir := filepath.Join(h.ConfigDir, "vendors")
 	if err := h.ProvManager.LoadVendors(vendorsDir); err != nil {
@@ -173,6 +177,9 @@ func (h *SystemHandler) ApplyConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	if h.ProvManager != nil && h.ProvManager.Tracker != nil {
+		h.ProvManager.Tracker.Rebuild()
+	}
 	w.Write([]byte(`{"status": "ok", "message": "Configuration applied successfully."}`))
 }
 
