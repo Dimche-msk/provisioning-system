@@ -171,7 +171,7 @@ func main() {
 	// Public API
 	apiRouter.HandleFunc("/login", authHandler.Login).Methods("POST")
 	apiRouter.HandleFunc("/logout", authHandler.Logout).Methods("POST")
-	apiRouter.HandleFunc("/check-auth", authHandler.CheckAuth).Methods("GET")
+	apiRouter.HandleFunc("/check-auth", authHandler.CheckAuth).Methods("GET", "POST")
 
 	// Protected API
 	// Middleware wrapper

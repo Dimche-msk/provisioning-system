@@ -32,9 +32,10 @@ type SystemConfig struct {
 		TFTPPort        string `yaml:"tftp_port" json:"tftp_port"`
 	} `yaml:"server" json:"server"`
 	Auth struct {
-		AdminUser     string `yaml:"admin_user" json:"admin_user"`
-		AdminPassword string `yaml:"admin_password" json:"admin_password"`
-		SecretKey     string `yaml:"secret_key" json:"secret_key"`
+		AdminUser      string `yaml:"admin_user" json:"admin_user"`
+		AdminPassword  string `yaml:"admin_password" json:"admin_password"`
+		SecretKey      string `yaml:"secret_key" json:"secret_key"`
+		AutoLogoffTime int    `yaml:"autologoff_time" json:"autologoff_time"`
 	} `yaml:"auth" json:"auth"`
 	Database struct {
 		Path      string `yaml:"path" json:"path"`

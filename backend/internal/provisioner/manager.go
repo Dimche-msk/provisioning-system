@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"provisioning-system/internal/config"
@@ -206,10 +207,14 @@ func (m *Manager) GenerateConfigs(outputDir string, phones []models.Phone) error
 	}
 
 	for _, d := range m.Config.Domains {
+		domainPhones := phonesByDomain[d.Name]
+		byNumber, byName := m.getSortedDirectory(domainPhones)
 		domainData := map[string]interface{}{
-			"name":      d.Name,
-			"variables": d.Variables,
-			"phones":    phonesByDomain[d.Name],
+			"name":                d.Name,
+			"variables":           d.Variables,
+			"phones":              domainPhones,
+			"directory_by_number": byNumber,
+			"directory_by_name":   byName,
 		}
 		allDomains = append(allDomains, domainData)
 	}
@@ -339,10 +344,14 @@ func (m *Manager) GenerateDirectories(outputDir string, phones []models.Phone) e
 	}
 
 	for _, d := range m.Config.Domains {
+		domainPhones := phonesByDomain[d.Name]
+		byNumber, byName := m.getSortedDirectory(domainPhones)
 		domainData := map[string]interface{}{
-			"name":      d.Name,
-			"variables": d.Variables,
-			"phones":    phonesByDomain[d.Name],
+			"name":                d.Name,
+			"variables":           d.Variables,
+			"phones":              domainPhones,
+			"directory_by_number": byNumber,
+			"directory_by_name":   byName,
 		}
 		allDomains = append(allDomains, domainData)
 	}
@@ -856,4 +865,71 @@ func renderPongoTemplate(tplString string, ctx pongo2.Context) (string, error) {
 		return "", err
 	}
 	return tpl.Execute(ctx)
+}
+
+type DirectoryContact struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	PhoneNumber string `json:"phone_number"`
+	Description string `json:"description"`
+}
+
+func splitDescription(desc string) (string, string) {
+	parts := strings.Split(desc, " ")
+	var firstName, lastName string
+	if len(parts) > 0 {
+		firstName = parts[0]
+	}
+	if len(parts) > 1 {
+		lastName = parts[1]
+	}
+	return firstName, lastName
+}
+
+func (m *Manager) getSortedDirectory(phones []models.Phone) (byNumber, byName []DirectoryContact) {
+	var contacts []DirectoryContact
+	for _, p := range phones {
+		if p.Type == "gateway" {
+			for _, line := range p.Lines {
+				info := line.GetAdditionalInfoMap()
+				desc, okDesc := info["description"].(string)
+				userName, okUser := info["user_name"].(string)
+				if okDesc && desc != "" && okUser && userName != "" {
+					firstName, lastName := splitDescription(desc)
+					contacts = append(contacts, DirectoryContact{
+						FirstName:   firstName,
+						LastName:    lastName,
+						PhoneNumber: userName,
+						Description: desc,
+					})
+				}
+			}
+		} else {
+			if p.Description != "" && p.PhoneNumber != nil && *p.PhoneNumber != "" {
+				firstName, lastName := splitDescription(p.Description)
+				contacts = append(contacts, DirectoryContact{
+					FirstName:   firstName,
+					LastName:    lastName,
+					PhoneNumber: *p.PhoneNumber,
+					Description: p.Description,
+				})
+			}
+		}
+	}
+
+	byNumber = make([]DirectoryContact, len(contacts))
+	copy(byNumber, contacts)
+	sort.Slice(byNumber, func(i, j int) bool {
+		return byNumber[i].PhoneNumber < byNumber[j].PhoneNumber
+	})
+
+	byName = make([]DirectoryContact, len(contacts))
+	copy(byName, contacts)
+	sort.Slice(byName, func(i, j int) bool {
+		nameI := strings.ToLower(byName[i].FirstName + " " + byName[i].LastName)
+		nameJ := strings.ToLower(byName[j].FirstName + " " + byName[j].LastName)
+		return nameI < nameJ
+	})
+
+	return byNumber, byName
 }

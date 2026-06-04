@@ -201,6 +201,7 @@ auth:
   admin_user: "admin"
   admin_password: "password123"
   secret_key: "change-me-to-something-secure"
+  autologoff_time: 0 # minutes, 0 - disabled
 
 database:
   path: "provisioning.db"
@@ -438,6 +439,9 @@ accounts_file: accounts.yaml                          # [Опционально]
         {% endfor %}
         {% endfor %}
 ```
+##### Сортированные списки
+Для каждого домена в список all_domains добавлены два массива: directory_by_number и directory_by_name отсортированные по номеру и имени соответственно.
+
 
 ## 5. Описание интерфейса
 

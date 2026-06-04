@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -11,16 +12,21 @@ import (
 	"github.com/google/uuid"
 )
 
+type SessionInfo struct {
+	Expiration   time.Time
+	LastActivity time.Time
+}
+
 type AuthHandler struct {
 	Config   *config.SystemConfig
-	sessions map[string]time.Time // Token -> Expiration
+	sessions map[string]*SessionInfo // Token -> SessionInfo
 	mu       sync.RWMutex
 }
 
 func NewAuthHandler(cfg *config.SystemConfig) *AuthHandler {
 	return &AuthHandler{
 		Config:   cfg,
-		sessions: make(map[string]time.Time),
+		sessions: make(map[string]*SessionInfo),
 	}
 }
 
@@ -43,7 +49,10 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 		// Сохранение сессии
 		h.mu.Lock()
-		h.sessions[token] = expiration
+		h.sessions[token] = &SessionInfo{
+			Expiration:   expiration,
+			LastActivity: time.Now(),
+		}
 		h.mu.Unlock()
 
 		// Устанавливаем куку
@@ -81,44 +90,73 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
-	if !h.isValidSession(r) {
+	isValid, remainingSeconds := h.isValidSession(r)
+	if !isValid {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"status": "ok"}`))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":            "ok",
+		"remaining_seconds": remainingSeconds,
+	})
 }
 
 // Вспомогательная функция проверки сессии
-func (h *AuthHandler) isValidSession(r *http.Request) bool {
+func (h *AuthHandler) isValidSession(r *http.Request) (bool, int) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		return false
+		return false, 0
 	}
 
-	h.mu.RLock()
-	expiration, exists := h.sessions[cookie.Value]
-	h.mu.RUnlock()
+	h.mu.Lock()
+	defer h.mu.Unlock()
 
+	session, exists := h.sessions[cookie.Value]
 	if !exists {
-		return false
+		return false, 0
 	}
 
-	if time.Now().After(expiration) {
-		// Сессия истекла, удаляем (ленивая очистка)
-		h.mu.Lock()
+	now := time.Now()
+
+	// Check hard expiration
+	if now.After(session.Expiration) {
 		delete(h.sessions, cookie.Value)
-		h.mu.Unlock()
-		return false
+		return false, 0
 	}
 
-	return true
+	// Check inactivity timeout
+	autoLogoffTime := h.Config.Auth.AutoLogoffTime
+	remainingSeconds := 0
+
+	if autoLogoffTime > 0 {
+		timeoutDuration := time.Duration(autoLogoffTime) * time.Minute
+		elapsed := now.Sub(session.LastActivity)
+		if elapsed > timeoutDuration {
+			delete(h.sessions, cookie.Value)
+			return false, 0
+		}
+		remainingSeconds = int((timeoutDuration - elapsed).Seconds())
+	}
+
+	// Update last activity time (except check-auth endpoint GET requests to prevent keeping session alive via background checking)
+	cleanPath := strings.TrimSuffix(r.URL.Path, "/")
+	if !strings.HasSuffix(cleanPath, "/check-auth") || r.Method == http.MethodPost {
+		session.LastActivity = now
+		if autoLogoffTime > 0 {
+			remainingSeconds = autoLogoffTime * 60
+		}
+	}
+
+	return true, remainingSeconds
 }
 
 // Middleware для защиты роутов
 func (h *AuthHandler) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !h.isValidSession(r) {
+		isValid, _ := h.isValidSession(r)
+		if !isValid {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

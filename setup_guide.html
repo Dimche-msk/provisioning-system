@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерактивное руководство по настройке Provisioning System для АТС Mitel MX-One</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Переменные для Цветовой Палитры (Indigo/Slate) */
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-light: #e0e7ff;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --code-bg: #0f1423;
+      --code-text: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #131b2e;
+      --bg-tertiary: #1e293b;
+      --border-color: #2e3b4e;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #818cf8;
+      --accent-hover: #6366f1;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --success: #34d399;
+      --success-light: rgba(52, 211, 153, 0.15);
+      --warning: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.15);
+      --danger: #f87171;
+      --code-bg: #090d16;
+      --code-text: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+      transition: var(--transition);
+    }
+
+    /* Боковая панель (Навигация) */
+    aside {
+      width: 320px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 2rem 1.5rem;
+      z-index: 10;
+      transition: var(--transition);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .brand-title h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Прогресс-бар */
+    .progress-container {
+      background-color: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Меню навигации по шагам */
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: left;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-item button:hover {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active button {
+      background-color: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-item-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+    }
+
+    .nav-item.active .nav-item-icon {
+      background-color: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .nav-item.completed .nav-item-icon::after {
+      content: '✓';
+      color: var(--success);
+    }
+    .nav-item.completed .nav-item-icon span {
+      display: none;
+    }
+
+    /* Переключатель Темы */
+    .theme-toggle-wrapper {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .theme-toggle-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      background-color: var(--border-color);
+    }
+
+    /* Основной контент */
+    main {
+      flex: 1;
+      padding: 3rem 4rem;
+      max-width: 1200px;
+      overflow-y: auto;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 2rem;
+    }
+
+    .header-tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background-color: var(--accent-light);
+      color: var(--accent);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    /* Две колонки для ввода настроек */
+    .configurator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Карточки и секции */
+    .card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .section-title svg {
+      color: var(--accent);
+    }
+
+    /* Интерактивный калькулятор / Форма */
+    .grid-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .grid-form-full {
+      grid-column: span 2;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .form-group input, .form-group select {
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    /* Динамическая высота для условных полей */
+    .conditional-group {
+      display: none;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .conditional-group.show {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Код блоки */
+    .code-container {
+      position: relative;
+      margin: 1.5rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .code-header {
+      background-color: #1e2538;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #2d3748;
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #cbd5e1;
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .copy-btn.copied {
+      background-color: var(--success);
+      color: white;
+    }
+
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    /* Чеклист */
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background-color: var(--bg-tertiary);
+      transition: var(--transition);
+    }
+
+    .checklist-item.completed {
+      border-color: var(--success);
+      background-color: var(--bg-secondary);
+      opacity: 0.9;
+    }
+
+    .checklist-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--text-muted);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: 0.2rem;
+      transition: var(--transition);
+      background-color: var(--bg-secondary);
+      user-select: none;
+    }
+
+    .checklist-item.completed .checklist-checkbox {
+      border-color: var(--success);
+      background-color: var(--success);
+      color: white;
+    }
+
+    .checklist-checkbox::after {
+      content: '✓';
+      display: none;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .checklist-item.completed .checklist-checkbox::after {
+      display: block;
+    }
+
+    .checklist-content {
+      flex: 1;
+    }
+
+    .checklist-content h4 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .checklist-item.completed .checklist-content h4 {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .checklist-content p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Подсветка кода */
+    .hl-var { color: #60a5fa; font-weight: 600; }
+    .hl-comment { color: #64748b; font-style: italic; }
+    .hl-string { color: #34d399; }
+    .hl-key { color: #f472b6; }
+    .hl-num { color: #fbbf24; }
+
+    /* Уведомления */
+    .alert {
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      margin: 1.5rem 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .alert-info {
+      background-color: var(--accent-light);
+      border: 1px solid var(--accent);
+      color: var(--text-primary);
+    }
+
+    .alert-success {
+      background-color: var(--success-light);
+      border: 1px solid var(--success);
+      color: var(--text-primary);
+    }
+
+    .alert-warning {
+      background-color: var(--warning-light);
+      border: 1px solid var(--warning);
+      color: var(--text-primary);
+    }
+
+    .alert-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .alert-content h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .alert-content p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Ссылки */
+    .file-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      border-bottom: 1px dashed var(--accent);
+    }
+
+    .file-link:hover {
+      color: var(--accent-hover);
+      border-bottom-style: solid;
+    }
+
+    /* Переключение шагов */
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @media(max-width: 1024px) {
+      .configurator-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        flex-direction: column;
+      }
+      aside {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+      }
+      main {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- БОКОВАЯ ПАНЕЛЬ -->
+  <aside>
+    <div class="brand">
+      <div class="brand-icon">P</div>
+      <div class="brand-title">
+        <h1>Provisioning System</h1>
+        <p>Настройка для Mitel &amp; MX-One</p>
+      </div>
+    </div>
+
+    <!-- Прогресс прохождения инструкции -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Ваш Прогресс</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- Навигационные Шаги -->
+    <ul class="nav-menu">
+      <li class="nav-item active" data-step="1">
+        <button onclick="switchStep(1)">
+          <div class="nav-item-icon"><span>1</span></div>
+          <span>Шаг 1: Конфиг Сервера</span>
+        </button>
+      </li>
+      <li class="nav-item" data-step="2">
+        <button onclick="switchStep(2)">
+          <div class="nav-item-icon"><span>2</span></div>
+          <span>Шаг 2: Домен и MX-One</span>
+        </button>
+      </li>
+      <li class="nav-item" data-step="3">
+        <button onclick="switchStep(3)">
+          <div class="nav-item-icon"><span>3</span></div>
+          <span>Шаг 3: Настройка Mitel</span>
+        </button>
+      </li>
+      <li class="nav-item" data-step="4">
+        <button onclick="switchStep(4)">
+          <div class="nav-item-icon"><span>4</span></div>
+          <span>Шаг 4: Запуск и Проверка</span>
+        </button>
+      </li>
+    </ul>
+
+    <!-- Темная / Светлая тема -->
+    <div class="theme-toggle-wrapper">
+      <span class="theme-toggle-label">Режим оформления</span>
+      <button class="theme-toggle-btn" onclick="toggleTheme()">
+        <span id="theme-btn-icon">☀️</span>
+        <span id="theme-btn-text">Светлый</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main>
+    <header>
+      <div class="header-tag">Интерактивный гайд</div>
+      <h2>Настройка Provisioning System</h2>
+      <p class="subtitle">Интеграция с АТС Mitel MX-One и конфигурирование вендоров из папки conf</p>
+    </header>
+
+    <!-- ИНТЕРАКТИВНЫЕ НАСТРОЙКИ (2 колонки) -->
+    <div class="configurator-grid">
+      
+      <!-- ГЛОБАЛЬНЫЕ НАСТРОЙКИ СЕРВЕРА -->
+      <section class="card" style="margin-bottom: 0;">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          1. Глобальные Настройки Сервера
+        </div>
+        <div class="grid-form">
+          <div class="form-group">
+            <label for="input-http-port">HTTP Порт Сервера</label>
+            <input type="text" id="input-http-port" value="8080" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-serve-configs">Раздача конфигов по HTTP</label>
+            <select id="input-serve-configs" onchange="updateCalculations()">
+              <option value="true" selected>Включена (true)</option>
+              <option value="false">Выключена (false)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="input-tftp-server">Встроенный TFTP сервер</label>
+            <select id="input-tftp-server" onchange="updateCalculations()">
+              <option value="true" selected>Включен (true)</option>
+              <option value="false">Выключен (false)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="input-tftp-port">TFTP Порт</label>
+            <input type="text" id="input-tftp-port" value="69" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-log-access">Логирование запросов</label>
+            <select id="input-log-access" onchange="updateCalculations()">
+              <option value="full" selected>Полное (full)</option>
+              <option value="access">Только доступы (access)</option>
+              <option value="error">Только ошибки (error)</option>
+              <option value="none">Отключено (none)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="input-log-path">Путь к файлу логов</label>
+            <input type="text" id="input-log-path" value="./access.log" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-admin-user">Администратор (Логин)</label>
+            <input type="text" id="input-admin-user" value="admin" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-admin-password">Администратор (Пароль)</label>
+            <input type="text" id="input-admin-password" value="password123" oninput="updateCalculations()">
+          </div>
+        </div>
+      </section>
+
+      <!-- НАСТРОЙКИ ДОМЕНА -->
+      <section class="card" style="margin-bottom: 0;">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          2. Параметры Домена и АТС MX-One
+        </div>
+        <div class="grid-form">
+          <div class="form-group">
+            <label for="input-domain">Имя домена в системе</label>
+            <input type="text" id="input-domain" value="main_PBX" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-mxone-ip">IP-адрес АТС Mitel MX-One</label>
+            <input type="text" id="input-mxone-ip" value="172.20.25.10" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-csp">Категория обслуживания (CSP)</label>
+            <input type="number" id="input-csp" value="3" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-vlan-voip">VLAN для голоса (VoIP)</label>
+            <input type="text" id="input-vlan-voip" value="100" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-vlan-pc">VLAN для ПК</label>
+            <input type="text" id="input-vlan-pc" value="1" oninput="updateCalculations()">
+          </div>
+          <div class="form-group">
+            <label for="input-sip-policy">Политика SIP пароля</label>
+            <select id="input-sip-policy" onchange="togglePasswordFields(); updateCalculations();">
+              <option value="random" selected>Случайный (generate_random_password: True)</option>
+              <option value="pattern">Шаблон (Префикс + Номер + Постфикс)</option>
+              <option value="constant">Константа (Общий пароль для всех)</option>
+            </select>
+          </div>
+          
+          <!-- УСЛОВНЫЕ ПОЛЯ ДЛЯ ПОЛИТИКИ ПАРОЛЕЙ -->
+          <div class="form-group conditional-group grid-form-full" id="grp-passwd-pattern">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 100%;">
+              <div class="form-group">
+                <label for="input-pass-pre">Префикс пароля</label>
+                <input type="text" id="input-pass-pre" value="Pre_" oninput="updateCalculations()">
+              </div>
+              <div class="form-group">
+                <label for="input-pass-post">Постфикс пароля</label>
+                <input type="text" id="input-pass-post" value="_Post" oninput="updateCalculations()">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group conditional-group grid-form-full" id="grp-passwd-const">
+            <label for="input-sip-pass">Статический SIP-пароль</label>
+            <input type="text" id="input-sip-pass" value="SipPasswd$" oninput="updateCalculations()">
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ШАГ 1: КОНФИГУРАЦИЯ СЕРВЕРА -->
+    <div id="step-1" class="page-section active">
+      <div class="card">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          Глобальный конфигурационный файл: provisioning-system.yaml (Серверная часть)
+        </div>
+        <p class="mb-4">
+          Ниже сгенерирован итоговый YAML-конфиг для серверных настроек и авторизации в соответствии с введенными вами параметрами.
+        </p>
+
+        <div class="alert alert-info">
+          <div class="alert-icon">💡</div>
+          <div class="alert-content">
+            <h5>Авторизация и лог-файлы</h5>
+            <p>Параметры <span class="badge">admin_user</span> и <span class="badge">admin_password</span> используются для доступа к веб-панели. Логирование запросов телефонов сохраняется по указанному вами пути.</p>
+          </div>
+        </div>
+        
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">conf/provisioning-system.yaml (Секция server и auth)</span>
+            <button class="copy-btn" onclick="copyCode('code-server-config')">Копировать</button>
+          </div>
+          <pre id="code-server-config"><code>...</code></pre>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Чеклист настройки Шага 1:</h3>
+        <ul class="checklist">
+          <li class="checklist-item" id="chk-1-1">
+            <div class="checklist-checkbox" onclick="toggleChecklist('1-1')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте доступность порта HTTP сервера</h4>
+              <p>Убедитесь, что порт <span class="calc-http-port badge">8080</span> свободен на сервере. Если вы разворачиваете веб-интерфейс за прокси (Nginx), можете изменить порт на любой свободный (например, 8090).</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-1-2">
+            <div class="checklist-checkbox" onclick="toggleChecklist('1-2')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте права на запуск TFTP сервера</h4>
+              <p>Поскольку TFTP использует системный порт 69, в ОС Linux вам потребуется запускать исполняемый файл от пользователя root или выдать файлу специальный capability: <span class="badge">sudo setcap 'cap_net_bind_service=+ep' ./provisioning-system</span>. Либо смените порт на непривилегированный (например, 6969) и настройте NAT перенаправление.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-1-3">
+            <div class="checklist-checkbox" onclick="toggleChecklist('1-3')"></div>
+            <div class="checklist-content">
+              <h4>Задайте надежный пароль администратора (auth.admin_password)</h4>
+              <p>По умолчанию задан "password123". Обязательно смените его перед тем как подключить систему к корпоративной сети.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ШАГ 2: НАСТРОЙКА ДОМЕНОВ И MX-ONE -->
+    <div id="step-2" class="page-section">
+      <div class="card">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          Настройка доменов и интеграции с АТС Mitel MX-One
+        </div>
+        <p class="mb-4">
+          В системе Provisioning System АТС Mitel MX-One привязана к конкретному домену (филиалу). IP-адрес АТС вынесен из глобальных настроек и привязан к домену как шлюз сигнализации и регистрации SIP.
+        </p>
+
+        <div class="alert alert-warning">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <h5>Логика выполнения deploy_commands и delete_commands</h5>
+            <p>При создании/обновлении параметров телефона система генерирует файлы конфигурации и запускает <span class="badge">deploy_commands</span>. При удалении телефона запускаются <span class="badge">delete_commands</span>. В них используется шаблонизатор для подстановки параметров из интерфейса (номер телефона, описание, пароли).</p>
+          </div>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Конфигурация домена с выбранной политикой SIP паролей:</h3>
+        
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">conf/provisioning-system.yaml (Секция domains)</span>
+            <button class="copy-btn" onclick="copyCode('code-domain-config')">Копировать</button>
+          </div>
+          <pre id="code-domain-config"><code>...</code></pre>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Пример скрипта provision_subscriber.sh на сервере:</h3>
+        <p class="mb-4">
+          Данный скрипт должен быть расположен в рабочей директории системы и иметь права на исполнение. Он выполняет низкоуровневые команды АТС MX-One для регистрации абонента:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">./provision_subscriber.sh (Скрипт для MX-One)</span>
+            <button class="copy-btn" onclick="copyCode('code-bash-script')">Копировать</button>
+          </div>
+          <pre id="code-bash-script"><code><span class="hl-comment">#!/bin/bash</span>
+<span class="hl-comment"># Скрипт провиженинга абонента в MX-One</span>
+
+<span class="hl-key">while</span> <span class="hl-key">getopts</span> n:f:c:p: flag
+<span class="hl-key">do</span>
+    <span class="hl-key">case</span> <span class="hl-string">"${flag}"</span> <span class="hl-key">in</span>
+        n) EXT=${OPTARG};;  <span class="hl-comment"># Extension / Номер</span>
+        f) DESC=${OPTARG};; <span class="hl-comment"># Full Name / ФИО</span>
+        c) CSP=${OPTARG};;  <span class="hl-comment"># CSP / Категория</span>
+        p) PASS=${OPTARG};; <span class="hl-comment"># Password / Пароль SIP</span>
+    <span class="hl-key">esac</span>
+<span class="hl-key">done</span>
+
+<span class="hl-key">if</span> [ -z <span class="hl-string">"$EXT"</span> ]; <span class="hl-key">then</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Error: Extension is empty"</span>
+    <span class="hl-key">exit</span> 1
+<span class="hl-key">fi</span>
+
+<span class="hl-comment"># Пути к исполняемым файлам CLI MX-One</span>
+MX_DIR=<span class="hl-string">"/opt/eri_sn/bin"</span>
+
+<span class="hl-comment"># 1. Создание абонента (если он еще не существует)</span>
+<span class="hl-key">if</span> ! $MX_DIR/extension -p -e $EXT &gt;/dev/null 2&gt;&amp;1; <span class="hl-key">then</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Creating extension $EXT..."</span>
+    yes | $MX_DIR/extension -e -n $EXT -f <span class="hl-string">"$DESC"</span> -c $CSP
+<span class="hl-key">else</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Extension $EXT already exists, skipping base creation."</span>
+<span class="hl-key">fi</span>
+
+<span class="hl-comment"># 2. Создание IP/SIP параметров для этого абонента</span>
+<span class="hl-key">if</span> ! $MX_DIR/ip_extension -p -e $EXT &gt;/dev/null 2&gt;&amp;1; <span class="hl-key">then</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Creating IP/SIP extension $EXT..."</span>
+    yes | $MX_DIR/ip_extension -e -n $EXT -p <span class="hl-string">"N/A"</span>
+<span class="hl-key">fi</span>
+
+<span class="hl-comment"># 3. Установка авторизационного пароля SIP-линии</span>
+<span class="hl-key">if</span> ! $MX_DIR/auth_code -p -e $EXT &gt;/dev/null 2&gt;&amp;1; <span class="hl-key">then</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Setting SIP password/auth code for $EXT..."</span>
+    yes | $MX_DIR/auth_code -e -n $EXT -a <span class="hl-string">"$PASS"</span>
+<span class="hl-key">else</span>
+    <span class="hl-key">echo</span> <span class="hl-string">"Updating SIP password for $EXT..."</span>
+    yes | $MX_DIR/auth_code -c -n $EXT -a <span class="hl-string">"$PASS"</span>
+<span class="hl-key">fi</span>
+
+<span class="hl-key">echo</span> <span class="hl-string">"Subscriber $EXT successfully provisioned!"</span></code></pre>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Чеклист настройки Шага 2:</h3>
+        <ul class="checklist">
+          <li class="checklist-item" id="chk-2-1">
+            <div class="checklist-checkbox" onclick="toggleChecklist('2-1')"></div>
+            <div class="checklist-content">
+              <h4>Создайте и сделайте исполняемым скрипт provision_subscriber.sh</h4>
+              <p>Сохраните код bash-скрипта выше в файл в корне проекта и выполните команду <span class="badge">chmod +x provision_subscriber.sh</span>.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-2-2">
+            <div class="checklist-checkbox" onclick="toggleChecklist('2-2')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте переменные домена в provisioning-system.yaml</h4>
+              <p>Убедитесь, что параметры <span class="badge">sip_server1_ip</span> и <span class="badge">sip_proxy1_address</span> указывают именно на сигнальный IP АТС MX-One (<span class="calc-mxone-ip">172.20.25.10</span>).</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-2-3">
+            <div class="checklist-checkbox" onclick="toggleChecklist('2-3')"></div>
+            <div class="checklist-content">
+              <h4>Убедитесь в наличии прав для выполнения утилит MX-One</h4>
+              <p>Скрипт запускается от имени пользователя, указанного в Systemd сервисе. По умолчанию это должен быть <span class="badge">mxone_admin</span> или пользователь, входящий в группы с правами запуска утилит из <span class="badge">/opt/eri_sn/bin/</span>.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ШАГ 3: НАСТРОЙКА ВЕНДОРА MITEL -->
+    <div id="step-3" class="page-section">
+      <div class="card">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2-2.5v-15z"></path></svg>
+          Настройка Вендора Mitel (структура папки conf/vendors/mitel)
+        </div>
+        <p class="mb-4">
+          Шаблоны конфигураций телефонов Mitel сгруппированы в директории <span class="badge">conf/vendors/mitel/</span>. Система автоматически сканирует эти каталоги при запуске и генерирует конфигурации.
+        </p>
+
+        <div class="alert alert-info">
+          <div class="alert-icon">📂</div>
+          <div class="alert-content">
+            <h5>Карта директории Mitel</h5>
+            <p>Убедитесь, что ваша папка вендора имеет следующий вид:</p>
+            <pre style="padding: 0.5rem 1rem; margin-top: 0.5rem; background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 0.85rem;">
+conf/vendors/mitel/
+├── vendor.yaml           # Метаданные вендора Mitel
+├── accounts.yaml         # Поля в интерфейсе добавления SIP-аккаунтов
+├── templates/
+│   ├── phone.tpl         # Главный Jinja/Pongo шаблон телефона (.cfg)
+│   └── features.yaml     # Шаблоны функций кнопок (BLF, SpeedDial)
+├── models/
+│   ├── 6867i.yaml        # Описание кнопок и линий для Mitel 6867i
+│   └── AnalogATS.yaml    # Описание аналоговых номеров (для MX-One)
+└── static/               # Статические файлы прошивок и картинок</pre>
+          </div>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Главный шаблон телефона (templates/phone.tpl):</h3>
+        <p class="mb-4">
+          Этот шаблон рендерится для каждого телефона в системе. В нем используются циклы для обхода SIP-аккаунтов и функциональных кнопок:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">conf/vendors/mitel/templates/phone.tpl</span>
+            <button class="copy-btn" onclick="copyCode('code-mitel-tpl')">Копировать</button>
+          </div>
+          <pre id="code-mitel-tpl"><code>{% if phone.type != "gateway" %}
+# Mitel Phone-Specific Configuration ({{ account.mac_address|lower }}.cfg)
+# Phone: {{ phone.type }} (Model: {{ phone.model }})
+# User: {{ account.phone_number }}
+
+# Account / Line Settings
+{%- for line in account.lines %}
+{%- if line.type == "line" %}
+# ------------- line {{line.number}} --------------
+sip line{{line.number}} user name: {{ line.user_name|default:line.number }}
+sip line{{line.number}} auth name: {{ line.auth_name|default:line.number }}
+sip line{{line.number}} password: {% if line.password -%}{{ line.password }}{%- elif variables.PasswdPre and variables.PasswdPost and (line.auth_name or line.phone_number) -%}{{ variables.PasswdPre }}{{ auth_name|default:line.phone_number }}{{ variables.PasswdPost }}{%- else -%}{{ variables.sip_password }}{%- endif %}
+sip line{{line.number}} display name: {{ line.display_name|default:line.screen_name|default:line.number }}
+sip line{{line.number}} screen name: {{ line.screen_name|default:line.display_name|default:line.number }}
+sip line{{line.number}} proxy: {{ line.registrar_ip|default:variables.sip_server_ip }}
+sip line{{line.number}} proxy port: {{ line.registrar_port|default:variables.sip_server_port|default:5060 }}
+sip line{{line.number}} registrar: {{ line.registrar_ip|default:variables.sip_server_ip }}
+sip line{{line.number}} registrar port: {{ line.registrar_port|default:variables.sip_server_port|default:5060 }}
+{%- endif %}
+{%- endfor %}
+
+# Individual settings generated from lines and features
+{%- for cfg in keys_config %}
+{{ cfg }}
+{%- endfor %}
+
+# Custom Overrides and Additional Settings
+{%- if phone.settings %}
+# Device-specific settings
+{%- for key, val in phone.settings %}
+{{ key }}: {{ val }}
+{%- endfor %}
+{%- endif %}
+{% else %}
+# This device ({{ account.mac_address }}) is a {{ phone.type }} and does not require an individual configuration file.
+# It is used for system number tracking and directory generation only.
+{% endif %}</code></pre>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Чеклист настройки Шага 3:</h3>
+        <ul class="checklist">
+          <li class="checklist-item" id="chk-3-1">
+            <div class="checklist-checkbox" onclick="toggleChecklist('3-1')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте vendor.yaml для Mitel</h4>
+              <p>Убедитесь, что файл содержит правильное указание формата имени файла: <span class="badge">phone_config_file: "{{account.mac_address|lower}}.cfg"</span>. Это важно, поскольку Mitel ожидает MAC-адрес в нижнем регистре без двоеточий.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-3-2">
+            <div class="checklist-checkbox" onclick="toggleChecklist('3-2')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте наличие необходимых моделей в models/</h4>
+              <p>В директории <span class="badge">models/</span> должны быть описаны все используемые аппараты (например, 6863i, 6867i, а также виртуальная модель <span class="badge">AnalogATS.yaml</span> для учета аналоговых абонентов на MX-One).</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-3-3">
+            <div class="checklist-checkbox" onclick="toggleChecklist('3-3')"></div>
+            <div class="checklist-content">
+              <h4>Скопируйте шаблоны функций кнопок в templates/features.yaml</h4>
+              <p>Убедитесь, что в файле features.yaml заданы шаблоны для BLF, Speed Dial и XML-справочника.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ШАГ 4: ЗАПУСК И ПРОВЕРКА -->
+    <div id="step-4" class="page-section">
+      <div class="card">
+        <div class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 11.08 12 19 9 16"></polyline><circle cx="12" cy="12" r="10"></circle></svg>
+          Запуск системы и проверка работы
+        </div>
+        <p class="mb-4">
+          После настройки всех конфигурационных файлов, пришло время запустить систему, загрузить список телефонов (вручную или через импорт из Excel) и проверить, как АТС и аппараты взаимодействуют с сервером.
+        </p>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Команды для проверки работы в терминале:</h3>
+        
+        <p class="mb-2">Вы можете сгенерировать команды проверки для вашего IP-адреса сервера:</p>
+        
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">Проверка скачивания конфига по HTTP</span>
+            <button class="copy-btn" onclick="copyCode('code-test-http')">Копировать</button>
+          </div>
+          <pre id="code-test-http"><code>curl -v http://localhost:<span class="calc-http-port">8080</span>/configs/<span class="calc-domain">main_PBX</span>/00085d1610de.cfg</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">Проверка скачивания конфига по TFTP</span>
+            <button class="copy-btn" onclick="copyCode('code-test-tftp')">Копировать</button>
+          </div>
+          <pre id="code-test-tftp"><code>tftp localhost -c get <span class="calc-domain">main_PBX</span>/00085d1610de.cfg test_download.cfg</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span class="code-title">Проверка создания абонента на АТС MX-One</span>
+            <button class="copy-btn" onclick="copyCode('code-test-mxone')">Копировать</button>
+          </div>
+          <pre id="code-test-mxone"><code>/opt/eri_sn/bin/extension -p -e 1000  <span class="hl-comment"># Выведет информацию об абоненте 1000 на АТС</span>
+/opt/eri_sn/bin/ip_extension -p -e 1000 <span class="hl-comment"># Выведет IP/SIP статус абонента 1000</span></code></pre>
+        </div>
+
+        <h3 class="mt-4 mb-4" style="font-size: 1.15rem; font-weight:600;">Чеклист настройки Шага 4:</h3>
+        <ul class="checklist">
+          <li class="checklist-item" id="chk-4-1">
+            <div class="checklist-checkbox" onclick="toggleChecklist('4-1')"></div>
+            <div class="checklist-content">
+              <h4>Запустите сервис Provisioning System</h4>
+              <p>Используйте systemd: <span class="badge">sudo systemctl start provisioning-system</span>. Проверьте статус: <span class="badge">sudo systemctl status provisioning-system</span>.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-4-2">
+            <div class="checklist-checkbox" onclick="toggleChecklist('4-2')"></div>
+            <div class="checklist-content">
+              <h4>Сделайте тестовый импорт из Excel</h4>
+              <p>Скачайте пример файла импорта из папки <span class="badge">sample_config/Phones_IMPORT.xlsx</span>. Заполните тестовую запись (MAC-адрес, номер, вендор="mitel", модель="6867i"), загрузите файл через веб-интерфейс в домен <span class="badge"><span class="calc-domain">main_PBX</span></span>.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-4-3">
+            <div class="checklist-checkbox" onclick="toggleChecklist('4-3')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте выполнение deploy_commands в логах</h4>
+              <p>При сохранении телефона откройте лог-файл (или <span class="badge">journalctl -u provisioning-system -f</span>) и убедитесь, что выполнился скрипт регистрации абонента на АТС: <span class="badge">./provision_subscriber.sh -n "..." -p "..."</span> без ошибок.</p>
+            </div>
+          </li>
+          <li class="checklist-item" id="chk-4-4">
+            <div class="checklist-checkbox" onclick="toggleChecklist('4-4')"></div>
+            <div class="checklist-content">
+              <h4>Проверьте лог обращений (Debug) в веб-интерфейсе</h4>
+              <p>Перейдите во вкладку "Debug" (Логи обращений) в веб-панели. Вы должны увидеть запросы от телефонов Mitel на скачивание файлов конфигурации <span class="badge">00085dXXXXXX.cfg</span> и статус ответа 200 OK.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS ЛОГИКА ДЛЯ ИНТЕРАКТИВНОСТИ -->
+  <script>
+    const stepsCount = 13; // Общее количество пунктов чеклиста
+    const completedTasks = JSON.parse(localStorage.getItem('provisioning_guide_tasks') || '{}');
+
+    // Функция переключения вкладок/шагов
+    function switchStep(stepNumber) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.querySelector(`.nav-item[data-step="${stepNumber}"]`).classList.add('active');
+
+      document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`step-${stepNumber}`).classList.add('active');
+
+      localStorage.setItem('provisioning_guide_last_step', stepNumber);
+    }
+
+    // Показать/скрыть поля формирования паролей на основе выбранной политики
+    function togglePasswordFields() {
+      const policy = document.getElementById('input-sip-policy').value;
+      const grpPattern = document.getElementById('grp-passwd-pattern');
+      const grpConst = document.getElementById('grp-passwd-const');
+
+      grpPattern.classList.remove('show');
+      grpConst.classList.remove('show');
+
+      if (policy === 'pattern') {
+        grpPattern.classList.add('show');
+      } else if (policy === 'constant') {
+        grpConst.classList.add('show');
+      }
+    }
+
+    // Восстановление последнего открытого шага и состояния
+    window.onload = function() {
+      const lastStep = localStorage.getItem('provisioning_guide_last_step') || 1;
+      switchStep(parseInt(lastStep));
+      
+      Object.keys(completedTasks).forEach(id => {
+        if (completedTasks[id]) {
+          const item = document.getElementById(`chk-${id}`);
+          if (item) {
+            item.classList.add('completed');
+          }
+        }
+      });
+      
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      updateThemeUI(currentTheme);
+
+      togglePasswordFields();
+      updateCalculations();
+      updateProgress();
+    };
+
+    function toggleChecklist(id) {
+      const item = document.getElementById(`chk-${id}`);
+      if (item.classList.contains('completed')) {
+        item.classList.remove('completed');
+        completedTasks[id] = false;
+      } else {
+        item.classList.add('completed');
+        completedTasks[id] = true;
+      }
+      localStorage.setItem('provisioning_guide_tasks', JSON.stringify(completedTasks));
+      
+      checkStepCompletion(id.split('-')[0]);
+      updateProgress();
+    }
+
+    function checkStepCompletion(stepNum) {
+      const stepItems = document.querySelectorAll(`[id^="chk-${stepNum}-"]`);
+      let allDone = true;
+      stepItems.forEach(item => {
+        if (!item.classList.contains('completed')) {
+          allDone = false;
+        }
+      });
+
+      const navItem = document.querySelector(`.nav-item[data-step="${stepNum}"]`);
+      if (allDone && stepItems.length > 0) {
+        navItem.classList.add('completed');
+      } else {
+        navItem.classList.remove('completed');
+      }
+    }
+
+    function updateProgress() {
+      const allCheckboxes = document.querySelectorAll('.checklist-item');
+      const completed = document.querySelectorAll('.checklist-item.completed');
+      const percent = allCheckboxes.length > 0 ? Math.round((completed.length / allCheckboxes.length) * 100) : 0;
+      
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+      document.getElementById('progress-percent').innerText = `${percent}%`;
+
+      for (let i = 1; i <= 4; i++) {
+        checkStepCompletion(i);
+      }
+    }
+
+    // Динамическая генерация текстов файлов конфигурации
+    function updateCalculations() {
+      // Глобальные переменные сервера
+      const httpPort = document.getElementById('input-http-port').value || '8080';
+      const serveConfigs = document.getElementById('input-serve-configs').value;
+      const tftpServer = document.getElementById('input-tftp-server').value;
+      const tftpPort = document.getElementById('input-tftp-port').value || '69';
+      const logAccess = document.getElementById('input-log-access').value;
+      const logPath = document.getElementById('input-log-path').value || './access.log';
+      const adminUser = document.getElementById('input-admin-user').value || 'admin';
+      const adminPassword = document.getElementById('input-admin-password').value || 'password123';
+
+      // Настройки домена
+      const domainName = document.getElementById('input-domain').value || 'main_PBX';
+      const mxoneIp = document.getElementById('input-mxone-ip').value || '172.20.25.10';
+      const csp = document.getElementById('input-csp').value || '3';
+      const vlanVoip = document.getElementById('input-vlan-voip').value || '100';
+      const vlanPc = document.getElementById('input-vlan-pc').value || '1';
+      const sipPolicy = document.getElementById('input-sip-policy').value;
+      const passPre = document.getElementById('input-pass-pre').value || 'Pre_';
+      const passPost = document.getElementById('input-pass-post').value || '_Post';
+      const sipPass = document.getElementById('input-sip-pass').value || 'SipPasswd$';
+
+      // 1. Рендеринг серверного YAML
+      let serverYAML = `<span class="hl-key">server</span>:
+  <span class="hl-key">listen_address</span>: <span class="hl-string">"0.0.0.0"</span>
+  <span class="hl-key">port</span>: <span class="hl-string">"${httpPort}"</span>
+  <span class="hl-key">serve_configs</span>: <span class="hl-num">${serveConfigs}</span>
+  <span class="hl-key">tftp_server</span>: <span class="hl-num">${tftpServer}</span>
+  <span class="hl-key">tftp_port</span>: <span class="hl-string">"${tftpPort}"</span>
+  <span class="hl-key">log_device_access</span>: <span class="hl-string">${logAccess}</span>
+  <span class="hl-key">log_file_path</span>: <span class="hl-string">"${logPath}"</span>
+
+<span class="hl-key">auth</span>:
+  <span class="hl-key">admin_user</span>: <span class="hl-string">"${adminUser}"</span>
+  <span class="hl-key">admin_password</span>: <span class="hl-string">"${adminPassword}"</span>
+  <span class="hl-key">secret_key</span>: <span class="hl-string">"super-secret-key-for-sessions"</span>
+
+<span class="hl-key">database</span>:
+  <span class="hl-key">path</span>: <span class="hl-string">"provisioning.db"</span>
+  <span class="hl-key">backup_dir</span>: <span class="hl-string">"backups"</span>`;
+
+      document.getElementById('code-server-config').innerHTML = serverYAML;
+
+      // 2. Рендеринг доменного YAML с учетом политики SIP паролей
+      let passPolicyYAML = '';
+      let passVariablesYAML = '';
+
+      if (sipPolicy === 'random') {
+        passPolicyYAML = `\n    <span class="hl-key">generate_random_password</span>: <span class="hl-num">true</span>`;
+      } else if (sipPolicy === 'pattern') {
+        passPolicyYAML = `\n    <span class="hl-key">generate_random_password</span>: <span class="hl-num">false</span>`;
+        passVariablesYAML = `\n      <span class="hl-key">PasswdPre</span>: <span class="hl-string">"${passPre}"</span>\n      <span class="hl-key">PasswdPost</span>: <span class="hl-string">"${passPost}"</span>`;
+      } else if (sipPolicy === 'constant') {
+        passPolicyYAML = `\n    <span class="hl-key">generate_random_password</span>: <span class="hl-num">false</span>`;
+        passVariablesYAML = `\n      <span class="hl-key">sip_password</span>: <span class="hl-string">"${sipPass}"</span>`;
+      }
+
+      let domainYAML = `<span class="hl-key">domains</span>:
+  - <span class="hl-key">name</span>: <span class="hl-string">"${domainName}"</span>
+    <span class="hl-key">static_ip_addresses</span>: <span class="hl-string">no</span>
+    <span class="hl-key">track_phone_ips</span>: <span class="hl-num">true</span>${passPolicyYAML}
+
+    <span class="hl-key">deploy_commands</span>:
+      - &gt;
+        {{- $pass := .Vars.sip_password -}}
+        {{- $linePass := "" -}}
+        {{- if gt (len .Phone.Lines) 0 -}}
+          {{- $linePass = (index .Phone.Lines 0).GetAdditionalInfoMap.password -}}
+        {{- end -}}
+        {{- if $linePass -}}
+          {{- $pass = $linePass -}}
+        {{- else if and .Vars.PasswdPre (and .Vars.PasswdPost .Phone.PhoneNumber) -}}
+          {{- $pass = print .Vars.PasswdPre .Phone.PhoneNumber .Vars.PasswdPost -}}
+        {{- end -}}
+        ./provision_subscriber.sh -n "{{if .Phone.PhoneNumber}}{{.Phone.PhoneNumber}}{{end}}" -f "{{.Phone.Description}}" -c {{.Vars.default_csp}} -p "{{$pass}}" 
+
+      - |
+        {{- $current_number := .Phone.PhoneNumber -}}
+        {{- if .Vars.old_number -}}
+          {{- $current_number = .Vars.old_number -}}
+        {{- end -}}
+        {{- $phone_ip := "" -}}
+        {{- if and (eq .Vars.static_ip_addresses "yes") .Phone.IPAddress -}}
+          {{- $phone_ip = .Phone.IPAddress -}}
+        {{- else -}}
+          {{- if .Phone.IPAddress -}}
+            {{- $phone_ip = .Phone.IPAddress -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if eq .Phone.Vendor "mitel" -}}
+          {{- if $phone_ip -}}
+            PHONE_IP="{{ $phone_ip }}"
+          {{- else -}}
+            PHONE_IP=$(./scripts/mx_one_get_extension_ip.sh "{{ $current_number }}" 2>/dev/null)
+          {{- end }}
+          if [ -n "$PHONE_IP" ]; then
+            sleep 5 &amp;&amp; ./scripts/sip_notify_check_sync.sh "$PHONE_IP" "{{.Vars.http_prov_server}}" &amp;
+          fi || true
+        {{- end -}}
+
+    <span class="hl-key">delete_commands</span>:
+      - '{{if .Phone.PhoneNumber}}yes | /opt/eri_sn/bin/auth_code -e -d "{{.Phone.PhoneNumber}}"{{end}}'
+      - '{{if .Phone.PhoneNumber}}yes | /opt/eri_sn/bin/ip_extension -e -d "{{.Phone.PhoneNumber}}"{{end}}'
+      - '{{if .Phone.PhoneNumber}}yes | /opt/eri_sn/bin/extension -e -d "{{.Phone.PhoneNumber}}"{{end}}'
+
+    <span class="hl-key">variables</span>:
+      <span class="hl-key">ntp_server</span>: <span class="hl-string">"pool.ntp.org"</span>
+      <span class="hl-key">sip_server1_ip</span>: <span class="hl-string">"${mxoneIp}"</span>  <span class="hl-comment"># IP АТС Mitel MX-One вынесен в домен!</span>
+      <span class="hl-key">sip_server1_port</span>: <span class="hl-string">"5060"</span>
+      <span class="hl-key">sip_proxy1_address</span>: <span class="hl-string">"${mxoneIp}"</span>
+      <span class="hl-key">sip_proxy1_port</span>: <span class="hl-string">"5060"</span>
+      <span class="hl-key">sip_registrar1_address</span>: <span class="hl-string">"${mxoneIp}"</span>
+      <span class="hl-key">sip_registrar1_port</span>: <span class="hl-string">"5060"</span>
+      <span class="hl-key">sip_server1_transport_type</span>: <span class="hl-string">"UDP"</span>
+      <span class="hl-key">vlan_voip</span>: <span class="hl-string">"${vlanVoip}"</span>
+      <span class="hl-key">vlan_pc</span>: <span class="hl-string">"${vlanPc}"</span>
+      <span class="hl-key">http_prov_server</span>: <span class="hl-string">"localhost"</span>
+      <span class="hl-key">http_prov_server_port</span>: <span class="hl-string">"${httpPort}"</span>
+      <span class="hl-key">admin_password</span>: <span class="hl-string">"Admin"</span>
+      <span class="hl-key">user_password</span>: <span class="hl-string">"User"</span>
+      <span class="hl-key">default_csp</span>: <span class="hl-string">${csp}</span>${passVariablesYAML}`;
+
+      document.getElementById('code-domain-config').innerHTML = domainYAML;
+
+      // Обновляем мелкие вставки в тексте на Шаге 4
+      document.querySelectorAll('.calc-http-port').forEach(el => el.innerText = httpPort);
+      document.querySelectorAll('.calc-domain').forEach(el => el.innerText = domainName);
+      document.querySelectorAll('.calc-mxone-ip').forEach(el => el.innerText = mxoneIp);
+    }
+
+    // Копирование кода в буфер
+    function copyCode(elementId) {
+      const codeElement = document.getElementById(elementId);
+      const textToCopy = codeElement.innerText;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const btn = codeElement.parentElement.querySelector('.copy-btn');
+        btn.innerText = 'Скопировано!';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerText = 'Копировать';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Ошибка копирования: ', err);
+      });
+    }
+
+    // Переключение тем
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeUI(newTheme);
+    }
+
+    function updateThemeUI(theme) {
+      const icon = document.getElementById('theme-btn-icon');
+      const text = document.getElementById('theme-btn-text');
+      
+      if (theme === 'dark') {
+        icon.innerText = '🌙';
+        text.innerText = 'Темный';
+      } else {
+        icon.innerText = '☀️';
+        text.innerText = 'Светлый';
+      }
+    }
+  </script>
+</body>
+</html>

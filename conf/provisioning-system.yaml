@@ -11,6 +11,7 @@ auth:
   admin_user: "admin"
   admin_password: "password123"
   secret_key: "super-secret-key-for-sessions"
+  autologoff_time: 0
 
 database:
   path: "provisioning.db"

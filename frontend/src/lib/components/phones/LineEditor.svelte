@@ -51,6 +51,13 @@
             type: l.type || "Line",
         }));
         selectedLine = null;
+        currentPage = 1;
+        searchQuery = "";
+        editForm = null;
+        additionalInfo = {};
+        showConflictDialog = false;
+        importConflicts = [];
+        pendingImport = [];
     }
 
     let searchQuery = "";

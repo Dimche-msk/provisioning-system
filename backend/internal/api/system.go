@@ -66,9 +66,8 @@ func (h *SystemHandler) Reload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update global config
-	*h.Config = newCfg
-	h.ProvManager.Config = newCfg
+	// Update global config in-place to ensure all handlers share the same updated struct
+	**h.Config = *newCfg
 
 	if h.ProvManager.Tracker != nil {
 		h.ProvManager.Tracker.Rebuild()
@@ -709,8 +708,8 @@ func (h *SystemHandler) UpdateSystemConfig(w http.ResponseWriter, r *http.Reques
 	// 3. Reload system state
 	// We reuse the Reload logic but slightly more targeted if needed.
 	// For now, full reload is safest.
-	*h.Config = &newCfg
-	h.ProvManager.Config = &newCfg
+	// Update global config in-place to ensure all handlers share the same updated struct
+	**h.Config = newCfg
 
 	// Trigger full internal reload (vendors, models, etc.)
 	h.ProvManager.LoadVendors(filepath.Join(h.ConfigDir, "vendors"))
